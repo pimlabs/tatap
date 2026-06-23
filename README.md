@@ -15,7 +15,7 @@ Teleprompter ringan berbasis browser, jalan tanpa install dan tanpa backend.
 
 ## Live Demo
 
-https://PLACEHOLDER.github.io/tatap/
+https://ekodedypurnomo.github.io/tatap/
 
 ## Dokumentasi
 
