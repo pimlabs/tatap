@@ -1,0 +1,22 @@
+schema: spec-driven
+
+context: |
+  Tatap: teleprompter ringan berbasis browser, single-purpose tool personal (bukan SaaS).
+  Stack: vanilla JS ES5-leaning (var, bukan let/const), no build step, no framework, no backend.
+  Seluruh app ada di SATU file index.html (HTML+CSS+JS dalam satu <script> IIFE). Tidak ada src/, node_modules, atau package.json.
+  Hosting: GitHub Pages static-only. Semua path harus relatif (./).
+  State: satu object `state`, load/save via loadState()/saveState() ke localStorage — jangan bikin sumber state lain.
+  DOM: semua getElementById di-cache ke object `el` di awal script, jangan query berulang di fungsi.
+  Tokenizer naskah (tokenizeScript) murni, parsing baris jadi content/blank/pause. Baris "---" = section break, baris "[pause]" = manual pause marker.
+  Sebelum nambah dependency/library/CDN baru — wajib didiskusikan dulu, jangan diam-diam diputuskan.
+  Source of truth arsitektur lengkap ada di AGENTS.md — baca itu dulu sebelum membuat proposal/spec/tasks.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
