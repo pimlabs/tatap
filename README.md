@@ -15,7 +15,7 @@ Teleprompter ringan berbasis browser, jalan tanpa install dan tanpa backend.
 
 ## Live Demo
 
-https://ekodedypurnomo.github.io/tatap/
+https://pimlabs.github.io/tatap/
 
 ## Dokumentasi
 
