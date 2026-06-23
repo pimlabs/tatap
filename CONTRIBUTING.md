@@ -16,7 +16,9 @@ Baca [AGENTS.md](AGENTS.md) dulu. Itu source of truth untuk arsitektur, konvensi
 ## Cara Test Lokal
 
 ```bash
-python3 -m http.server 8000
+bunx serve .                 # kalau ada Bun
+uv run -m http.server 8000   # kalau ada uv
+python3 -m http.server 8000  # fallback paling universal
 ```
 
 Lalu buka `http://localhost:8000`. Lihat [README.md](README.md) untuk detail lain.

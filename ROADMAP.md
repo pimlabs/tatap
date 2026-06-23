@@ -28,12 +28,19 @@ Status per 23 Juni 2026.
 - **Highlight baris aktif tidak men-dim baris lain.** Konvensi teleprompter umum: reader perlu bisa lihat ke depan, jadi cuma baris aktif yang ditonjolkan (bold + accent color), bukan baris lain yang digelapkan.
 - **Estimasi durasi mengecualikan runway padding** (`18vh` atas + `100vh` bawah di stage). Estimasi merepresentasikan waktu baca konten asli, bukan termasuk buffer visual.
 
+## ✅ v3a — Import Markdown (selesai)
+
+- Tombol "Import Markdown" di sebelah textarea naskah — buka file `.md`, hasilnya otomatis dibersihkan dari syntax markdown sebelum masuk ke textarea.
+- Auto-clean saat paste — kalau konten yang di-paste ke textarea kedeteksi markdown (heading/bold/italic), otomatis distrip; teks biasa (termasuk yang punya inline `#hashtag`) gak disentuh sama sekali.
+- Fungsi pure `stripMarkdown`/`looksLikeMarkdown` (berdekatan dengan `tokenizeScript`) menghapus marker heading/bold/italic/emoji per baris, dan **melewati baris `---` apa adanya** — tetap compatible sama section-break marker yang sudah ada.
+- **Keputusan**: scope digeneralisasi jadi "import Markdown" generic, bukan spesifik format `eko-narrative-book` — gak ada dependency ke project lain, dan gak nambah CDN/library baru (regex manual, bukan markdown parser).
+- Dikerjakan via OpenSpec change `add-markdown-import` (lihat `openspec/changes/add-markdown-import/` — proposal, design, spec, tasks).
+
 ## 🔜 v3 — Belum dibangun, sudah dianalisis
 
 | Fitur | Effort | Catatan |
 |---|---|---|
 | Remote control dari HP | M–L | Butuh PeerJS via CDN (WebRTC P2P, gratis, no signup). Ini akan jadi dependency eksternal pertama selain Google Fonts — perlu keputusan eksplisit sebelum dibangun. |
-| Import Markdown dari `eko-narrative-book` | S | Strip heading/emoji yang gak perlu dibaca keras; deteksi `---` yang sudah dipakai book-pipeline sebagai section break (kemungkinan sudah compatible, perlu dicek format aslinya). |
 | Multi-script library | M | Simpan beberapa naskah (per chapter), pilih dari list. Masih localStorage-based, belum perlu backend. |
 | Section label otomatis dari heading | S | Section list saat ini cuma snippet baris pertama — bisa diperbaiki kalau baris itu markdown heading (`#`/`##`). |
 
@@ -45,4 +52,4 @@ Status per 23 Juni 2026.
 
 ## Prioritas yang disarankan
 
-Kalau harus pilih satu untuk dikerjakan duluan dari v3: **import Markdown dari eko-narrative-book** — effort kecil, langsung mengurangi friksi di workflow yang sudah jalan (paste manual → otomatis), dan tidak menambah dependency apapun.
+Import Markdown udah selesai (lihat v3a). Sisa v3: **Section label otomatis dari heading** — effort kecil. Catatan implementasi: `stripMarkdown` saat ini buang marker heading sebelum teks masuk textarea, jadi info "baris ini tadinya heading" hilang — fitur ini perlu nangkep heading sebelum di-strip (atau jalan duluan sebelum stripper), bukan baca ulang dari hasil yang udah bersih.

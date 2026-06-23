@@ -20,33 +20,40 @@ Prinsip non-negotiable: **lite, zero-cost, zero-build**.
 
 ```
 tatap/
-├── index.html       # Seluruh app: HTML + CSS + JS dalam satu file
+├── index.html        # Markup + DOM wiring, link ke styles.css & app.js
+├── styles.css        # Seluruh CSS (custom properties di :root)
+├── app.js            # Seluruh JS app, satu IIFE
 ├── manifest.json     # PWA manifest
 ├── sw.js             # Service worker (cache app shell untuk offline)
-├── icon-192.png      # PWA icon
-├── icon-512.png      # PWA icon
+├── assets/
+│   ├── icon-192.png  # PWA icon
+│   └── icon-512.png  # PWA icon
+├── openspec/         # Spec-driven change proposals (lihat openspec/changes/)
 ├── CLAUDE.md
 ├── AGENTS.md
 ├── ROADMAP.md
+├── CONTRIBUTING.md
 └── README.md
 ```
 
-Tidak ada `src/`, tidak ada `package.json`. Semua logic ada di `index.html` dalam satu `<script>` tag (IIFE pattern).
+Tidak ada `src/`, tidak ada `package.json`, tidak ada build step. CSS/JS dipecah ke `styles.css`/`app.js` murni lewat `<link>`/`<script src>` biasa — tanpa bundler/transpiler, tanpa module system. Single-file gak lagi wajib (lihat Constraints & Non-Goals), tapi tetap zero-build.
 
 ## Cara Menjalankan / Testing Lokal
 
 - **Buka langsung**: double-click `index.html`, semua fitur jalan kecuali service worker (butuh http/https, bukan `file://`).
-- **Test dengan service worker aktif**: jalankan local server, contoh:
+- **Test dengan service worker aktif**: jalankan local server. Rekomendasi (pilih salah satu, gak perlu install project-level — semua cuma static file server, gak ada build step):
+  ```bash
+  bunx serve .          # kalau ada Bun
+  uv run -m http.server 8000   # kalau ada uv (Python tanpa setup venv manual)
+  python3 -m http.server 8000  # fallback paling universal
   ```
-  python3 -m http.server 8000
-  ```
-  lalu buka `http://localhost:8000`.
+  lalu buka `http://localhost:8000` (Bun's `serve` defaultnya port lain, cek output terminal).
 - **Tidak ada automated browser test** di proyek ini. Logic murni (parsing naskah) bisa ditest lewat Node tanpa browser — lihat bagian Testing di bawah.
 
 ## Code Style
 
 - Vanilla JS, ES5-leaning (`var`, bukan `let`/`const`) untuk kompatibilitas browser lama tanpa transpiler.
-- Satu file `index.html`, semua CSS di `<style>`, semua JS di satu `<script>` IIFE di bagian akhir `<body>`.
+- Markup di `index.html`, CSS di `styles.css`, JS di `app.js` (satu IIFE) — gak ada module system (`import`/`export`), gak ada bundler.
 - CSS pakai custom properties (`:root { --bg: ...; }`) untuk semua warna/spacing yang berulang — jangan hardcode hex value langsung di banyak tempat.
 - Penamaan elemen DOM: cache semua `getElementById` ke object `el` di awal script, jangan query berulang.
 - State app disimpan di satu object `state`, di-load/save ke `localStorage` lewat `loadState()`/`saveState()`. Jangan bikin sumber kebenaran state yang lain.
@@ -79,8 +86,8 @@ Logic yang bergantung pada `getBoundingClientRect()` (pointer, jump, animasi scr
 - ❌ Jangan tambah backend/database tanpa diskusi eksplisit.
 - ❌ Jangan ubah `localStorage` jadi `sessionStorage` atau sebaliknya tanpa alasan kuat.
 - ❌ Jangan tambah dependency CDN baru tanpa menyebutkan trade-off-nya (ukuran, privasi, ketergantungan pihak ketiga) ke pemilik repo.
-- ✅ Boleh nambah fitur baru di dalam `index.html` selama tetap single-file dan tetap jalan tanpa build step.
-- ✅ Boleh bikin file terpisah HANYA untuk hal yang memang perlu file sendiri (manifest, service worker, ikon) — bukan untuk split JS/CSS yang sebenarnya bisa tetap inline.
+- ✅ Boleh nambah fitur baru di dalam `index.html` selama tetap jalan tanpa build step.
+- ✅ Boleh split CSS/JS ke file terpisah (`styles.css`, `app.js`, dll) kalau itu bikin lebih rapi — link via `<link>`/`<script src>` biasa, tanpa bundler/transpiler. Single-file gak lagi wajib.
 
 ## Commit Convention
 
