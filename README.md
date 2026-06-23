@@ -21,3 +21,8 @@ https://pimlabs.github.io/tatap/
 
 - [AGENTS.md](AGENTS.md) — source of truth konteks development (arsitektur, konvensi, batasan).
 - [CLAUDE.md](CLAUDE.md) — pointer ke AGENTS.md.
+- [CONTRIBUTING.md](CONTRIBUTING.md) — panduan kontribusi.
+
+## Lisensi
+
+[MIT](LICENSE)
