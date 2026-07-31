@@ -138,6 +138,8 @@
   // Runs on raw text BEFORE tokenizeScript. Lines that are exactly "---" are left
   // untouched so the section-break convention above keeps working.
   var EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/gu;
+  var HEADING_RE = /^\s{0,3}#{1,6}\s+\S/;
+  var SECTION_HEADING_RE = /^\s{0,3}#{1,2}\s+\S/;
   function stripMarkdownLine(line){
     if(line.trim() === "---") return line;
     var out = line.replace(/^\s{0,3}#{1,6}\s+/, "");
@@ -147,15 +149,33 @@
     out = out.replace(EMOJI_RE, "");
     return out;
   }
+  // Insert a "---" section break before H1/H2 headings so the resulting section
+  // label (first content line after the break) is automatically the heading text.
+  // Must run BEFORE stripMarkdownLine removes the "#" marker, since that's the
+  // only place we can still tell a line was a heading.
+  function autoSectionizeMarkdown(text){
+    var rawLines = (text || "").split("\n");
+    var out = [];
+    var sawContent = false;
+    for(var i = 0; i < rawLines.length; i++){
+      var line = rawLines[i];
+      if(SECTION_HEADING_RE.test(line) && sawContent && out[out.length - 1].trim() !== "---"){
+        out.push("---");
+      }
+      out.push(line);
+      if(line.trim() !== "") sawContent = true;
+    }
+    return out.join("\n");
+  }
   function stripMarkdown(text){
-    return (text || "").split("\n").map(stripMarkdownLine).join("\n");
+    return autoSectionizeMarkdown(text || "").split("\n").map(stripMarkdownLine).join("\n");
   }
   function looksLikeMarkdown(text){
     var lines = (text || "").split("\n");
     for(var i = 0; i < lines.length; i++){
       var t = lines[i];
       if(t.trim() === "---") continue;
-      if(/^\s{0,3}#{1,6}\s+\S/.test(t)) return true;
+      if(HEADING_RE.test(t)) return true;
       if(/\*\*[^*]+\*\*/.test(t)) return true;
       if(/(^|\s)\*[^*\s][^*]*\*(?=$|\s)/.test(t)) return true;
       if(EMOJI_RE.test(t)) return true;

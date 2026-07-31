@@ -36,13 +36,20 @@ Status per 23 Juni 2026.
 - **Keputusan**: scope digeneralisasi jadi "import Markdown" generic, bukan spesifik format `eko-narrative-book` — gak ada dependency ke project lain, dan gak nambah CDN/library baru (regex manual, bukan markdown parser).
 - Dikerjakan via OpenSpec change `add-markdown-import` (lihat `openspec/changes/add-markdown-import/` — proposal, design, spec, tasks).
 
+## ✅ v3b — Section label otomatis dari heading (selesai)
+
+- Saat import/paste Markdown, heading `#`/`##` sekarang otomatis jadi section break (`---`) sebelum heading tersebut ditulis ke textarea — heading H1/H2 di tengah dokumen akan memicu section break baru, heading pertama dokumen tidak (supaya gak ada section kosong duplikat di awal).
+- Efeknya: label section panel (yang diambil dari baris pertama tiap section) otomatis jadi teks heading asli, tanpa perlu ubah `buildSectionList`/`snippetFrom` sama sekali.
+- Heading H3–H6 tetap di-strip markernya seperti biasa, tapi TIDAK memicu section break otomatis (biar gak kebanyakan subsection kecil jadi section jump).
+- Fungsi baru `autoSectionizeMarkdown` jalan sebelum `stripMarkdownLine` (harus tahu suatu baris itu heading sebelum marker `#`-nya dihapus) — dipanggil dari `stripMarkdown`, jadi otomatis kepakai baik lewat tombol Import Markdown maupun auto-clean saat paste.
+- 9/9 test case pure-logic pass via Node (heading pertama dokumen, heading beruntun, heading yang udah didahului `---` manual, blank line sebelum heading pertama, H3–H6 gak bikin break, teks biasa gak kesentuh, inline `#hashtag` gak dianggap heading, multi-H2 di dokumen panjang). Verifikasi end-to-end juga jalan via Playwright headless (import file `.md` → cek label section panel).
+
 ## 🔜 v3 — Belum dibangun, sudah dianalisis
 
 | Fitur | Effort | Catatan |
 |---|---|---|
 | Remote control dari HP | M–L | Butuh PeerJS via CDN (WebRTC P2P, gratis, no signup). Ini akan jadi dependency eksternal pertama selain Google Fonts — perlu keputusan eksplisit sebelum dibangun. |
 | Multi-script library | M | Simpan beberapa naskah (per chapter), pilih dari list. Masih localStorage-based, belum perlu backend. |
-| Section label otomatis dari heading | S | Section list saat ini cuma snippet baris pertama — bisa diperbaiki kalau baris itu markdown heading (`#`/`##`). |
 
 ## 💭 v4 — Ide, belum dianalisis teknis
 
@@ -52,4 +59,4 @@ Status per 23 Juni 2026.
 
 ## Prioritas yang disarankan
 
-Import Markdown udah selesai (lihat v3a). Sisa v3: **Section label otomatis dari heading** — effort kecil. Catatan implementasi: `stripMarkdown` saat ini buang marker heading sebelum teks masuk textarea, jadi info "baris ini tadinya heading" hilang — fitur ini perlu nangkep heading sebelum di-strip (atau jalan duluan sebelum stripper), bukan baca ulang dari hasil yang udah bersih.
+Import Markdown (v3a) dan section label otomatis dari heading (v3b) udah selesai. Sisa v3: **Remote control dari HP** (M–L, butuh keputusan dependency PeerJS dulu) atau **Multi-script library** (M) — dua-duanya lebih besar dari yang udah dikerjakan, belum ada rekomendasi mana duluan, tanya pemilik repo prioritasnya.
