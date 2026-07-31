@@ -111,13 +111,24 @@
           <span class="track"></span><span class="knob"></span>
         </label>
       </div>
+      <div class="toggle-row">
+        <span>Remote HP</span>
+        <label class="switch">
+          <input type="checkbox" id="remoteToggle" />
+          <span class="track"></span><span class="knob"></span>
+        </label>
+      </div>
 
       <button id="startBtn">▶ Mulai</button>
       <p class="hint">Space: pause &middot; ↑↓: speed &middot; [ ]: section &middot; Esc: keluar</p>
     </div>
   </main>
 
-  <footer class="note">Naskah &amp; pengaturan disimpan otomatis di browser ini (localStorage) — nggak perlu akun, nggak terkirim ke server manapun. Bisa di-install sebagai app (PWA) lewat menu browser.</footer>
+  <footer class="note">
+    Naskah &amp; pengaturan disimpan otomatis di browser ini (localStorage) — nggak perlu akun, nggak terkirim ke server manapun. Bisa di-install sebagai app (PWA) lewat menu browser.
+    <br />
+    <button type="button" id="becomeRemoteBtn" class="linklike">📱 Jadi remote control dari HP ini</button>
+  </footer>
 </div>
 
 <!-- Calibration modal -->
@@ -179,11 +190,42 @@
     <button id="btnPlayPause" title="Pause/lanjut">⏸</button>
     <div class="sep"></div>
     <button id="btnExit" title="Keluar (Esc)">✕</button>
+    <div class="sep" id="remoteBadgeSep" hidden></div>
+    <div id="remoteBadge" hidden></div>
   </div>
 </div>
 
 <div id="measurer" aria-hidden="true"></div>
 
+<!-- Remote control view (dipakai kalau device ini jadi remote, bukan layar utama) -->
+<div id="remoteView" hidden>
+  <div id="remoteConnect">
+    <div class="ring"></div>
+    <h2>Remote Tatap</h2>
+    <p class="muted">Masukkan kode 4 digit yang tampil di layar utama.</p>
+    <input type="text" id="remoteCodeInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="0000" autocomplete="off" />
+    <button type="button" class="btn-accent" id="remoteConnectBtn">Sambung</button>
+    <p id="remoteError" class="remoteError"></p>
+    <button type="button" class="btn-ghost" id="remoteBackBtn">‹ Kembali</button>
+  </div>
+  <div id="remotePad" hidden>
+    <p id="remoteStatus" class="muted">Tersambung</p>
+    <button type="button" id="remoteBtnPlayPause">⏸</button>
+    <div class="remoteRow">
+      <button type="button" id="remoteBtnSpeedDown">−</button>
+      <div id="remoteSpeedLabel">70</div>
+      <button type="button" id="remoteBtnSpeedUp">+</button>
+    </div>
+    <div class="remoteRow">
+      <button type="button" id="remoteBtnPrev">‹ Section</button>
+      <button type="button" id="remoteBtnNext">Section ›</button>
+    </div>
+    <button type="button" id="remoteBtnRestart">⟲ Ulang dari awal</button>
+    <button type="button" class="btn-ghost" id="remoteDisconnectBtn">Putuskan</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js" integrity="sha384-x0YgkOr/3UOZP2CRDxGW9e0Q+2Qjyr3uJrm4xU32Y7ZCNAo7Cc7bjhrZMi/dwczu" crossorigin="anonymous"></script>
 <script src="./app.js"></script>
 </body>
 </html>

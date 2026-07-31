@@ -17,7 +17,8 @@
     focusLine: true,
     highlight: true,
     autoPause: false,
-    activeLibId: null
+    activeLibId: null,
+    remoteEnabled: false
   };
 
   function loadState(){
@@ -90,6 +91,26 @@
     focusLineToggle: document.getElementById("focusLineToggle"),
     highlightToggle: document.getElementById("highlightToggle"),
     autoPauseToggle: document.getElementById("autoPauseToggle"),
+    remoteToggle: document.getElementById("remoteToggle"),
+    becomeRemoteBtn: document.getElementById("becomeRemoteBtn"),
+    remoteBadgeSep: document.getElementById("remoteBadgeSep"),
+    remoteBadge: document.getElementById("remoteBadge"),
+    remoteView: document.getElementById("remoteView"),
+    remoteConnect: document.getElementById("remoteConnect"),
+    remotePad: document.getElementById("remotePad"),
+    remoteCodeInput: document.getElementById("remoteCodeInput"),
+    remoteConnectBtn: document.getElementById("remoteConnectBtn"),
+    remoteError: document.getElementById("remoteError"),
+    remoteBackBtn: document.getElementById("remoteBackBtn"),
+    remoteStatus: document.getElementById("remoteStatus"),
+    remoteBtnPlayPause: document.getElementById("remoteBtnPlayPause"),
+    remoteBtnSpeedDown: document.getElementById("remoteBtnSpeedDown"),
+    remoteSpeedLabel: document.getElementById("remoteSpeedLabel"),
+    remoteBtnSpeedUp: document.getElementById("remoteBtnSpeedUp"),
+    remoteBtnPrev: document.getElementById("remoteBtnPrev"),
+    remoteBtnNext: document.getElementById("remoteBtnNext"),
+    remoteBtnRestart: document.getElementById("remoteBtnRestart"),
+    remoteDisconnectBtn: document.getElementById("remoteDisconnectBtn"),
     estimateInfo: document.getElementById("estimateInfo"),
     calibBtn: document.getElementById("calibBtn"),
     startBtn: document.getElementById("startBtn"),
@@ -140,6 +161,7 @@
     el.focusLineToggle.checked = !!state.focusLine;
     el.highlightToggle.checked = !!state.highlight;
     el.autoPauseToggle.checked = !!state.autoPause;
+    el.remoteToggle.checked = !!state.remoteEnabled;
   }
   applyStateToForm();
 
@@ -420,6 +442,7 @@
   el.focusLineToggle.addEventListener("change", function(){ state.focusLine = el.focusLineToggle.checked; scheduleSave(); });
   el.highlightToggle.addEventListener("change", function(){ state.highlight = el.highlightToggle.checked; scheduleSave(); });
   el.autoPauseToggle.addEventListener("change", function(){ state.autoPause = el.autoPauseToggle.checked; scheduleSave(); });
+  el.remoteToggle.addEventListener("change", function(){ state.remoteEnabled = el.remoteToggle.checked; scheduleSave(); });
 
   el.presetDark.addEventListener("click", function(){
     state.bg = "#0E0F11"; state.text = "#F2EFE9";
@@ -606,11 +629,13 @@
     anim.lastTs = 0;
     el.btnPlayPause.textContent = "⏸";
     anim.raf = requestAnimationFrame(step);
+    sendRemoteState();
   }
   function pause(){
     anim.playing = false;
     if(anim.raf) cancelAnimationFrame(anim.raf);
     el.btnPlayPause.textContent = "▶";
+    sendRemoteState();
   }
   function togglePlayPause(){ if(anim.playing) pause(); else play(); }
   function restart(){ pause(); resetPosition(); }
@@ -621,6 +646,7 @@
     el.speedVal.textContent = state.speed + " px/dtk";
     el.barSpeedLabel.textContent = state.speed;
     scheduleSave();
+    sendRemoteState();
   }
 
   function jumpToSection(idx){
@@ -693,6 +719,7 @@
     el.barSpeedLabel.textContent = state.speed;
     resetPosition();
     showControls();
+    if(state.remoteEnabled) startRemoteHost();
     try{
       if(document.documentElement.requestFullscreen){
         document.documentElement.requestFullscreen().catch(function(){});
@@ -703,6 +730,7 @@
 
   function exitStage(){
     pause();
+    stopRemoteHost();
     if(anim.countdownTimer) clearInterval(anim.countdownTimer);
     el.countdownOverlay.style.display = "none";
     el.sectionPanel.hidden = true;
@@ -763,6 +791,172 @@
       jumpRelativeSection(1);
     }
   });
+
+  // ---------- Remote HP (P2P via PeerJS) ----------
+  // "Host" = device yang lagi jalanin prompter (buildStageContent dkk). "Client" = HP yang
+  // dipakai buat kontrol dari jauh (mode "Jadi remote control"). Satu tab browser cuma
+  // jalanin salah satu peran dalam satu waktu.
+  var REMOTE_ID_PREFIX = "tatap-";
+  var hostPeer = null, hostConn = null, hostCode = null;
+  var clientPeer = null, clientConn = null;
+
+  function updateRemoteBadge(text, connected){
+    var show = !!state.remoteEnabled;
+    el.remoteBadgeSep.hidden = !show;
+    el.remoteBadge.hidden = !show;
+    if(show){
+      el.remoteBadge.textContent = text;
+      el.remoteBadge.classList.toggle("connected", !!connected);
+    }
+  }
+
+  function startRemoteHost(attempt){
+    attempt = attempt || 0;
+    if(typeof Peer === "undefined"){
+      updateRemoteBadge("🔗 remote gak bisa dimuat", false);
+      return;
+    }
+    if(attempt >= 5){
+      updateRemoteBadge("🔗 gagal bikin kode, coba lagi", false);
+      return;
+    }
+    var code = String(Math.floor(1000 + Math.random() * 9000));
+    // Assign ke hostPeer SEKARANG (bukan di dalam callback "open") supaya stopRemoteHost()
+    // selalu punya referensi buat destroy, meski dipanggil sebelum peer selesai connect ke
+    // signaling server (mis. user exit stage super cepat).
+    hostPeer = new Peer(REMOTE_ID_PREFIX + code);
+    hostPeer.on("open", function(){
+      hostCode = code;
+      updateRemoteBadge("🔗 " + code, false);
+    });
+    hostPeer.on("connection", function(conn){
+      if(hostConn){ conn.close(); return; }
+      hostConn = conn;
+      conn.on("open", function(){
+        updateRemoteBadge("🔗 " + hostCode + " ✓", true);
+        sendRemoteState();
+      });
+      conn.on("data", function(msg){ handleRemoteCommand(msg); });
+      conn.on("close", function(){
+        hostConn = null;
+        updateRemoteBadge("🔗 " + hostCode, false);
+      });
+    });
+    hostPeer.on("error", function(err){
+      if(err && err.type === "unavailable-id"){
+        stopRemoteHost();
+        startRemoteHost(attempt + 1);
+      } else {
+        updateRemoteBadge("🔗 gagal, coba lagi", false);
+      }
+    });
+  }
+
+  function stopRemoteHost(){
+    if(hostConn){ try{ hostConn.close(); }catch(e){} hostConn = null; }
+    if(hostPeer){ try{ hostPeer.destroy(); }catch(e){} hostPeer = null; }
+    hostCode = null;
+    updateRemoteBadge("", false);
+  }
+
+  function sendRemoteState(){
+    if(hostConn && hostConn.open){
+      hostConn.send({ type: "state", playing: anim.playing, speed: state.speed });
+    }
+  }
+
+  function handleRemoteCommand(msg){
+    if(!msg || typeof msg !== "object") return;
+    if(msg.cmd === "toggle") togglePlayPause();
+    else if(msg.cmd === "speed") changeSpeed(msg.delta || 0);
+    else if(msg.cmd === "restart") restart();
+    else if(msg.cmd === "section") jumpRelativeSection(msg.delta || 0);
+    else if(msg.cmd === "exit") exitStage();
+  }
+
+  // ---------- Remote HP: client side (device yang "jadi remote") ----------
+  function disconnectRemoteClient(){
+    if(clientConn){ try{ clientConn.close(); }catch(e){} clientConn = null; }
+    if(clientPeer){ try{ clientPeer.destroy(); }catch(e){} clientPeer = null; }
+  }
+  function showRemoteConnectForm(){
+    el.remotePad.hidden = true;
+    el.remoteConnect.hidden = false;
+    el.remoteConnectBtn.disabled = false;
+  }
+  function applyRemoteState(msg){
+    if(!msg || msg.type !== "state") return;
+    el.remoteBtnPlayPause.textContent = msg.playing ? "⏸" : "▶";
+    el.remoteSpeedLabel.textContent = msg.speed;
+  }
+  function sendRemoteCmd(cmd, extra){
+    if(!clientConn || !clientConn.open) return;
+    var msg = Object.assign({ cmd: cmd }, extra || {});
+    clientConn.send(msg);
+  }
+
+  el.becomeRemoteBtn.addEventListener("click", function(){
+    el.setup.style.display = "none";
+    el.remoteView.hidden = false;
+    el.remoteCodeInput.value = "";
+    el.remoteError.textContent = "";
+    showRemoteConnectForm();
+    el.remoteCodeInput.focus();
+  });
+  el.remoteBackBtn.addEventListener("click", function(){
+    disconnectRemoteClient();
+    el.remoteView.hidden = true;
+    el.setup.style.display = "flex";
+  });
+  el.remoteDisconnectBtn.addEventListener("click", function(){
+    disconnectRemoteClient();
+    showRemoteConnectForm();
+  });
+  el.remoteConnectBtn.addEventListener("click", function(){
+    var code = el.remoteCodeInput.value.trim();
+    if(!/^\d{4}$/.test(code)){
+      el.remoteError.textContent = "Kode harus 4 digit angka.";
+      return;
+    }
+    if(typeof Peer === "undefined"){
+      el.remoteError.textContent = "Gagal load library remote (cek koneksi internet).";
+      return;
+    }
+    disconnectRemoteClient();
+    el.remoteError.textContent = "Menyambungkan...";
+    el.remoteConnectBtn.disabled = true;
+    clientPeer = new Peer();
+    clientPeer.on("open", function(){
+      clientConn = clientPeer.connect(REMOTE_ID_PREFIX + code, { reliable: true });
+      clientConn.on("open", function(){
+        el.remoteError.textContent = "";
+        el.remoteConnectBtn.disabled = false;
+        el.remotePad.hidden = false;
+        el.remoteConnect.hidden = true;
+      });
+      clientConn.on("data", function(msg){ applyRemoteState(msg); });
+      clientConn.on("close", function(){
+        clientConn = null;
+        el.remoteError.textContent = "Koneksi terputus.";
+        showRemoteConnectForm();
+      });
+      clientConn.on("error", function(){
+        el.remoteError.textContent = "Gagal sambung. Cek kode & coba lagi.";
+        el.remoteConnectBtn.disabled = false;
+      });
+    });
+    clientPeer.on("error", function(){
+      el.remoteError.textContent = "Gagal sambung. Cek kode & coba lagi.";
+      el.remoteConnectBtn.disabled = false;
+    });
+  });
+
+  el.remoteBtnPlayPause.addEventListener("click", function(){ sendRemoteCmd("toggle"); });
+  el.remoteBtnSpeedDown.addEventListener("click", function(){ sendRemoteCmd("speed", { delta: -10 }); });
+  el.remoteBtnSpeedUp.addEventListener("click", function(){ sendRemoteCmd("speed", { delta: 10 }); });
+  el.remoteBtnPrev.addEventListener("click", function(){ sendRemoteCmd("section", { delta: -1 }); });
+  el.remoteBtnNext.addEventListener("click", function(){ sendRemoteCmd("section", { delta: 1 }); });
+  el.remoteBtnRestart.addEventListener("click", function(){ sendRemoteCmd("restart"); });
 
   // ---------- PWA ----------
   if("serviceWorker" in navigator){
