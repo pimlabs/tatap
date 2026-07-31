@@ -52,11 +52,15 @@ Status per 23 Juni 2026.
 - Sengaja pakai `prompt()`/`confirm()` browser native buat nama & konfirmasi hapus, bukan modal custom — biar tetep ringan, gak nambah state UI baru yang gak perlu buat tool personal ini.
 - 11/11 test end-to-end pass via Playwright headless (save naskah baru dgn prompt, update silent tanpa prompt saat link aktif, save naskah kedua yg distinct, list nampilin dua-duanya, load balikin teks yg bener, localStorage persist setelah reload — baik naskah aktif maupun library-nya, hapus via confirm, guard: naskah kosong gak munculin prompt/gak kesave).
 
-## 🔜 v3 — Belum dibangun, sudah dianalisis
+## ✅ v3d — Remote control dari HP (selesai)
 
-| Fitur | Effort | Catatan |
-|---|---|---|
-| Remote control dari HP | M–L | Butuh PeerJS via CDN (WebRTC P2P, gratis, no signup). Ini akan jadi dependency eksternal pertama selain Google Fonts — perlu keputusan eksplisit sebelum dibangun. |
+- **Dependency eksternal kedua** (setelah Google Fonts): [PeerJS](https://peerjs.com) via jsdelivr CDN, pinned ke versi `1.5.5` dengan Subresource Integrity hash — WebRTC P2P, gratis, no signup, pakai broker publik `0.peerjs.com` cuma buat signaling awal (jalur data sesudahnya P2P langsung antar device). Trade-off yang perlu diketahui: fitur ini butuh internet (bukan cuma LAN) karena signaling server publik, dan gak akan jalan offline meski app-nya sendiri PWA — degradasi dibikin graceful (badge "remote gak bisa dimuat", app tetap jalan normal tanpa remote kalau CDN/script gagal load).
+- Toggle "Remote HP" di setup screen. Saat toggle aktif & masuk stage, layar utama ("host") generate kode 4 digit (`tatap-XXXX` sebagai Peer ID), ditampilin di control bar.
+- Device lain (HP) buka URL yang sama, klik "📱 Jadi remote control dari HP ini" → masukin kode 4 digit → tersambung via data channel P2P. Kontrol yang tersedia: play/pause, speed ±10, section prev/next, restart, exit — semuanya manggil fungsi yang sama persis dengan keyboard shortcut di host, cuma dipicu dari pesan JSON via data channel.
+- Sengaja **gak** manggil `showControls()` pas command dari remote masuk — biar control bar gak nongol di layar utama pas dikontrol dari HP (relevan buat physical mirror rig, control bar bisa kerekam kalau nongol).
+- Satu host cuma nerima satu koneksi remote sekaligus (koneksi kedua langsung di-reject) — cukup buat use-case personal, gak perlu multi-remote.
+- Fix bareng: `sw.js` cache version ketinggalan (masih `v2` padahal `app.js`/`index.html`/`styles.css` udah berubah 2 fitur terakhir) — di-bump ke `v3` biar PWA yang udah ke-install re-fetch app shell terbaru.
+- **Belum dites end-to-end beneran** — sandbox development ini network policy-nya blokir CDN (jsdelivr/unpkg) dan broker PeerJS (`0.peerjs.com`), jadi koneksi P2P asli (host↔HP, handshake kode, kirim command bolak-balik) belum pernah divalidasi jalan. Yang udah dites otomatis (Playwright headless, 12/12 pass): toggle persist, badge muncul/kesembunyi sesuai state, degradasi graceful pas `Peer` library gagal load (gak crash, badge kasih pesan jelas), validasi input kode 4 digit, form connect/back/disconnect switch UI dengan benar. **Perlu ditest manual sama Eko di device asli** (laptop + HP beneran, buka lewat GitHub Pages) sebelum dianggap kelar — terutama: apakah kode beneran connect, apakah command remote sampe ke host dengan latency wajar, dan apakah behaviour di jaringan WiFi rumah/hotspot HP normal (WebRTC kadang butuh TURN relay kalau NAT-nya strict, PeerJS default cuma pakai STUN publik Google — kemungkinan kecil gagal connect di jaringan tertentu, belum ada fallback TURN).
 
 ## 💭 v4 — Ide, belum dianalisis teknis
 
@@ -66,4 +70,4 @@ Status per 23 Juni 2026.
 
 ## Prioritas yang disarankan
 
-v3a (Import Markdown), v3b (section label dari heading), v3c (Multi-script library) udah selesai. Sisa satu-satunya item v3: **Remote control dari HP** — tapi ini butuh keputusan eksplisit soal dependency PeerJS via CDN dulu (lihat Open Questions), jangan dikerjakan diam-diam tanpa konfirmasi.
+Semua item v3 (a/b/c/d) udah selesai dikerjakan — remote control masih butuh verifikasi manual (lihat catatan di v3d). Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.

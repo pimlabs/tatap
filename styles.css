@@ -221,6 +221,60 @@ footer.note{
 .libItem button:hover{border-color:var(--accent);color:var(--text);}
 .libItem button.libDelete:hover{border-color:#c0524a;color:#e0776f;}
 
+/* ---------- Remote HP ---------- */
+.linklike{
+  background:none;border:none;color:var(--muted);
+  font-size:12px;text-decoration:underline;cursor:pointer;
+  padding:0;margin-top:10px;display:inline-block;
+}
+.linklike:hover{color:var(--accent);}
+
+#remoteBadge{
+  font-size:12px;color:var(--muted);padding:0 6px;
+  display:flex;align-items:center;gap:4px;white-space:nowrap;flex:none;
+}
+#remoteBadge.connected{color:var(--accent);}
+
+#remoteView{
+  position:fixed;inset:0;background:var(--bg);color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1300;padding:24px;
+}
+#remoteView[hidden]{display:none;}
+#remotePad[hidden], #remoteConnect[hidden]{display:none;}
+
+#remoteConnect, #remotePad{width:100%;max-width:320px;text-align:center;}
+#remoteConnect .ring{margin:0 auto 16px;}
+#remoteConnect h2{font-family:'Fraunces',serif;font-weight:600;margin:0 0 6px;}
+#remoteConnect .muted{color:var(--muted);font-size:13px;margin:0 0 20px;}
+#remoteCodeInput{
+  width:100%;font-size:32px;letter-spacing:.3em;text-align:center;
+  background:var(--panel);border:1px solid var(--panel-border);border-radius:12px;
+  color:var(--text);padding:14px 0;margin-bottom:14px;font-family:'Inter',sans-serif;
+}
+#remoteCodeInput:focus{outline:none;border-color:var(--accent);}
+#remoteConnectBtn{width:100%;margin-bottom:10px;}
+.remoteError{color:#e0776f;font-size:12.5px;min-height:16px;margin:0 0 10px;}
+#remoteBackBtn{width:100%;}
+
+#remotePad #remoteStatus{margin-bottom:20px;}
+#remoteBtnPlayPause{
+  width:96px;height:96px;border-radius:50%;
+  background:var(--accent);color:#161208;border:none;
+  font-size:34px;cursor:pointer;margin-bottom:22px;
+}
+.remoteRow{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px;}
+.remoteRow button{
+  background:var(--panel);border:1px solid var(--panel-border);color:var(--text);
+  border-radius:10px;padding:14px 18px;font-size:16px;cursor:pointer;flex:1;
+}
+#remoteSpeedLabel{min-width:48px;font-size:16px;color:var(--accent);font-weight:600;flex:none;}
+#remoteBtnRestart{
+  width:100%;background:transparent;border:1px solid var(--panel-border);color:var(--text);
+  border-radius:10px;padding:12px 0;font-size:14px;cursor:pointer;margin-bottom:12px;
+}
+#remoteDisconnectBtn{width:100%;}
+
 /* ---------- Stage (fullscreen prompter) ---------- */
 #stage{
   position:fixed;inset:0;

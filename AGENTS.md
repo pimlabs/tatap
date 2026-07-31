@@ -11,7 +11,7 @@ Prinsip non-negotiable: **lite, zero-cost, zero-build**.
 - Tidak ada build step (no npm, no bundler, no transpiler)
 - Tidak ada backend/server — pure static files
 - Hosting target: GitHub Pages (gratis, static-only)
-- Dependency eksternal dibatasi seminimal mungkin (saat ini hanya Google Fonts via CDN)
+- Dependency eksternal dibatasi seminimal mungkin (saat ini Google Fonts via CDN + PeerJS via CDN buat fitur Remote HP)
 - Semua state tersimpan di `localStorage` browser, tidak ada database
 
 **Sebelum menambah dependency, library, atau build tool apapun — tanya pemilik repo dulu.** Ini adalah keputusan arsitektur sengaja, bukan kelalaian.
@@ -109,8 +109,8 @@ Penting: semua path di `index.html`, `manifest.json`, dan `sw.js` harus **relati
 
 ## Open Questions (belum diputuskan — jangan diam-diam diputuskan sendiri)
 
-- **Remote control dari HP** — sudah dianalisis butuh PeerJS via CDN (WebRTC P2P, gratis, no signup) karena GitHub Pages tidak punya backend. Belum dibangun. Ini akan jadi dependency eksternal pertama selain Google Fonts — konfirmasi ke pemilik repo dulu sebelum nambah `<script>` CDN baru.
-- **Multi-script library** dan **sync laptop↔iPad** — masih ide di `ROADMAP.md`, belum ada keputusan teknis (localStorage vs backend ringan vs manual export/import).
+- **Sync laptop↔iPad** — masih ide di `ROADMAP.md` (v4), belum ada keputusan teknis (localStorage manual export/import vs backend ringan).
+- Remote control dari HP (PeerJS via CDN) dan Multi-script library sudah dibangun (lihat `ROADMAP.md` v3c/v3d) — bukan open question lagi. Remote control masih perlu verifikasi manual sama pemilik repo di device asli sebelum dianggap fully validated (lihat catatan di ROADMAP v3d).
 
 ## Catatan untuk Agent
 
