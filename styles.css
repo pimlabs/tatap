@@ -203,6 +203,24 @@ footer.note{
   border-radius:999px;padding:10px 18px;cursor:pointer;font-size:14px;
 }
 
+.libList{max-height:44vh;overflow:auto;margin-top:14px;}
+.libItem{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 4px;border-bottom:1px solid var(--panel-border);
+}
+.libItem:last-child{border-bottom:none;}
+.libItem .libInfo{flex:1;min-width:0;}
+.libItem .libTitle{
+  font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.libItem .libMeta{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.libItem button{
+  font-size:12px;padding:6px 10px;border-radius:8px;flex:none;
+  border:1px solid var(--panel-border);background:transparent;color:var(--muted);cursor:pointer;
+}
+.libItem button:hover{border-color:var(--accent);color:var(--text);}
+.libItem button.libDelete:hover{border-color:#c0524a;color:#e0776f;}
+
 /* ---------- Stage (fullscreen prompter) ---------- */
 #stage{
   position:fixed;inset:0;

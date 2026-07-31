@@ -44,12 +44,19 @@ Status per 23 Juni 2026.
 - Fungsi baru `autoSectionizeMarkdown` jalan sebelum `stripMarkdownLine` (harus tahu suatu baris itu heading sebelum marker `#`-nya dihapus) — dipanggil dari `stripMarkdown`, jadi otomatis kepakai baik lewat tombol Import Markdown maupun auto-clean saat paste.
 - 9/9 test case pure-logic pass via Node (heading pertama dokumen, heading beruntun, heading yang udah didahului `---` manual, blank line sebelum heading pertama, H3–H6 gak bikin break, teks biasa gak kesentuh, inline `#hashtag` gak dianggap heading, multi-H2 di dokumen panjang). Verifikasi end-to-end juga jalan via Playwright headless (import file `.md` → cek label section panel).
 
+## ✅ v3c — Multi-script library (selesai)
+
+- Tombol "💾 Simpan naskah" dan "📚 Naskah tersimpan (N)" di sebelah Import Markdown. Naskah disimpan sebagai `{id, title, script, updatedAt}` di localStorage key terpisah `tatap:library` (array), gak nyampur sama `tatap:state` yang isinya cuma naskah aktif + pengaturan.
+- `state.activeLibId` melacak naskah mana yang lagi "connected" ke library. Klik Simpan saat ada link aktif → update in-place, diam-diam, tanpa prompt. Kalau belum ada link (naskah baru atau abis Import Markdown, yang otomatis clear link-nya) → `prompt()` native buat nama, defaultnya diambil dari baris pertama naskah.
+- Modal "Naskah tersimpan" (reuse pola `.modal`/`.modal-box` dari modal kalibrasi) nampilin list diurut terbaru dulu, tiap item ada tombol Muat & Hapus (`confirm()` native sebelum hapus).
+- Sengaja pakai `prompt()`/`confirm()` browser native buat nama & konfirmasi hapus, bukan modal custom — biar tetep ringan, gak nambah state UI baru yang gak perlu buat tool personal ini.
+- 11/11 test end-to-end pass via Playwright headless (save naskah baru dgn prompt, update silent tanpa prompt saat link aktif, save naskah kedua yg distinct, list nampilin dua-duanya, load balikin teks yg bener, localStorage persist setelah reload — baik naskah aktif maupun library-nya, hapus via confirm, guard: naskah kosong gak munculin prompt/gak kesave).
+
 ## 🔜 v3 — Belum dibangun, sudah dianalisis
 
 | Fitur | Effort | Catatan |
 |---|---|---|
 | Remote control dari HP | M–L | Butuh PeerJS via CDN (WebRTC P2P, gratis, no signup). Ini akan jadi dependency eksternal pertama selain Google Fonts — perlu keputusan eksplisit sebelum dibangun. |
-| Multi-script library | M | Simpan beberapa naskah (per chapter), pilih dari list. Masih localStorage-based, belum perlu backend. |
 
 ## 💭 v4 — Ide, belum dianalisis teknis
 
@@ -59,4 +66,4 @@ Status per 23 Juni 2026.
 
 ## Prioritas yang disarankan
 
-Import Markdown (v3a) dan section label otomatis dari heading (v3b) udah selesai. Sisa v3: **Remote control dari HP** (M–L, butuh keputusan dependency PeerJS dulu) atau **Multi-script library** (M) — dua-duanya lebih besar dari yang udah dikerjakan, belum ada rekomendasi mana duluan, tanya pemilik repo prioritasnya.
+v3a (Import Markdown), v3b (section label dari heading), v3c (Multi-script library) udah selesai. Sisa satu-satunya item v3: **Remote control dari HP** — tapi ini butuh keputusan eksplisit soal dependency PeerJS via CDN dulu (lihat Open Questions), jangan dikerjakan diam-diam tanpa konfirmasi.

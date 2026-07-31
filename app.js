@@ -2,6 +2,7 @@
   "use strict";
 
   var STORE_KEY = "tatap:state";
+  var LIB_STORE_KEY = "tatap:library";
   var CALIB_TEXT = "Pagi ini langit terlihat cerah dengan sedikit awan putih yang bergerak pelan. Aku menyiapkan secangkir kopi hangat sambil mendengarkan suara burung di luar jendela. Hari ini ada beberapa hal yang ingin aku selesaikan, tapi aku mencoba untuk tidak terburu-buru. Kadang hal-hal terbaik datang ketika kita memberi diri sendiri sedikit ruang untuk bernapas dan berpikir jernih sebelum melangkah.";
 
   var defaults = {
@@ -15,7 +16,8 @@
     countdown: true,
     focusLine: true,
     highlight: true,
-    autoPause: false
+    autoPause: false,
+    activeLibId: null
   };
 
   function loadState(){
@@ -34,11 +36,45 @@
 
   var state = loadState();
 
+  // ---------- Naskah library (multi-script, localStorage) ----------
+  function loadLibrary(){
+    try{
+      var raw = localStorage.getItem(LIB_STORE_KEY);
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    }catch(e){
+      return [];
+    }
+  }
+  function saveLibrary(){
+    try{ localStorage.setItem(LIB_STORE_KEY, JSON.stringify(library)); }catch(e){}
+  }
+  function genLibId(){
+    return "n" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+  function firstLineSnippet(text){
+    var lines = (text || "").split("\n");
+    for(var i = 0; i < lines.length; i++){
+      var t = lines[i].trim();
+      if(t && t !== "---") return t.length > 40 ? t.slice(0, 40) + "…" : t;
+    }
+    return "Naskah tanpa judul";
+  }
+
+  var library = loadLibrary();
+
   // ---------- Element refs ----------
   var el = {
     script: document.getElementById("script"),
     importMdBtn: document.getElementById("importMdBtn"),
     importMdInput: document.getElementById("importMdInput"),
+    libSaveBtn: document.getElementById("libSaveBtn"),
+    libOpenBtn: document.getElementById("libOpenBtn"),
+    libCloseBtn: document.getElementById("libCloseBtn"),
+    libCount: document.getElementById("libCount"),
+    libModal: document.getElementById("libModal"),
+    libList: document.getElementById("libList"),
+    libEmptyHint: document.getElementById("libEmptyHint"),
     sizeRange: document.getElementById("sizeRange"),
     sizeVal: document.getElementById("sizeVal"),
     marginRange: document.getElementById("marginRange"),
@@ -270,11 +306,95 @@
     if(!file) return;
     var reader = new FileReader();
     reader.onload = function(){
+      state.activeLibId = null;
       applyScriptText(stripMarkdown(String(reader.result)));
     };
     reader.readAsText(file);
     el.importMdInput.value = "";
   });
+
+  // ---------- Library wiring ----------
+  function updateLibCount(){
+    el.libCount.textContent = library.length;
+  }
+  updateLibCount();
+
+  function renderLibList(){
+    el.libList.innerHTML = "";
+    var sorted = library.slice().sort(function(a, b){ return b.updatedAt - a.updatedAt; });
+    el.libEmptyHint.style.display = sorted.length ? "none" : "block";
+    sorted.forEach(function(entry){
+      var row = document.createElement("div");
+      row.className = "libItem";
+
+      var info = document.createElement("div");
+      info.className = "libInfo";
+      var title = document.createElement("div");
+      title.className = "libTitle";
+      title.textContent = entry.title;
+      var meta = document.createElement("div");
+      meta.className = "libMeta";
+      meta.textContent = new Date(entry.updatedAt).toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+      info.appendChild(title);
+      info.appendChild(meta);
+
+      var loadBtn = document.createElement("button");
+      loadBtn.type = "button";
+      loadBtn.textContent = "Muat";
+      loadBtn.addEventListener("click", function(){
+        state.activeLibId = entry.id;
+        applyScriptText(entry.script);
+        scheduleSave();
+        el.libModal.hidden = true;
+      });
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "libDelete";
+      delBtn.textContent = "Hapus";
+      delBtn.addEventListener("click", function(){
+        if(!confirm('Hapus naskah "' + entry.title + '"?')) return;
+        library = library.filter(function(x){ return x.id !== entry.id; });
+        saveLibrary();
+        if(state.activeLibId === entry.id){ state.activeLibId = null; scheduleSave(); }
+        updateLibCount();
+        renderLibList();
+      });
+
+      row.appendChild(info);
+      row.appendChild(loadBtn);
+      row.appendChild(delBtn);
+      el.libList.appendChild(row);
+    });
+  }
+
+  el.libSaveBtn.addEventListener("click", function(){
+    if(!state.script || !state.script.trim()){ el.script.focus(); return; }
+    var existing = state.activeLibId && library.filter(function(x){ return x.id === state.activeLibId; })[0];
+    if(existing){
+      existing.script = state.script;
+      existing.updatedAt = Date.now();
+    } else {
+      var title = prompt("Nama naskah:", firstLineSnippet(state.script));
+      if(title === null) return;
+      title = title.trim() || "Naskah tanpa judul";
+      var entry = { id: genLibId(), title: title, script: state.script, updatedAt: Date.now() };
+      library.push(entry);
+      state.activeLibId = entry.id;
+      scheduleSave();
+    }
+    saveLibrary();
+    updateLibCount();
+    var original = el.libSaveBtn.textContent;
+    el.libSaveBtn.textContent = "✓ Tersimpan";
+    setTimeout(function(){ el.libSaveBtn.textContent = original; }, 1200);
+  });
+
+  el.libOpenBtn.addEventListener("click", function(){
+    renderLibList();
+    el.libModal.hidden = false;
+  });
+  el.libCloseBtn.addEventListener("click", function(){ el.libModal.hidden = true; });
   el.sizeRange.addEventListener("input", function(){
     state.size = parseInt(el.sizeRange.value, 10);
     el.sizeVal.textContent = state.size + "px";
