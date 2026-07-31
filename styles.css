@@ -273,6 +273,10 @@ footer.note{
   width:100%;background:transparent;border:1px solid var(--panel-border);color:var(--text);
   border-radius:10px;padding:12px 0;font-size:14px;cursor:pointer;margin-bottom:12px;
 }
+#remoteBtnExit{
+  width:100%;background:transparent;border:1px solid #c0524a;color:#e0776f;
+  border-radius:10px;padding:12px 0;font-size:14px;cursor:pointer;margin-bottom:20px;
+}
 #remoteDisconnectBtn{width:100%;}
 
 /* ---------- Stage (fullscreen prompter) ---------- */

@@ -110,6 +110,7 @@
     remoteBtnPrev: document.getElementById("remoteBtnPrev"),
     remoteBtnNext: document.getElementById("remoteBtnNext"),
     remoteBtnRestart: document.getElementById("remoteBtnRestart"),
+    remoteBtnExit: document.getElementById("remoteBtnExit"),
     remoteDisconnectBtn: document.getElementById("remoteDisconnectBtn"),
     estimateInfo: document.getElementById("estimateInfo"),
     calibBtn: document.getElementById("calibBtn"),
@@ -957,6 +958,7 @@
   el.remoteBtnPrev.addEventListener("click", function(){ sendRemoteCmd("section", { delta: -1 }); });
   el.remoteBtnNext.addEventListener("click", function(){ sendRemoteCmd("section", { delta: 1 }); });
   el.remoteBtnRestart.addEventListener("click", function(){ sendRemoteCmd("restart"); });
+  el.remoteBtnExit.addEventListener("click", function(){ sendRemoteCmd("exit"); });
 
   // ---------- PWA ----------
   if("serviceWorker" in navigator){
