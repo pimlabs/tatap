@@ -18,6 +18,63 @@
 </head>
 <body>
 
+<svg style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
+  <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 3h9l3 3v15H6z"/><path d="M15 3v3h3"/><path d="M9 9h3M9 12h6M9 15h6"/>
+  </symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="1.6" fill="currentColor" stroke="none"/>
+    <line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+    <line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="1.6" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>
+  </symbol>
+  <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h8V4"/><path d="M8 14h8v6H8z"/>
+  </symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 6h5l2 2h9v11H4z"/>
+  </symbol>
+  <symbol id="i-import" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M4 19h16"/>
+  </symbol>
+  <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.3"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.4" x2="13" y2="18.4"/>
+  </symbol>
+  <symbol id="i-restart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12a8 8 0 1 1 2.6 5.9"/><path d="M4 17.2v-5h5"/>
+  </symbol>
+  <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+  </symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <line x1="5" y1="12" x2="19" y2="12"/>
+  </symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M7 4l13 8-13 8z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+    <rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>
+  </symbol>
+  <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/>
+  </symbol>
+  <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><line x1="10" y1="12" x2="14" y2="12"/>
+  </symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 5l-7 7 7 7"/>
+  </symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 5l7 7-7 7"/>
+  </symbol>
+</svg>
+
 <div id="setup">
   <header class="brand">
     <div class="ring"></div>
@@ -26,11 +83,21 @@
   <p class="tagline">Teleprompter ringan, langsung di browser. Tanpa install.</p>
 
   <main class="layout">
-    <div>
-      <div class="importRow">
-        <button type="button" id="libSaveBtn" class="importBtn">💾 Simpan naskah</button>
-        <button type="button" id="libOpenBtn" class="importBtn">📚 Naskah tersimpan (<span id="libCount">0</span>)</button>
-        <button type="button" id="importMdBtn" class="importBtn">Import Markdown</button>
+    <div class="panelGroup active" id="panelNaskah">
+      <div class="toolbar">
+        <button type="button" id="libSaveBtn" class="toolItem">
+          <svg class="icon" width="19" height="19"><use href="#i-save"/></svg>
+          <span id="libSaveBtnLabel">Simpan</span>
+        </button>
+        <button type="button" id="libOpenBtn" class="toolItem">
+          <svg class="icon" width="19" height="19"><use href="#i-folder"/></svg>
+          <span>Tersimpan</span>
+          <span class="toolBadge" id="libCount">0</span>
+        </button>
+        <button type="button" id="importMdBtn" class="toolItem">
+          <svg class="icon" width="19" height="19"><use href="#i-import"/></svg>
+          <span>Import</span>
+        </button>
         <input type="file" id="importMdInput" accept=".md,.markdown,text/markdown" hidden />
       </div>
       <textarea id="script" placeholder="Tempel naskah kamu di sini..."></textarea>
@@ -40,94 +107,126 @@
       </p>
     </div>
 
-    <div class="panel">
-      <h3>Tampilan</h3>
-      <div class="field">
-        <label>Ukuran teks <span class="val" id="sizeVal">48px</span></label>
-        <input type="range" id="sizeRange" min="24" max="110" value="48" />
-      </div>
-      <div class="field">
-        <label>Margin samping <span class="val" id="marginVal">10%</span></label>
-        <input type="range" id="marginRange" min="0" max="35" value="10" />
-      </div>
-      <div class="row2">
-        <div class="colorfield">
-          <label>Warna latar</label>
-          <input type="color" id="bgColor" value="#0E0F11" />
+    <div class="panelGroup" id="panelSetting">
+      <div class="panel">
+        <h3>Tampilan</h3>
+        <div class="field">
+          <label>Ukuran teks <span class="val" id="sizeVal">48px</span></label>
+          <input type="range" id="sizeRange" min="24" max="110" value="48" />
         </div>
-        <div class="colorfield">
-          <label>Warna teks</label>
-          <input type="color" id="textColor" value="#F2EFE9" />
+        <div class="field">
+          <label>Margin samping <span class="val" id="marginVal">10%</span></label>
+          <input type="range" id="marginRange" min="0" max="35" value="10" />
+        </div>
+        <div class="row2">
+          <div class="colorfield">
+            <label>Warna latar</label>
+            <input type="color" id="bgColor" value="#0E0F11" />
+          </div>
+          <div class="colorfield">
+            <label>Warna teks</label>
+            <input type="color" id="textColor" value="#F2EFE9" />
+          </div>
+        </div>
+        <div class="presets">
+          <button type="button" id="presetDark">Gelap</button>
+          <button type="button" id="presetLight">Terang</button>
         </div>
       </div>
-      <div class="presets">
-        <button type="button" id="presetDark">Gelap</button>
-        <button type="button" id="presetLight">Terang</button>
+
+      <div class="panel">
+        <h3>Kecepatan &amp; kontrol</h3>
+        <div class="field">
+          <label>Kecepatan gulir <span class="val" id="speedVal">70 px/dtk</span></label>
+          <input type="range" id="speedRange" min="20" max="260" value="70" />
+        </div>
+
+        <button type="button" class="btn-secondary" id="calibBtn">
+          <svg class="icon" width="15" height="15"><use href="#i-target"/></svg>
+          Kalibrasi kecepatan baca
+        </button>
+
+        <div class="toggle-row">
+          <span>Cermin (mirror rig)</span>
+          <label class="switch">
+            <input type="checkbox" id="mirrorToggle" />
+            <span class="track"></span><span class="knob"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span>Hitung mundur 3-2-1</span>
+          <label class="switch">
+            <input type="checkbox" id="countdownToggle" checked />
+            <span class="track"></span><span class="knob"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span>Garis fokus</span>
+          <label class="switch">
+            <input type="checkbox" id="focusLineToggle" checked />
+            <span class="track"></span><span class="knob"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span>Highlight baris aktif</span>
+          <label class="switch">
+            <input type="checkbox" id="highlightToggle" checked />
+            <span class="track"></span><span class="knob"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span>Auto-pause di <code style="background:none;border:none;padding:0;">[pause]</code></span>
+          <label class="switch">
+            <input type="checkbox" id="autoPauseToggle" />
+            <span class="track"></span><span class="knob"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span>Remote HP</span>
+          <label class="switch">
+            <input type="checkbox" id="remoteToggle" />
+            <span class="track"></span><span class="knob"></span>
+          </label>
+        </div>
       </div>
+
+      <button type="button" id="becomeRemoteBtn" class="linklike">
+        <svg class="icon" width="13" height="13"><use href="#i-phone"/></svg>
+        Jadi remote control dari HP ini
+      </button>
     </div>
 
-    <div class="panel" style="grid-column:2; margin-top:0;">
-      <h3>Kecepatan &amp; kontrol</h3>
-      <div class="field">
-        <label>Kecepatan gulir <span class="val" id="speedVal">70 px/dtk</span></label>
-        <input type="range" id="speedRange" min="20" max="260" value="70" />
+    <div class="panelGroup" id="panelPreview">
+      <div class="previewLabel">Begini kira-kira tampilannya nanti</div>
+      <div class="previewBox" id="previewBox">
+        <div class="previewFocusLine" id="previewFocusLine"></div>
+        <div class="previewInner" id="previewInner"></div>
+        <div class="previewFade" id="previewFade"></div>
       </div>
+      <div class="previewCaption">Sesuai ukuran &amp; warna dari tab Setting</div>
       <p class="estimate" id="estimateInfo">≈ — &middot; — kata &middot; — bagian</p>
-
-      <button type="button" class="btn-secondary" id="calibBtn">🎯 Kalibrasi kecepatan baca</button>
-
-      <div class="toggle-row">
-        <span>Cermin (mirror rig)</span>
-        <label class="switch">
-          <input type="checkbox" id="mirrorToggle" />
-          <span class="track"></span><span class="knob"></span>
-        </label>
-      </div>
-      <div class="toggle-row">
-        <span>Hitung mundur 3-2-1</span>
-        <label class="switch">
-          <input type="checkbox" id="countdownToggle" checked />
-          <span class="track"></span><span class="knob"></span>
-        </label>
-      </div>
-      <div class="toggle-row">
-        <span>Garis fokus</span>
-        <label class="switch">
-          <input type="checkbox" id="focusLineToggle" checked />
-          <span class="track"></span><span class="knob"></span>
-        </label>
-      </div>
-      <div class="toggle-row">
-        <span>Highlight baris aktif</span>
-        <label class="switch">
-          <input type="checkbox" id="highlightToggle" checked />
-          <span class="track"></span><span class="knob"></span>
-        </label>
-      </div>
-      <div class="toggle-row">
-        <span>Auto-pause di <code style="background:none;border:none;padding:0;">[pause]</code></span>
-        <label class="switch">
-          <input type="checkbox" id="autoPauseToggle" />
-          <span class="track"></span><span class="knob"></span>
-        </label>
-      </div>
-      <div class="toggle-row">
-        <span>Remote HP</span>
-        <label class="switch">
-          <input type="checkbox" id="remoteToggle" />
-          <span class="track"></span><span class="knob"></span>
-        </label>
-      </div>
-
-      <button id="startBtn">▶ Mulai</button>
+      <button id="startBtn">
+        <svg class="icon" width="16" height="16"><use href="#i-play"/></svg>
+        Mulai
+      </button>
       <p class="hint">Space: pause &middot; ↑↓: speed &middot; [ ]: section &middot; Esc: keluar</p>
     </div>
   </main>
 
+  <nav class="tabbar" id="tabbar">
+    <button type="button" class="tabBtn active" id="tabBtnNaskah" data-panel="Naskah">
+      <svg class="icon" width="17" height="17"><use href="#i-doc"/></svg>Naskah
+    </button>
+    <button type="button" class="tabBtn" id="tabBtnSetting" data-panel="Setting">
+      <svg class="icon" width="17" height="17"><use href="#i-sliders"/></svg>Setting
+    </button>
+    <button type="button" class="tabBtn" id="tabBtnPreview" data-panel="Preview">
+      <svg class="icon" width="17" height="17"><use href="#i-eye"/></svg>Preview
+    </button>
+  </nav>
+
   <footer class="note">
     Naskah &amp; pengaturan disimpan otomatis di browser ini (localStorage) — nggak perlu akun, nggak terkirim ke server manapun. Bisa di-install sebagai app (PWA) lewat menu browser.
-    <br />
-    <button type="button" id="becomeRemoteBtn" class="linklike">📱 Jadi remote control dari HP ini</button>
   </footer>
 </div>
 
@@ -174,24 +273,30 @@
   <div class="overlay-panel" id="sectionPanel" hidden>
     <div class="panel-head">
       <span>Lompat ke section</span>
-      <button id="closeSectionPanel">✕</button>
+      <button id="closeSectionPanel"><svg class="icon" width="13" height="13"><use href="#i-close"/></svg></button>
     </div>
     <div id="sectionList"></div>
   </div>
 
   <div id="controlBar">
-    <button id="btnRestart" title="Ulang dari awal">⟲</button>
-    <button id="btnSections" title="Lompat ke section">≡</button>
+    <button id="btnRestart" title="Ulang dari awal"><svg class="icon" width="17" height="17"><use href="#i-restart"/></svg></button>
+    <button id="btnSections" title="Lompat ke section"><svg class="icon" width="17" height="17"><use href="#i-list"/></svg></button>
     <div class="sep"></div>
-    <button id="btnSpeedDown" title="Lebih lambat">−</button>
-    <div class="speedLabel" id="barSpeedLabel">70</div>
-    <button id="btnSpeedUp" title="Lebih cepat">+</button>
+    <button id="btnSpeedToggle" class="speedToggleBtn" title="Kecepatan"><span id="barSpeedLabel">70</span></button>
     <div class="sep"></div>
-    <button id="btnPlayPause" title="Pause/lanjut">⏸</button>
+    <button id="btnPlayPause" class="playBtn" title="Pause/lanjut"><svg class="icon" width="17" height="17"><use href="#i-pause"/></svg></button>
     <div class="sep"></div>
-    <button id="btnExit" title="Keluar (Esc)">✕</button>
+    <button id="btnExit" title="Keluar (Esc)"><svg class="icon" width="16" height="16"><use href="#i-close"/></svg></button>
     <div class="sep" id="remoteBadgeSep" hidden></div>
-    <div id="remoteBadge" hidden></div>
+    <div id="remoteBadge" hidden>
+      <svg class="icon" width="13" height="13"><use href="#i-link"/></svg>
+      <span id="remoteBadgeText"></span>
+    </div>
+  </div>
+
+  <div id="speedPopover" hidden>
+    <button id="btnSpeedDown" title="Lebih lambat"><svg class="icon" width="15" height="15"><use href="#i-minus"/></svg></button>
+    <button id="btnSpeedUp" title="Lebih cepat"><svg class="icon" width="15" height="15"><use href="#i-plus"/></svg></button>
   </div>
 </div>
 
@@ -209,19 +314,19 @@
     <button type="button" class="btn-ghost" id="remoteBackBtn">‹ Kembali</button>
   </div>
   <div id="remotePad" hidden>
-    <p id="remoteStatus" class="muted">Tersambung</p>
-    <button type="button" id="remoteBtnPlayPause">⏸</button>
+    <p id="remoteStatus" class="muted"><span class="dotOnline"></span>Tersambung</p>
+    <button type="button" id="remoteBtnPlayPause"><svg class="icon" width="26" height="26"><use href="#i-pause"/></svg></button>
     <div class="remoteRow">
-      <button type="button" id="remoteBtnSpeedDown">−</button>
+      <button type="button" id="remoteBtnSpeedDown"><svg class="icon" width="16" height="16"><use href="#i-minus"/></svg></button>
       <div id="remoteSpeedLabel">70</div>
-      <button type="button" id="remoteBtnSpeedUp">+</button>
+      <button type="button" id="remoteBtnSpeedUp"><svg class="icon" width="16" height="16"><use href="#i-plus"/></svg></button>
     </div>
     <div class="remoteRow">
-      <button type="button" id="remoteBtnPrev">‹ Section</button>
-      <button type="button" id="remoteBtnNext">Section ›</button>
+      <button type="button" id="remoteBtnPrev"><svg class="icon" width="15" height="15"><use href="#i-chevron-left"/></svg>Section</button>
+      <button type="button" id="remoteBtnNext">Section<svg class="icon" width="15" height="15"><use href="#i-chevron-right"/></svg></button>
     </div>
-    <button type="button" id="remoteBtnRestart">⟲ Ulang dari awal</button>
-    <button type="button" id="remoteBtnExit">✕ Keluar dari stage</button>
+    <button type="button" id="remoteBtnRestart"><svg class="icon" width="15" height="15"><use href="#i-restart"/></svg>Ulang dari awal</button>
+    <button type="button" id="remoteBtnExit"><svg class="icon" width="15" height="15"><use href="#i-close"/></svg>Keluar dari stage</button>
     <button type="button" class="btn-ghost" id="remoteDisconnectBtn">Putuskan</button>
   </div>
 </div>

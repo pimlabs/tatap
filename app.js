@@ -70,6 +70,7 @@
     importMdBtn: document.getElementById("importMdBtn"),
     importMdInput: document.getElementById("importMdInput"),
     libSaveBtn: document.getElementById("libSaveBtn"),
+    libSaveBtnLabel: document.getElementById("libSaveBtnLabel"),
     libOpenBtn: document.getElementById("libOpenBtn"),
     libCloseBtn: document.getElementById("libCloseBtn"),
     libCount: document.getElementById("libCount"),
@@ -95,6 +96,7 @@
     becomeRemoteBtn: document.getElementById("becomeRemoteBtn"),
     remoteBadgeSep: document.getElementById("remoteBadgeSep"),
     remoteBadge: document.getElementById("remoteBadge"),
+    remoteBadgeText: document.getElementById("remoteBadgeText"),
     remoteView: document.getElementById("remoteView"),
     remoteConnect: document.getElementById("remoteConnect"),
     remotePad: document.getElementById("remotePad"),
@@ -104,6 +106,7 @@
     remoteBackBtn: document.getElementById("remoteBackBtn"),
     remoteStatus: document.getElementById("remoteStatus"),
     remoteBtnPlayPause: document.getElementById("remoteBtnPlayPause"),
+    remoteBtnPlayPauseIcon: document.querySelector("#remoteBtnPlayPause use"),
     remoteBtnSpeedDown: document.getElementById("remoteBtnSpeedDown"),
     remoteSpeedLabel: document.getElementById("remoteSpeedLabel"),
     remoteBtnSpeedUp: document.getElementById("remoteBtnSpeedUp"),
@@ -115,6 +118,17 @@
     estimateInfo: document.getElementById("estimateInfo"),
     calibBtn: document.getElementById("calibBtn"),
     startBtn: document.getElementById("startBtn"),
+
+    panelNaskah: document.getElementById("panelNaskah"),
+    panelSetting: document.getElementById("panelSetting"),
+    panelPreview: document.getElementById("panelPreview"),
+    tabBtnNaskah: document.getElementById("tabBtnNaskah"),
+    tabBtnSetting: document.getElementById("tabBtnSetting"),
+    tabBtnPreview: document.getElementById("tabBtnPreview"),
+    previewBox: document.getElementById("previewBox"),
+    previewInner: document.getElementById("previewInner"),
+    previewFocusLine: document.getElementById("previewFocusLine"),
+    previewFade: document.getElementById("previewFade"),
 
     calibModal: document.getElementById("calibModal"),
     calibSample: document.getElementById("calibSample"),
@@ -140,10 +154,13 @@
     controlBar: document.getElementById("controlBar"),
     btnRestart: document.getElementById("btnRestart"),
     btnSections: document.getElementById("btnSections"),
+    btnSpeedToggle: document.getElementById("btnSpeedToggle"),
+    speedPopover: document.getElementById("speedPopover"),
     btnSpeedDown: document.getElementById("btnSpeedDown"),
     btnSpeedUp: document.getElementById("btnSpeedUp"),
     barSpeedLabel: document.getElementById("barSpeedLabel"),
     btnPlayPause: document.getElementById("btnPlayPause"),
+    btnPlayPauseIcon: document.querySelector("#btnPlayPause use"),
     btnExit: document.getElementById("btnExit")
   };
 
@@ -165,6 +182,20 @@
     el.remoteToggle.checked = !!state.remoteEnabled;
   }
   applyStateToForm();
+
+  // ---------- Setup screen tabs (mobile only — desktop shows all 3 via CSS) ----------
+  var tabPanels = { naskah: el.panelNaskah, setting: el.panelSetting, preview: el.panelPreview };
+  var tabBtns = { naskah: el.tabBtnNaskah, setting: el.tabBtnSetting, preview: el.tabBtnPreview };
+  function setActiveTab(name){
+    Object.keys(tabPanels).forEach(function(key){
+      tabPanels[key].classList.toggle("active", key === name);
+      tabBtns[key].classList.toggle("active", key === name);
+    });
+    if(name === "preview") updatePreviewBox();
+  }
+  el.tabBtnNaskah.addEventListener("click", function(){ setActiveTab("naskah"); });
+  el.tabBtnSetting.addEventListener("click", function(){ setActiveTab("setting"); });
+  el.tabBtnPreview.addEventListener("click", function(){ setActiveTab("preview"); });
 
   var saveTimer = null;
   function scheduleSave(){
@@ -285,7 +316,7 @@
   var estimateTimer = null;
   function scheduleEstimate(){
     clearTimeout(estimateTimer);
-    estimateTimer = setTimeout(updateEstimate, 150);
+    estimateTimer = setTimeout(function(){ updateEstimate(); updatePreviewBox(); }, 150);
   }
   function updateEstimate(){
     var m = measureScript(state.script, state.size, state.margin);
@@ -296,6 +327,19 @@
       "≈ <b>" + mins + "m " + secs + "d</b> &middot; <b>" + m.wordCount + "</b> kata &middot; <b>" + m.sectionCount + "</b> bagian";
   }
   updateEstimate();
+
+  // ---------- Preview panel (render mini naskah pakai setting asli) ----------
+  function updatePreviewBox(){
+    var tokenized = tokenizeScript(state.script);
+    el.previewBox.style.background = state.bg;
+    el.previewFade.style.background = "linear-gradient(to top, " + state.bg + ", transparent)";
+    el.previewInner.style.color = state.text;
+    el.previewInner.style.fontSize = state.size + "px";
+    el.previewInner.style.maxWidth = (100 - state.margin * 2) + "%";
+    el.previewFocusLine.style.display = state.focusLine ? "block" : "none";
+    renderLinesInto(el.previewInner, tokenized);
+  }
+  updatePreviewBox();
 
   // ---------- Form wiring ----------
   function applyScriptText(text){
@@ -408,9 +452,9 @@
     }
     saveLibrary();
     updateLibCount();
-    var original = el.libSaveBtn.textContent;
-    el.libSaveBtn.textContent = "✓ Tersimpan";
-    setTimeout(function(){ el.libSaveBtn.textContent = original; }, 1200);
+    var original = el.libSaveBtnLabel.textContent;
+    el.libSaveBtnLabel.textContent = "Tersimpan!";
+    setTimeout(function(){ el.libSaveBtnLabel.textContent = original; }, 1200);
   });
 
   el.libOpenBtn.addEventListener("click", function(){
@@ -436,11 +480,11 @@
     scheduleSave();
     scheduleEstimate();
   });
-  el.bgColor.addEventListener("input", function(){ state.bg = el.bgColor.value; scheduleSave(); });
-  el.textColor.addEventListener("input", function(){ state.text = el.textColor.value; scheduleSave(); });
+  el.bgColor.addEventListener("input", function(){ state.bg = el.bgColor.value; scheduleSave(); scheduleEstimate(); });
+  el.textColor.addEventListener("input", function(){ state.text = el.textColor.value; scheduleSave(); scheduleEstimate(); });
   el.mirrorToggle.addEventListener("change", function(){ state.mirror = el.mirrorToggle.checked; scheduleSave(); });
   el.countdownToggle.addEventListener("change", function(){ state.countdown = el.countdownToggle.checked; scheduleSave(); });
-  el.focusLineToggle.addEventListener("change", function(){ state.focusLine = el.focusLineToggle.checked; scheduleSave(); });
+  el.focusLineToggle.addEventListener("change", function(){ state.focusLine = el.focusLineToggle.checked; scheduleSave(); scheduleEstimate(); });
   el.highlightToggle.addEventListener("change", function(){ state.highlight = el.highlightToggle.checked; scheduleSave(); });
   el.autoPauseToggle.addEventListener("change", function(){ state.autoPause = el.autoPauseToggle.checked; scheduleSave(); });
   el.remoteToggle.addEventListener("change", function(){ state.remoteEnabled = el.remoteToggle.checked; scheduleSave(); });
@@ -448,12 +492,12 @@
   el.presetDark.addEventListener("click", function(){
     state.bg = "#0E0F11"; state.text = "#F2EFE9";
     el.bgColor.value = state.bg; el.textColor.value = state.text;
-    scheduleSave();
+    scheduleSave(); scheduleEstimate();
   });
   el.presetLight.addEventListener("click", function(){
     state.bg = "#FFFFFF"; state.text = "#111111";
     el.bgColor.value = state.bg; el.textColor.value = state.text;
-    scheduleSave();
+    scheduleSave(); scheduleEstimate();
   });
 
   // ---------- Calibration ----------
@@ -628,14 +672,14 @@
     if(anim.playing) return;
     anim.playing = true;
     anim.lastTs = 0;
-    el.btnPlayPause.textContent = "⏸";
+    el.btnPlayPauseIcon.setAttribute("href", "#i-pause");
     anim.raf = requestAnimationFrame(step);
     sendRemoteState();
   }
   function pause(){
     anim.playing = false;
     if(anim.raf) cancelAnimationFrame(anim.raf);
-    el.btnPlayPause.textContent = "▶";
+    el.btnPlayPauseIcon.setAttribute("href", "#i-play");
     sendRemoteState();
   }
   function togglePlayPause(){ if(anim.playing) pause(); else play(); }
@@ -718,6 +762,8 @@
     el.stage.classList.add("active");
     el.setup.style.display = "none";
     el.barSpeedLabel.textContent = state.speed;
+    el.speedPopover.hidden = true;
+    el.btnSpeedToggle.classList.remove("active");
     resetPosition();
     showControls();
     if(state.remoteEnabled) startRemoteHost();
@@ -735,6 +781,8 @@
     if(anim.countdownTimer) clearInterval(anim.countdownTimer);
     el.countdownOverlay.style.display = "none";
     el.sectionPanel.hidden = true;
+    el.speedPopover.hidden = true;
+    el.btnSpeedToggle.classList.remove("active");
     el.stage.classList.remove("active");
     el.setup.style.display = "flex";
     try{
@@ -768,8 +816,24 @@
   el.btnExit.addEventListener("click", exitStage);
   el.btnSpeedDown.addEventListener("click", function(){ changeSpeed(-10); });
   el.btnSpeedUp.addEventListener("click", function(){ changeSpeed(10); });
+  el.btnSpeedToggle.addEventListener("click", function(){
+    var opening = el.speedPopover.hidden;
+    if(opening){
+      // Posisi ngambang di atas bar dihitung dari tinggi bar ASLI (getBoundingClientRect),
+      // bukan angka fixed — soalnya #controlBar bisa wrap jadi 2 baris di layar sempit,
+      // jadi tingginya gak selalu sama.
+      var barRect = el.controlBar.getBoundingClientRect();
+      el.speedPopover.style.bottom = (window.innerHeight - barRect.top + 10) + "px";
+    }
+    el.speedPopover.hidden = !opening;
+    el.btnSpeedToggle.classList.toggle("active", opening);
+    el.sectionPanel.hidden = true;
+    showControls();
+  });
   el.btnSections.addEventListener("click", function(){
     el.sectionPanel.hidden = !el.sectionPanel.hidden;
+    el.speedPopover.hidden = true;
+    el.btnSpeedToggle.classList.remove("active");
     showControls();
   });
   el.closeSectionPanel.addEventListener("click", function(){ el.sectionPanel.hidden = true; });
@@ -806,7 +870,7 @@
     el.remoteBadgeSep.hidden = !show;
     el.remoteBadge.hidden = !show;
     if(show){
-      el.remoteBadge.textContent = text;
+      el.remoteBadgeText.textContent = text;
       el.remoteBadge.classList.toggle("connected", !!connected);
     }
   }
@@ -814,11 +878,11 @@
   function startRemoteHost(attempt){
     attempt = attempt || 0;
     if(typeof Peer === "undefined"){
-      updateRemoteBadge("🔗 remote gak bisa dimuat", false);
+      updateRemoteBadge("remote gak bisa dimuat", false);
       return;
     }
     if(attempt >= 5){
-      updateRemoteBadge("🔗 gagal bikin kode, coba lagi", false);
+      updateRemoteBadge("gagal bikin kode, coba lagi", false);
       return;
     }
     var code = String(Math.floor(1000 + Math.random() * 9000));
@@ -828,19 +892,19 @@
     hostPeer = new Peer(REMOTE_ID_PREFIX + code);
     hostPeer.on("open", function(){
       hostCode = code;
-      updateRemoteBadge("🔗 " + code, false);
+      updateRemoteBadge(code, false);
     });
     hostPeer.on("connection", function(conn){
       if(hostConn){ conn.close(); return; }
       hostConn = conn;
       conn.on("open", function(){
-        updateRemoteBadge("🔗 " + hostCode + " ✓", true);
+        updateRemoteBadge(hostCode + " ✓", true);
         sendRemoteState();
       });
       conn.on("data", function(msg){ handleRemoteCommand(msg); });
       conn.on("close", function(){
         hostConn = null;
-        updateRemoteBadge("🔗 " + hostCode, false);
+        updateRemoteBadge(hostCode, false);
       });
     });
     hostPeer.on("error", function(err){
@@ -848,7 +912,7 @@
         stopRemoteHost();
         startRemoteHost(attempt + 1);
       } else {
-        updateRemoteBadge("🔗 gagal, coba lagi", false);
+        updateRemoteBadge("gagal, coba lagi", false);
       }
     });
   }
@@ -887,7 +951,7 @@
   }
   function applyRemoteState(msg){
     if(!msg || msg.type !== "state") return;
-    el.remoteBtnPlayPause.textContent = msg.playing ? "⏸" : "▶";
+    el.remoteBtnPlayPauseIcon.setAttribute("href", msg.playing ? "#i-pause" : "#i-play");
     el.remoteSpeedLabel.textContent = msg.speed;
   }
   function sendRemoteCmd(cmd, extra){
