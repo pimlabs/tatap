@@ -17,13 +17,14 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 a{color:var(--accent);}
+.icon{display:block;flex:none;}
 
 /* ---------- Setup screen ---------- */
 #setup{
   min-height:100vh;
   display:flex;
   flex-direction:column;
-  padding:32px clamp(20px,4vw,56px) 48px;
+  padding:32px clamp(20px,4vw,56px) 90px;
 }
 header.brand{
   display:flex;
@@ -47,23 +48,44 @@ header.brand{
   font-size:14px;
   margin:0 0 22px 44px;
 }
+/* Mobile (<880px): cuma satu panelGroup aktif yang keliatan, dikontrol tab bar bawah.
+   Desktop (>=880px): ketiganya tampil sekaligus jadi 3 kolom, tab bar disembunyikan —
+   komponen yang sama, cuma disusun ulang, bukan sistem terpisah. */
 main.layout{
   flex:1;
-  display:grid;
-  grid-template-columns:1.7fr 1fr;
-  gap:24px;
-  align-items:start;
+  display:block;
 }
-@media (max-width:880px){
-  main.layout{grid-template-columns:1fr;}
+.panelGroup{display:none;flex-direction:column;gap:14px;}
+.panelGroup.active{display:flex;}
+
+@media (min-width:880px){
+  main.layout{
+    display:grid;
+    grid-template-columns:1.25fr 1fr 1fr;
+    gap:24px;
+    align-items:start;
+  }
+  .panelGroup{display:flex !important;}
 }
-.importRow{display:flex;justify-content:flex-end;margin-bottom:8px;}
-.importBtn{
-  font-size:12px;padding:6px 10px;border-radius:8px;
-  border:1px solid var(--panel-border);background:transparent;color:var(--muted);
-  cursor:pointer;
+
+.toolbar{
+  display:flex; background:var(--panel); border:1px solid var(--panel-border);
+  border-radius:var(--radius); overflow:hidden;
 }
-.importBtn:hover{border-color:var(--accent);color:var(--text);}
+.toolItem{
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:5px;
+  padding:12px 4px 11px; color:var(--muted); font-size:11px; position:relative;
+  border-right:1px solid var(--panel-border);
+  background:transparent; border-top:none; border-bottom:none; border-left:none; cursor:pointer;
+  font-family:'Inter',sans-serif;
+}
+.toolItem:last-child{border-right:none;}
+.toolItem:hover{color:var(--text);}
+.toolBadge{
+  position:absolute; top:6px; right:16%; background:var(--accent); color:#161208;
+  font-size:9px; font-weight:700; min-width:15px; height:15px; border-radius:99px;
+  display:flex; align-items:center; justify-content:center; padding:0 3px;
+}
 textarea#script{
   width:100%;
   min-height:380px;
@@ -156,6 +178,7 @@ button.btn-secondary{
   width:100%;background:transparent;border:1px solid var(--panel-border);
   color:var(--text);border-radius:10px;padding:9px 0;font-size:13px;
   cursor:pointer;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
 }
 button.btn-secondary:hover{border-color:var(--accent);}
 
@@ -173,6 +196,42 @@ button#startBtn:hover{filter:brightness(1.06);}
 }
 footer.note{
   margin-top:24px;color:var(--muted);font-size:12px;
+}
+
+/* ---------- Tab bar (mobile) ---------- */
+.tabbar{
+  display:flex; gap:2px; position:fixed; left:0; right:0; bottom:0; z-index:900;
+  margin:0 10px calc(10px + env(safe-area-inset-bottom,0px));
+  background:var(--panel); border:1px solid var(--panel-border);
+  border-radius:18px; padding:5px;
+  box-shadow:0 10px 26px -14px rgba(0,0,0,.6);
+}
+.tabBtn{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:9px 4px; border-radius:13px; color:var(--muted); font-size:11px; font-weight:500;
+  cursor:pointer; background:transparent; border:none; font-family:'Inter',sans-serif;
+  transition:background-color .15s ease, color .15s ease;
+}
+.tabBtn.active{background:var(--accent-dim); color:var(--accent);}
+@media (min-width:880px){
+  .tabbar{display:none;}
+  #setup{padding-bottom:48px;}
+}
+
+/* ---------- Preview panel ---------- */
+.previewLabel{font-size:13px;color:var(--text);font-weight:500;}
+.previewCaption{font-size:11px;color:var(--muted);margin-top:-8px;}
+.previewBox{
+  position:relative; border:1px solid var(--panel-border); border-radius:var(--radius);
+  padding:22px 20px; height:220px; overflow:hidden; background:var(--bg);
+}
+.previewFocusLine{position:absolute;left:0;right:0;top:38%;height:1px;background:var(--accent);opacity:.3;}
+.previewInner{line-height:1.45;font-family:'Inter',sans-serif;}
+.previewInner .line{margin:0;}
+.previewFade{
+  position:absolute;left:0;right:0;bottom:0;height:64px;
+  background:linear-gradient(to top, var(--bg), transparent);
+  pointer-events:none;
 }
 
 /* ---------- Calibration modal ---------- */
@@ -225,7 +284,8 @@ footer.note{
 .linklike{
   background:none;border:none;color:var(--muted);
   font-size:12px;text-decoration:underline;cursor:pointer;
-  padding:0;margin-top:10px;display:inline-block;
+  padding:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
 .linklike:hover{color:var(--accent);}
 
@@ -234,6 +294,7 @@ footer.note{
   display:flex;align-items:center;gap:4px;white-space:nowrap;flex:none;
 }
 #remoteBadge.connected{color:var(--accent);}
+#remoteBadge .icon{width:13px;height:13px;}
 
 #remoteView{
   position:fixed;inset:0;background:var(--bg);color:var(--text);
@@ -257,25 +318,32 @@ footer.note{
 .remoteError{color:#e0776f;font-size:12.5px;min-height:16px;margin:0 0 10px;}
 #remoteBackBtn{width:100%;}
 
-#remotePad #remoteStatus{margin-bottom:20px;}
+#remotePad #remoteStatus{
+  margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.dotOnline{width:7px;height:7px;border-radius:50%;background:#5FCB86;flex:none;}
 #remoteBtnPlayPause{
   width:96px;height:96px;border-radius:50%;
   background:var(--accent);color:#161208;border:none;
-  font-size:34px;cursor:pointer;margin-bottom:22px;
+  cursor:pointer;margin-bottom:22px;
+  display:flex;align-items:center;justify-content:center;
 }
 .remoteRow{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px;}
 .remoteRow button{
   background:var(--panel);border:1px solid var(--panel-border);color:var(--text);
   border-radius:10px;padding:14px 18px;font-size:16px;cursor:pointer;flex:1;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
 #remoteSpeedLabel{min-width:48px;font-size:16px;color:var(--accent);font-weight:600;flex:none;}
 #remoteBtnRestart{
   width:100%;background:transparent;border:1px solid var(--panel-border);color:var(--text);
   border-radius:10px;padding:12px 0;font-size:14px;cursor:pointer;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:center;gap:7px;
 }
 #remoteBtnExit{
   width:100%;background:transparent;border:1px solid #c0524a;color:#e0776f;
   border-radius:10px;padding:12px 0;font-size:14px;cursor:pointer;margin-bottom:20px;
+  display:flex;align-items:center;justify-content:center;gap:7px;
 }
 #remoteDisconnectBtn{width:100%;}
 
@@ -331,25 +399,42 @@ footer.note{
 }
 #controlBar{
   position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:6px;
+  display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:6px;row-gap:8px;
   background:rgba(20,20,22,.82);
   border:1px solid rgba(255,255,255,.08);
-  border-radius:999px;padding:8px 10px;
+  border-radius:22px;padding:8px 10px;
   opacity:1;transition:opacity .25s;
   max-width:94vw;
 }
 #controlBar.idle{opacity:0;}
 #controlBar button{
   background:transparent;border:none;color:#fff;cursor:pointer;
-  font-size:18px;width:38px;height:38px;border-radius:50%;
+  font-size:18px;width:44px;height:44px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;flex:none;
 }
 #controlBar button:hover{background:rgba(255,255,255,.1);}
-#controlBar .speedLabel{
-  min-width:40px;text-align:center;font-size:13px;color:var(--muted);
-  font-family:'Inter',sans-serif;
+#controlBar .playBtn{background:var(--accent);color:#161208;}
+#controlBar .playBtn:hover{background:var(--accent);filter:brightness(1.08);}
+#controlBar .speedToggleBtn{
+  width:auto;padding:0 15px;border-radius:22px;font-size:14px;font-weight:600;
+  color:var(--muted);font-variant-numeric:tabular-nums;font-family:'Inter',sans-serif;
 }
+#controlBar .speedToggleBtn.active{background:rgba(255,255,255,.12);color:#fff;}
 #controlBar .sep{width:1px;height:22px;background:rgba(255,255,255,.12);margin:0 4px;flex:none;}
+
+#speedPopover{
+  position:absolute;left:50%;bottom:96px;transform:translateX(-50%);
+  display:flex;align-items:center;gap:10px;
+  background:rgba(20,20,22,.94);border:1px solid rgba(255,255,255,.1);
+  border-radius:999px;padding:8px 14px;z-index:1010;
+}
+#speedPopover[hidden]{display:none;}
+#speedPopover button{
+  background:rgba(255,255,255,.08);border:none;color:#fff;cursor:pointer;
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex:none;
+}
+#speedPopover button:hover{background:rgba(255,255,255,.16);}
 
 /* ---------- Section jump panel ---------- */
 .overlay-panel{
@@ -366,6 +451,7 @@ footer.note{
 }
 .panel-head button{
   background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
 }
 .sectionItem{
   padding:10px 8px;border-radius:8px;cursor:pointer;font-size:13px;

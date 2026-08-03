@@ -62,6 +62,22 @@ Status per 23 Juni 2026.
 - Fix bareng: `sw.js` cache version ketinggalan (masih `v2` padahal `app.js`/`index.html`/`styles.css` udah berubah 2 fitur terakhir) — di-bump ke `v3` biar PWA yang udah ke-install re-fetch app shell terbaru.
 - **Belum dites end-to-end beneran** — sandbox development ini network policy-nya blokir CDN (jsdelivr/unpkg) dan broker PeerJS (`0.peerjs.com`), jadi koneksi P2P asli (host↔HP, handshake kode, kirim command bolak-balik) belum pernah divalidasi jalan. Yang udah dites otomatis (Playwright headless, 12/12 pass): toggle persist, badge muncul/kesembunyi sesuai state, degradasi graceful pas `Peer` library gagal load (gak crash, badge kasih pesan jelas), validasi input kode 4 digit, form connect/back/disconnect switch UI dengan benar. **Perlu ditest manual sama Eko di device asli** (laptop + HP beneran, buka lewat GitHub Pages) sebelum dianggap kelar — terutama: apakah kode beneran connect, apakah command remote sampe ke host dengan latency wajar, dan apakah behaviour di jaringan WiFi rumah/hotspot HP normal (WebRTC kadang butuh TURN relay kalau NAT-nya strict, PeerJS default cuma pakai STUN publik Google — kemungkinan kecil gagal connect di jaringan tertentu, belum ada fallback TURN).
 
+## ✅ v3e — Mobile readiness (selesai)
+
+Dikerjain lewat mockup artifact dulu (beberapa ronde validasi/revisi), baru dieksekusi ke kode asli setelah disetujui.
+
+- **Layar setup dipecah 3 tab di mobile** (`<880px`): Naskah → Setting → Preview, urutan ngikutin alur kerja (tulis → atur → cek hasil → mulai). Tab bar pill mengambang di bawah layar (thumb-reachable), tab aktif dapet indikator background.
+- **Desktop (`>=880px`) bukan sistem terpisah** — 3 blok yang sama (`#panelNaskah`/`#panelSetting`/`#panelPreview`) ditampilin sekaligus jadi 3 kolom CSS grid, tab bar disembunyiin. Nol komponen/markup duplikat antara mobile & desktop.
+- **Tab Preview baru** — render mini naskah pakai ukuran/warna/margin asli dari state (bukan versi diskalain, jadi akurat literally "begini nanti tampilannya", cuma di-window tinggi tetap + fade di bawah kayak viewport stage beneran), plus estimasi durasi/kata/bagian yang sebelumnya nempel di panel Kecepatan, plus tombol "▶ Mulai" jadi CTA penutup di sini.
+- **Toolbar naskah dirapikan** — "💾 Simpan naskah" / "📚 Naskah tersimpan" / "Import Markdown" yang sebelumnya 3 chip lepas ukuran beda-beda, sekarang jadi satu toolbar bersegmen (3 sel sama besar, pembatas tipis, badge angka nempel di icon).
+- **Semua icon emoji diganti SVG** — satu sprite icon line-style (`stroke-width:1.8`, sudut membulat) digambar manual di `<svg style="display:none">` awal `<body>`, dipakai lewat `<use href="#i-xxx">` di tab bar, toolbar, control bar, remote pad, badge remote, dan tombol close section panel. Alasan: emoji render beda-beda tiap OS/browser, SVG konsisten dan gak nambah dependency (bukan ditarik dari icon library eksternal).
+- **Control bar stage direstruktur biar gak kepotong**:
+  - Kontrol kecepatan (`−`/angka/`+`) yang sebelumnya selalu tampil 3 elemen, sekarang jadi 1 tombol toggle nunjukkin angka aja — tap buat buka popover `−`/`+` yang ngambang di atas bar. Ngurangin lebar default bar secara permanen.
+  - Posisi popover dihitung dinamis dari `getBoundingClientRect()` bar asli (bukan angka fixed) — soalnya bar bisa wrap ke 2 baris di layar sempit, jadi tingginya gak selalu sama. Sempat ketauan bug pas testing: posisi fixed bikin popover numpuk nutupin tombol section di layar sempit — udah difix sebelum di-ship.
+  - `#controlBar` dikasih `flex-wrap:wrap;justify-content:center` + tombol diperbesar 38px→44px (touch target minimum) — di layar sempit (mis. iPhone SE 375px + Remote HP aktif) bar wrap jadi 2 baris rapi, bukan kepotong/ke-clip kayak sebelumnya.
+- **Remote pad** (device kedua yang jadi remote) ikut dapet icon SVG + status dot ijo buat "Tersambung", + tombol "Keluar dari stage" dikasih aksen merah tipis biar beda dari aksi netral lainnya.
+- **Testing**: 32/32 assertion Playwright headless pass (default tab, semua 12+ kontrol Setting hadir tanpa kelewat, preview render & sinkron ke perubahan ukuran/warna, toolbar & library masih jalan, desktop nampilin 3 kolom sekaligus, control bar gak keluar viewport bahkan di 375px + Remote HP aktif, popover speed buka/tutup & incrementnya bener, keyboard shortcut masih jalan, section panel & speed popover saling exclusive, badge remote gak ada emoji lagi, modal kalibrasi masih kebuka) + screenshot visual manual buat cross-check. Font Fraunces/Inter gak bisa diverifikasi visual di sandbox dev (Google Fonts CDN diblokir network policy sandbox) — fallback font dipakai buat screenshot, tapi CSS `font-family` aslinya gak diubah jadi bakal render benar di production.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
@@ -70,4 +86,4 @@ Status per 23 Juni 2026.
 
 ## Prioritas yang disarankan
 
-Semua item v3 (a/b/c/d) udah selesai dikerjakan — remote control masih butuh verifikasi manual (lihat catatan di v3d). Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
+Semua item v3 (a/b/c/d/e) udah selesai dikerjakan — remote control (v3d) masih butuh verifikasi manual koneksi P2P beneran (lihat catatan di v3d), mobile readiness (v3e) juga baru divalidasi otomatis, belum dicoba di device fisik. Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
