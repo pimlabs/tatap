@@ -1,3 +1,8 @@
+/* Tema aplikasi (chrome UI: setup screen, modal, tab bar) — TERPISAH dari
+   "Warna latar/teks" di panel Tampilan, yang itu khusus warna panggung
+   teleprompter (state.bg/state.text, di-set inline via JS, gak kepengaruh
+   token ini). Default dark, ikut prefers-color-scheme kecuali di-override
+   eksplisit lewat [data-theme] (diset oleh toggle Tema aplikasi). */
 :root{
   --bg:#0E0F11;
   --panel:#17191C;
@@ -7,6 +12,35 @@
   --accent:#E8A33D;
   --accent-dim:rgba(232,163,61,.22);
   --radius:14px;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#F7F5F1;
+    --panel:#FFFFFF;
+    --panel-border:#E1DBCC;
+    --text:#221F1A;
+    --muted:#726B5C;
+    --accent:#C9791F;
+    --accent-dim:rgba(201,121,31,.14);
+  }
+}
+:root[data-theme="light"]{
+  --bg:#F7F5F1;
+  --panel:#FFFFFF;
+  --panel-border:#E1DBCC;
+  --text:#221F1A;
+  --muted:#726B5C;
+  --accent:#C9791F;
+  --accent-dim:rgba(201,121,31,.14);
+}
+:root[data-theme="dark"]{
+  --bg:#0E0F11;
+  --panel:#17191C;
+  --panel-border:#2A2D31;
+  --text:#F2EFE9;
+  --muted:#8B8D91;
+  --accent:#E8A33D;
+  --accent-dim:rgba(232,163,61,.22);
 }
 *{box-sizing:border-box;}
 html,body{margin:0;height:100%;}
@@ -148,6 +182,15 @@ input[type=color]{
   cursor:pointer;
 }
 .presets button:hover{border-color:var(--accent);color:var(--text);}
+
+.themeToggle{display:flex;gap:8px;}
+.themeOpt{
+  flex:1;font-size:12px;padding:6px 8px;border-radius:8px;
+  border:1px solid var(--panel-border);background:transparent;color:var(--muted);
+  cursor:pointer;
+}
+.themeOpt:hover{border-color:var(--accent);color:var(--text);}
+.themeOpt.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
 
 .toggle-row{
   display:flex;align-items:center;justify-content:space-between;

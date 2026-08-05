@@ -18,7 +18,8 @@
     highlight: true,
     autoPause: false,
     activeLibId: null,
-    remoteEnabled: false
+    remoteEnabled: false,
+    theme: "system"
   };
 
   function loadState(){
@@ -36,6 +37,13 @@
   }
 
   var state = loadState();
+
+  // Set attribute sedini mungkin (sebelum DOM/el lain dibangun) biar gak ada
+  // flash tema salah pas load. "system" = jangan set attribute sama sekali,
+  // biarin @media (prefers-color-scheme) di styles.css yang nentuin.
+  if(state.theme && state.theme !== "system"){
+    document.documentElement.setAttribute("data-theme", state.theme);
+  }
 
   // ---------- Naskah library (multi-script, localStorage) ----------
   function loadLibrary(){
@@ -87,6 +95,9 @@
     textColor: document.getElementById("textColor"),
     presetDark: document.getElementById("presetDark"),
     presetLight: document.getElementById("presetLight"),
+    themeOptDark: document.getElementById("themeOptDark"),
+    themeOptLight: document.getElementById("themeOptLight"),
+    themeOptSystem: document.getElementById("themeOptSystem"),
     mirrorToggle: document.getElementById("mirrorToggle"),
     countdownToggle: document.getElementById("countdownToggle"),
     focusLineToggle: document.getElementById("focusLineToggle"),
@@ -182,6 +193,39 @@
     el.remoteToggle.checked = !!state.remoteEnabled;
   }
   applyStateToForm();
+
+  // ---------- Tema aplikasi (chrome UI: dark/light/system) ----------
+  // Terpisah dari state.bg/state.text (warna panggung teleprompter) — ini cuma
+  // ngatur tampilan setup screen/modal/tab bar, gak nyentuh warna stage.
+  var themeOptEls = { dark: el.themeOptDark, light: el.themeOptLight, system: el.themeOptSystem };
+  var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  function applyTheme(){
+    var resolved = state.theme;
+    if(resolved === "system"){
+      document.documentElement.removeAttribute("data-theme");
+      resolved = (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+    } else {
+      document.documentElement.setAttribute("data-theme", state.theme);
+    }
+    if(themeColorMeta) themeColorMeta.setAttribute("content", resolved === "light" ? "#F7F5F1" : "#0E0F11");
+    Object.keys(themeOptEls).forEach(function(key){
+      themeOptEls[key].classList.toggle("active", key === state.theme);
+    });
+  }
+  function setTheme(value){
+    state.theme = value;
+    applyTheme();
+    scheduleSave();
+  }
+  el.themeOptDark.addEventListener("click", function(){ setTheme("dark"); });
+  el.themeOptLight.addEventListener("click", function(){ setTheme("light"); });
+  el.themeOptSystem.addEventListener("click", function(){ setTheme("system"); });
+  applyTheme();
+  if(window.matchMedia){
+    window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function(){
+      if(state.theme === "system") applyTheme();
+    });
+  }
 
   // ---------- Setup screen tabs (mobile only — desktop shows all 3 via CSS) ----------
   var tabPanels = { naskah: el.panelNaskah, setting: el.panelSetting, preview: el.panelPreview };
