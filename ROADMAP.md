@@ -175,6 +175,15 @@ Diminta Eko buat evaluasi color scheme & UI/UX aplikasi asli (bukan mockup) — 
 - Diverifikasi: toolbar balik ke tinggi natural (`61px`, dari `2px`) di iPhone SE simulasi, screenshot manual cross-check 3 kombinasi viewport/tema × ~12 state per kombinasi (naskah kosong/terisi, Setting atas/bawah/custom-color, Preview, modal kalibrasi, modal library, stage+control bar, speed popover, section panel, remote pad) — semua bersih, gak ada yang kepenyet/numpuk/overlap. Regression suite penuh (implementation/theme/stagecolor/colorscheme/touchfeedback) tetap pass.
 - `sw.js` cache `v14` → `v15`.
 
+## 🔧 Fix — Footer "Naskah & pengaturan disimpan..." nongol di semua tab
+
+- Eko notice: teks footer privasi/penyimpanan nongol identik di ketiga tab (Naskah, Setting, Preview). Penyebab: `<footer class="note">` posisinya di luar ketiga `.panelGroup` — sibling dari `<main>`/`<nav class="tabbar">`, jadi gak ikut sistem show/hide per-tab (`.panelGroup.active{display:flex}`), otomatis kerender terus di semua tab.
+- Ditanya ke Eko mau ditaruh di mana — jawabannya: cuma di tab Naskah (tab default/pertama).
+- Fix: `<footer class="note">` dipindah jadi anak terakhir `#panelNaskah` (setelah `.hint-inline`), dihapus dari posisi global-nya. Otomatis cuma nongol pas tab Naskah aktif (mobile) / di kolom Naskah doang (desktop, 3 kolom).
+- `footer.note` ditambahin ke daftar `flex-shrink:0` (sekarang dia anak `.panelGroup` yang scrollable, perlu proteksi yang sama kayak `.hint-inline` biar gak ikut kepenyet di viewport pendek).
+- Diverifikasi: query DOM konfirmasi footer cuma ada di `#panelNaskah`, gak ada di `#panelSetting`/`#panelPreview`, dan invisible pas tab lain aktif. Screenshot mobile & desktop cross-check — bersih, gak ada duplikasi. Regression suite tetap pass.
+- `sw.js` cache `v15` → `v16`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
