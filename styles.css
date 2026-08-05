@@ -110,6 +110,21 @@ a{color:var(--accent);}
      (height:220px) biar gak membengkak ngikutin panjang naskah. */
   textarea#script{flex:1;}
   .previewBox{flex:1;min-height:220px;}
+  /* Elemen non-flex di Naskah/Preview (toolbar, hint, tombol Mulai, dst)
+     dikunci flex-shrink:0 — ketauan bug pas dites di viewport pendek
+     (iPhone SE, 667px): tanpa ini, flex-shrink bawaan (default 1) biarin
+     browser "meratain" kekurangan ruang ke SEMUA sibling, termasuk yang
+     harusnya ukuran tetap. `.toolbar` kena parah (nyusut sampe 2px)
+     karena dia punya overflow:hidden (buat clip sudut tombol
+     bersegmen) — spec flexbox bikin automatic-minimum-size elemen jadi
+     0 kalau overflow-nya bukan visible, jadi dia gak dilindungi
+     min-content size-nya sendiri kayak elemen lain. Sekarang textarea
+     & previewBox doang yang boleh nyusut/gede — sisanya tetep ukuran
+     alami, kelebihan tinggi (kalau ada) di-scroll via `.panelGroup`. */
+  .toolbar, .hint-inline, .previewLabel, .previewCaption, .estimate,
+  #startBtn, .hint{
+    flex-shrink:0;
+  }
 }
 header.brand{
   display:flex;
