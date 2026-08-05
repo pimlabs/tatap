@@ -653,6 +653,25 @@
   var anim = { raf: null, lastTs: 0, pos: 0, textHeight: 0, playing: false, countdownTimer: null };
   var lineElements = [];
   var sectionAnchors = [];
+
+  // Layar gak boleh dim/lock pas lagi playing — teleprompter dipakai sambil
+  // rekam, layar mati di tengah jalan bisa ganggu banget. Wake Lock API
+  // otomatis ke-release browser pas tab kehilangan visibility (mis. app
+  // switcher sebentar), jadi perlu re-acquire manual pas balik keliatan lagi.
+  var wakeLock = null;
+  function requestWakeLock(){
+    if(!("wakeLock" in navigator)) return;
+    navigator.wakeLock.request("screen").then(function(lock){
+      wakeLock = lock;
+      wakeLock.addEventListener("release", function(){ wakeLock = null; });
+    }).catch(function(){ /* gagal minta (gak didukung/ditolak) - degrade diam-diam */ });
+  }
+  function releaseWakeLock(){
+    if(wakeLock){ wakeLock.release().catch(function(){}); wakeLock = null; }
+  }
+  document.addEventListener("visibilitychange", function(){
+    if(document.visibilityState === "visible" && anim.playing) requestWakeLock();
+  });
   var ptr = 0;
 
   function clearAllHighlights(){
@@ -775,12 +794,14 @@
     anim.lastTs = 0;
     el.btnPlayPauseIcon.setAttribute("href", "#i-pause");
     anim.raf = requestAnimationFrame(step);
+    requestWakeLock();
     sendRemoteState();
   }
   function pause(){
     anim.playing = false;
     if(anim.raf) cancelAnimationFrame(anim.raf);
     el.btnPlayPauseIcon.setAttribute("href", "#i-play");
+    releaseWakeLock();
     sendRemoteState();
   }
   function togglePlayPause(){ if(anim.playing) pause(); else play(); }

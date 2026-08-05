@@ -468,10 +468,30 @@ footer.note{
 }
 .linklike:hover{color:var(--accent);}
 
+/* Badge dipaksa mulai baris baru sendiri (bukan ngikut flex-wrap alami)
+   — sebelumnya separator "|" sebelum play/pause/exit bisa ke-dorong
+   wrap ke tengah grup pas badge nongol (teks-nya variable, mis. "remote
+   gak bisa dimuat"), jadinya separator numpang nyasar di ujung baris
+   tanpa konteks yang jelas dia misahin apa. Baris 1 = 4 kontrol utama
+   (restart/section/speed/play/exit, udah pas 1 baris tanpa badge),
+   baris 2 = badge doang kalau lagi ada, gak pernah ganggu susunan
+   baris 1. */
+#controlBar #remoteBadgeSep{
+  flex-basis:100%; width:0; height:0; margin:0; background:transparent;
+}
 #remoteBadge{
   font-size:12px;color:var(--muted);padding:0 6px;
   display:flex;align-items:center;gap:4px;white-space:nowrap;flex:none;
+  margin-top:2px;
 }
+/* #remoteBadge{display:flex} (ID selector) ngalahin specificity default
+   browser buat [hidden]{display:none} (attribute selector, lebih rendah) —
+   tanpa baris ini, badge kosong tetap kerender (icon doang, teks kosong)
+   di controlBar SETIAP masuk stage, walaupun remoteEnabled false & attribute
+   hidden-nya udah bener true. Ketauan pas investigasi "controlBar
+   berantakan pas play mode" — badge hantu ini nambah 1 elemen ekstra
+   yang ngerusak flex-wrap layout padahal harusnya gak ada apa-apa. */
+#remoteBadge[hidden]{display:none;}
 #remoteBadge.connected{color:var(--accent);}
 #remoteBadge .icon{width:13px;height:13px;}
 
