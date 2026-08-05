@@ -114,6 +114,15 @@ Ketauan pas Eko coba tema Terang beneran: kombinasi warnanya keliatan aneh. Dua 
 - 9/9 test tambahan pass (color-scheme ke-set bener di semua kombinasi OS/tema, switch track & calib-sample warnanya bener-bener beda antar tema, range input tetap fungsional setelah di-custom-styling) + screenshot visual cross-check kombinasi OS-dark+app-Terang (skenario yang awalnya munculin bug).
 - `sw.js` cache `v7` → `v8`.
 
+## ✅ v3h — Touch feedback di semua tombol (selesai)
+
+- Semua `<button>` (+ `.sectionItem`, div section-jump yang diperlakukan kayak tombol) sekarang punya respon instan pas ditekan: **membesar dikit** (`scale(1.07)`) + **indikator brightness** (`filter:brightness(1.2)`), transisi cepat (`.1s`). Aturan global satu tempat (`button, .sectionItem { ... }` di awal `styles.css`), bukan nge-duplicate per komponen — otomatis kepakai di tab bar, toolbar, preset, tema toggle, start button, control bar (termasuk yang accent/playBtn), speed popover, remote pad, section jump, dst.
+- Pilih `:active` (bukan `:hover`) karena itu yang beneran ngerespon touch — `:hover` gak reliable di touch device (kadang gak nyala sama sekali, kadang nyangkut/"sticky" abis tap).
+- `-webkit-tap-highlight-color:transparent` disertain biar gak numpuk sama highlight flash bawaan Android Chrome yang keliatan norak kalau digabung sama animasi custom kita.
+- `input[type=range]` sengaja **dikecualiin** — nge-scale seluruh elemen pas lagi di-drag bisa bikin jarak visual antara jari/kursor sama thumb keliatan aneh.
+- `prefers-reduced-motion` di-hormatin — transform di-disable buat yang minta gerakan diminimalin, indikator brightness tetap jalan (bukan efek gerak, jadi aman).
+- 15/15 test end-to-end Playwright (simulasi `mouse.down()`/`mouse.up()` beneran, bukan cuma cek CSS statis) — verifikasi transform berubah pas ditekan & balik normal pas dilepas, di semua kategori tombol: tab bar, tema toggle, preset, start button, toolbar, control bar (termasuk accent bg), section jump item (div).
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
@@ -122,4 +131,4 @@ Ketauan pas Eko coba tema Terang beneran: kombinasi warnanya keliatan aneh. Dua 
 
 ## Prioritas yang disarankan
 
-Semua item v3 (a–g) udah selesai dikerjakan — remote control (v3d) masih butuh verifikasi manual koneksi P2P beneran (lihat catatan di v3d), mobile readiness (v3e) juga baru divalidasi otomatis, belum dicoba di device fisik. Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
+Semua item v3 (a–h) udah selesai dikerjakan — remote control (v3d) masih butuh verifikasi manual koneksi P2P beneran (lihat catatan di v3d), mobile readiness (v3e) juga baru divalidasi otomatis, belum dicoba di device fisik. Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
