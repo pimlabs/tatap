@@ -115,14 +115,12 @@ a{color:var(--accent);}
      dikunci flex-shrink:0 — ketauan bug pas dites di viewport pendek
      (iPhone SE, 667px): tanpa ini, flex-shrink bawaan (default 1) biarin
      browser "meratain" kekurangan ruang ke SEMUA sibling, termasuk yang
-     harusnya ukuran tetap. `.toolbar` kena parah (nyusut sampe 2px)
-     karena dia punya overflow:hidden (buat clip sudut tombol
-     bersegmen) — spec flexbox bikin automatic-minimum-size elemen jadi
-     0 kalau overflow-nya bukan visible, jadi dia gak dilindungi
-     min-content size-nya sendiri kayak elemen lain. Sekarang textarea
-     & previewBox doang yang boleh nyusut/gede — sisanya tetep ukuran
-     alami, kelebihan tinggi (kalau ada) di-scroll via `.panelGroup`. */
-  .toolbar, .hint-inline, .previewLabel, .previewCaption, .estimate,
+     harusnya ukuran tetap (waktu itu `.toolbar` lama kena parah, nyusut
+     sampe 2px, gara-gara overflow:hidden bikin automatic-minimum-size-nya
+     jadi 0 alih-alih ngikut min-content). Sekarang textarea & previewBox
+     doang yang boleh nyusut/gede — sisanya tetep ukuran alami, kelebihan
+     tinggi (kalau ada) di-scroll via `.panelGroup`. */
+  .toolbarRow, .hint-inline, .previewLabel, .previewCaption, .estimate,
   #startBtn, .hint, footer.note{
     flex-shrink:0;
   }
@@ -170,21 +168,32 @@ main.layout{
   .panelGroup{display:flex !important;}
 }
 
-.toolbar{
-  display:flex; background:var(--panel); border:1px solid var(--panel-border);
-  border-radius:var(--radius); overflow:hidden;
+/* Simpan (aksi instan, paling sering dipakai) sengaja dikasih gaya beda
+   & lebih menonjol dari Daftar/Import (aksi yang buka modal/file-picker,
+   lebih jarang) — sebelumnya ketiganya disegmen jadi satu strip rata,
+   keliatan kayak tab switcher (nyamain 3 jenis interaksi yang beda). */
+.toolbarRow{
+  display:flex; gap:8px; align-items:stretch;
 }
-.toolItem{
-  flex:1; display:flex; flex-direction:column; align-items:center; gap:5px;
-  padding:12px 4px 11px; color:var(--muted); font-size:11px; position:relative;
-  border-right:1px solid var(--panel-border);
-  background:transparent; border-top:none; border-bottom:none; border-left:none; cursor:pointer;
-  font-family:'Inter',sans-serif;
+.toolPrimary{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  background:var(--accent-dim); border:1px solid var(--accent);
+  border-radius:var(--radius); color:var(--accent); font-weight:600; font-size:14px;
+  padding:12px 16px; cursor:pointer; font-family:'Inter',sans-serif;
 }
-.toolItem:last-child{border-right:none;}
-.toolItem:hover{color:var(--text);}
+.toolPrimary:hover{filter:brightness(1.08);}
+.toolSecondary{
+  display:flex; gap:6px; flex:none;
+}
+.toolSecondaryBtn{
+  flex:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+  width:62px; background:var(--panel); border:1px solid var(--panel-border);
+  border-radius:var(--radius); color:var(--muted); font-size:10.5px; position:relative;
+  padding:10px 4px 9px; cursor:pointer; font-family:'Inter',sans-serif;
+}
+.toolSecondaryBtn:hover{color:var(--text); border-color:var(--accent);}
 .toolBadge{
-  position:absolute; top:6px; right:16%; background:var(--accent); color:#161208;
+  position:absolute; top:5px; right:7px; background:var(--accent); color:#161208;
   font-size:9px; font-weight:700; min-width:15px; height:15px; border-radius:99px;
   display:flex; align-items:center; justify-content:center; padding:0 3px;
 }
@@ -280,6 +289,23 @@ input[type=color]{
 }
 .themeOpt:hover{border-color:var(--accent);color:var(--text);}
 .themeOpt.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+
+/* Kartu "Tema Aplikasi" sengaja dibikin ringan/compact — sebelumnya kartu
+   penuh (h3 + label yang isinya ngulang teks h3-nya lagi + toggle) makan
+   ruang & visual weight yang sama kayak "Panggung" di bawahnya, padahal
+   ini preference sekali-set, jauh lebih jarang diubah dibanding slider
+   ukuran teks/margin. Satu baris compact: label kiri, toggle kanan. */
+.panelCompact{padding:14px 16px;}
+.themeRow{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; flex-wrap:wrap;
+}
+.themeRowLabel{
+  font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); font-weight:600; flex:none;
+}
+.themeToggleCompact{flex:none;}
+.themeToggleCompact .themeOpt{flex:none; padding:5px 10px;}
 
 .toggle-row{
   display:flex;align-items:center;justify-content:space-between;
@@ -457,16 +483,26 @@ footer.note{
 #remoteBtnPlayPause{
   width:96px;height:96px;border-radius:50%;
   background:var(--accent);color:#161208;border:none;
-  cursor:pointer;margin-bottom:22px;
+  cursor:pointer;margin:0 auto 22px;
   display:flex;align-items:center;justify-content:center;
 }
+/* .remoteRow dulunya justify-content:center TAPI tombol di dalamnya
+   flex:1 (stretch ngisi 320px penuh) — jadi center-nya percuma, hasilnya
+   tombol -/+ jadi pil lebar aneh buat cuma 1 icon. Sekarang tombol
+   ukuran tetap (kotak kompak), baru justify-content:center kerasa
+   efeknya: cluster kecil yang center, bukan bar lebar penuh. */
 .remoteRow{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px;}
 .remoteRow button{
   background:var(--panel);border:1px solid var(--panel-border);color:var(--text);
-  border-radius:10px;padding:14px 18px;font-size:16px;cursor:pointer;flex:1;
-  display:flex;align-items:center;justify-content:center;gap:6px;
+  border-radius:10px;font-size:16px;cursor:pointer;
+  width:52px;height:48px;flex:none;
+  display:flex;align-items:center;justify-content:center;
 }
-#remoteSpeedLabel{min-width:48px;font-size:16px;color:var(--accent);font-weight:600;flex:none;}
+#remoteSpeedLabel{min-width:64px;font-size:16px;color:var(--accent);font-weight:600;flex:none;}
+/* Beda dari #remoteSpeedLabel — ini label statis ("Section"), bukan
+   nilai live kayak angka speed, jadi warnanya muted bukan accent biar
+   gak keliatan kayak nunjukkin data yang berubah-ubah. */
+#remoteSectionLabel{min-width:64px;font-size:13px;color:var(--muted);font-weight:600;flex:none;}
 #remoteBtnRestart{
   width:100%;background:transparent;border:1px solid var(--panel-border);color:var(--text);
   border-radius:10px;padding:12px 0;font-size:14px;cursor:pointer;margin-bottom:12px;

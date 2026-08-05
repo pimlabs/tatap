@@ -184,6 +184,32 @@ Diminta Eko buat evaluasi color scheme & UI/UX aplikasi asli (bukan mockup) — 
 - Diverifikasi: query DOM konfirmasi footer cuma ada di `#panelNaskah`, gak ada di `#panelSetting`/`#panelPreview`, dan invisible pas tab lain aktif. Screenshot mobile & desktop cross-check — bersih, gak ada duplikasi. Regression suite tetap pass.
 - `sw.js` cache `v15` → `v16`.
 
+## ✅ v3j — Toolbar Naskah dirombak: primary/secondary, bukan tab-switcher palsu (selesai)
+
+- Eko kasih feedback: tombol Simpan/Tersimpan/Import "gak begitu intuitive" dari sisi label, icon, bentuk, & posisi. Diagnosis:
+  1. **Label mirip** — "Simpan" vs "Tersimpan" cuma beda prefix, gampang salah baca sekilas, padahal fungsinya beda jauh (aksi instan vs buka daftar). Makin parah karena tombol Simpan sendiri, abis diklik, LABEL-nya flash jadi "Tersimpan!" — jadi dua tombol bersebelahan bisa nampilin kata yang nyaris sama persis.
+  2. **Bentuk segmented nyamain tab-switcher** — ketiganya difusi jadi satu strip bordered rata (persis gaya tab bar Naskah/Setting/Preview), padahal ketiganya jenis interaksi beda: Simpan aksi instan, Tersimpan/Daftar buka modal, Import buka file-picker. Nyamain visualnya bikin otak baca ini sebagai "pilihan view", bukan "tiga aksi beda".
+  3. Icon save (floppy) & folder sama-sama "berkonotasi storage", nambah kebingungan.
+- Ditanya scope ke Eko — dipilih: **pisahin visual primary/secondary** (bukan cuma rename+icon).
+- Fix: toolbar direstruktur jadi `.toolbarRow` berisi `.toolPrimary` (Simpan — aksi paling sering, jadi tombol menonjol: border+background accent, icon+label sejajar horizontal, lebar dominan `flex:1`) + `.toolSecondary` (grup Daftar+Import — aksi lebih jarang, jadi pasangan tombol kecil `62px` muted, icon+label kecil ke bawah kayak sebelumnya, badge count tetap nempel di Daftar).
+- Label "Tersimpan" (tombol daftar naskah) diganti jadi **"Daftar"** — beresin tabrakan kata sama flash "Tersimpan!" di tombol Simpan sekalian (flash text-nya sendiri dibiarin, gak nabrak lagi karena tetangganya udah ganti nama).
+- Class lama `.toolbar`/`.toolItem` diganti total (`.toolbarRow`/`.toolPrimary`/`.toolSecondary`/`.toolSecondaryBtn`) — termasuk update referensi di aturan `flex-shrink:0` (fix viewport-pendek sebelumnya) yang masih nunjuk ke `.toolbar` lama, supaya proteksi anti-kepenyet tetap kepakai di struktur baru.
+- Diverifikasi: DOM metrics (toolbar row `55px`, `flex-shrink:0` aktif, ketiga tombol full-size) di iPhone SE simulasi — gak ada regresi kepenyet. Flow Simpan (dialog `prompt()` buat nama naskah baru, flash "Tersimpan!", revert ke "Simpan") tetap jalan lewat Playwright dialog handling. Screenshot cross-check iPhone 14 dark/light, iPhone SE dark, desktop 3-kolom — bersih. Regression suite penuh (implementation — 1 assertion di-update ngikutin class baru, library, theme, touchfeedback) pass.
+- `sw.js` cache `v16` → `v17`.
+
+## 🔧 Fix — Remote pad kepenceng, Tema Aplikasi kekuatan visual
+
+Tiga temuan sekaligus dari Eko: "tombol di remote gak jalan efektif", "visualnya gak intuitif dan handy", "control Tema Aplikasi terlalu kuat dan makan ruang".
+
+- **Bug asli: tombol play/pause di remote pad gak center** — `#remoteBtnPlayPause` punya `display:flex` (buat center-in icon-nya sendiri), tapi efek sampingnya bikin dia jadi block-level, jadi gak lagi ngikut `text-align:center` dari `#remotePad` (parent). Hasilnya tombol nempel ke kiri, bukan di tengah — target sentuh utama remote jadi kepenceng, konsisten sama laporan "gak jalan efektif". Fix: `margin:0 auto` langsung di tombolnya, gak gantung ke `text-align` parent lagi.
+- **Baris Section gak konsisten sama baris Speed** — Speed pakai pola `[−][70][+]` (tombol-label-tombol), Section malah `[‹ Section][Section ›]` (dua tombol lebar isi teks "Section" dobel, kata yang sama keulang berdampingan). Direstruktur biar sama-persis pola-nya: `[‹][Section][›]`. Label "Section" dikasih warna muted (beda dari label speed yang accent-colored) karena ini teks statis, bukan nilai live kayak angka speed.
+- **Tombol `.remoteRow` (−/+/‹/›) kepaksa `flex:1` stretch ngisi 320px penuh** — jadinya pil lebar aneh buat cuma nampung 1 icon, `justify-content:center` di parent-nya jadi percuma karena gak ada sisa ruang buat di-center-in. Fix: ukuran tetap (`52×48px`), `flex:none` — sekarang jadi cluster kompak yang bener-bener kekontrol di tengah.
+- **Kartu "Tema Aplikasi" terlalu berat buat preference yang jarang diubah** — sebelumnya kartu penuh (h3 header + `<label>` yang isinya literally ngulang teks h3 lagi + toggle di baris terpisah), visual weight-nya nyamain "Panggung" di bawahnya padahal itu kartu dengan slider yang jauh lebih sering diutak-atik. Fix: dipadetin jadi SATU baris (`.themeRow`: label kiri, toggle kanan, padding kartu dikurangin), label `<label>Tema aplikasi</label>` yang redundan dihapus total.
+- Sekalian ketemu 1 test lama yang stale (bukan gara-gara perubahan ini) — `e2e-remote.js` masih assert `textContent` tombol play/pause = emoji `⏸`/`▶`, padahal sejak v3e ikon-nya udah pindah ke SVG `<use href>` (gak ada text content lagi). Diupdate buat cek `href` attribute-nya.
+- Diverifikasi: DOM metrics konfirmasi play/pause bener-bener center (`diff: 0`) di 3 kombinasi viewport. Screenshot cross-check mobile dark/light/SE & desktop — remote pad & Tema Aplikasi keduanya bersih. Regression suite penuh (implementation, theme, remote, stagecolor, colorscheme, touchfeedback, library) pass.
+- **Belum bisa divalidasi koneksi P2P beneran** (limitasi sandbox yang sama kayak v3d) — remote pad di-screenshot dengan cara force-show DOM (`hidden=false` manual), bukan lewat koneksi asli. Fungsional tombol (kirim command via data channel) belum tervalidasi ulang di device fisik.
+- `sw.js` cache `v17` → `v18`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
@@ -192,4 +218,4 @@ Diminta Eko buat evaluasi color scheme & UI/UX aplikasi asli (bukan mockup) — 
 
 ## Prioritas yang disarankan
 
-Semua item v3 (a–h) udah selesai dikerjakan — remote control (v3d) masih butuh verifikasi manual koneksi P2P beneran (lihat catatan di v3d), mobile readiness (v3e) juga baru divalidasi otomatis, belum dicoba di device fisik. Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
+Semua item v3 (a–j) udah selesai dikerjakan — remote control (v3d) masih butuh verifikasi manual koneksi P2P beneran (lihat catatan di v3d), mobile readiness (v3e) juga baru divalidasi otomatis, belum dicoba di device fisik. Beberapa fix safe-area/PWA (notch, padding, scroll container) juga masih nunggu verifikasi manual di device asli — lihat catatan di masing-masing entri fix. Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
