@@ -480,11 +480,20 @@ footer.note{
   margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:6px;
 }
 .dotOnline{width:7px;height:7px;border-radius:50%;background:#5FCB86;flex:none;}
+/* Icon doang (pause-bars vs play-triangle) susah kebeda pas dilihat
+   sekilas/dari jarak jauh (dipakai sambil rekam). Warna fill jadi
+   sinyal utama: playing = solid accent (konsisten sama makna "aktif/on"
+   di elemen lain se-app), paused = outline doang (idle, gak ada beban
+   visual, nunjukkin "belum jalan / lagi berhenti"). */
 #remoteBtnPlayPause{
   width:96px;height:96px;border-radius:50%;
-  background:var(--accent);color:#161208;border:none;
+  background:var(--accent);color:#161208;border:2px solid var(--accent);
   cursor:pointer;margin:0 auto 22px;
   display:flex;align-items:center;justify-content:center;
+  transition:background-color .15s, color .15s;
+}
+#remoteBtnPlayPause.isPaused{
+  background:transparent;color:var(--accent);
 }
 /* .remoteRow dulunya justify-content:center TAPI tombol di dalamnya
    flex:1 (stretch ngisi 320px penuh) — jadi center-nya percuma, hasilnya

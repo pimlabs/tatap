@@ -210,6 +210,14 @@ Tiga temuan sekaligus dari Eko: "tombol di remote gak jalan efektif", "visualnya
 - **Belum bisa divalidasi koneksi P2P beneran** (limitasi sandbox yang sama kayak v3d) — remote pad di-screenshot dengan cara force-show DOM (`hidden=false` manual), bukan lewat koneksi asli. Fungsional tombol (kirim command via data channel) belum tervalidasi ulang di device fisik.
 - `sw.js` cache `v17` → `v18`.
 
+## 🔧 Fix — Indikator playing/paused di remote pad kurang beda
+
+- Follow-up dari fix di atas: Eko minta indikator play/pause di remote pad yang lebih intuitive & beda jelas antar 2 state. Sebelumnya cuma icon yang beda (pause-bars vs play-triangle) — susah kebeda sekilas/dari jarak jauh, apalagi konteks pemakaiannya emang sambil rekam (gak selalu merhatiin closeup ke HP remote).
+- Fix: warna fill tombol sekarang ikut beda per state, bukan cuma icon. **Playing** = solid accent fill (konsisten sama makna "aktif/on" yang dipakai elemen lain se-app, mis. switch checked). **Paused** = outline doang (`background:transparent`, border+icon accent) — nunjukkin "idle/berhenti" tanpa beban visual kayak lagi aktif.
+- `applyRemoteState()` (dipanggil pas terima state message dari host lewat data channel) sekarang toggle class `.isPaused` bareng swap `href` icon yang udah ada sebelumnya — satu sumber state, dua sinyal visual (warna + bentuk icon) yang saling nguatin.
+- Diverifikasi: simulasi kedua state (toggle class + href manual, karena P2P beneran gak bisa ditest di sandbox) — dark & light theme, warna fill kekonfirmasi transparent penuh pas paused vs solid accent pas playing. Regression suite (remote, implementation, touchfeedback) pass.
+- `sw.js` cache `v18` → `v19`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)

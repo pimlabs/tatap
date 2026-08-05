@@ -1037,6 +1037,7 @@
   function applyRemoteState(msg){
     if(!msg || msg.type !== "state") return;
     el.remoteBtnPlayPauseIcon.setAttribute("href", msg.playing ? "#i-pause" : "#i-play");
+    el.remoteBtnPlayPause.classList.toggle("isPaused", !msg.playing);
     el.remoteSpeedLabel.textContent = msg.speed;
   }
   function sendRemoteCmd(cmd, extra){
