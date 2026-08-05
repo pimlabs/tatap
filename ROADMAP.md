@@ -135,6 +135,13 @@ Diminta Eko buat evaluasi color scheme & UI/UX aplikasi asli (bukan mockup) — 
 - 5 suite Playwright headless yang ada di-rerun full buat regresi (implementation/theme/stagecolor/colorscheme/touchfeedback) — semua pass setelah 1 assertion di `e2e-colorscheme.js` di-update (nilai lama `--switch-track-off` diganti `--control-track` yang baru). Screenshot visual mobile-dark/light & desktop dicek manual buat verifikasi ke-4 fix.
 - `sw.js` cache `v9` → `v10`.
 
+## 🔧 Fix — Header layar setup ketutup notch/dynamic island
+
+- Dilaporkan Eko: area atas (logo "Tatap" + tagline) ketutup notch/dynamic island di HP tertentu. Penyebab: `viewport-fit=cover` udah di-set di meta viewport (biar app bisa gambar sampai ke tepi layar), tapi cuma `.tabbar` di bawah yang reserve `env(safe-area-inset-bottom)` — `#setup` di atas masih padding-top fixed `32px` doang, gak reserve `env(safe-area-inset-top)`.
+- Fix: `#setup{padding:calc(32px + env(safe-area-inset-top,0px)) ...}` — di device tanpa notch/`env()` unsupported, fallback `0px` bikin behaviour persis sama kayak sebelumnya (32px polos); di device dengan notch, otomatis nambah jarak sebesar area aman OS.
+- **Belum bisa divalidasi visual di sandbox ini** — Playwright/Chromium headless resolve `env(safe-area-inset-top)` ke `0px` (gak ada notch beneran buat disimulasikan), jadi cuma keverifikasi CSS-nya valid & gak ngerusak layout non-notch (padding tetap `32px` seperti semula). **Perlu dicek manual sama Eko di HP asli yang punya notch/dynamic island.**
+- `sw.js` cache `v10` → `v11`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
