@@ -123,6 +123,18 @@ Ketauan pas Eko coba tema Terang beneran: kombinasi warnanya keliatan aneh. Dua 
 - `prefers-reduced-motion` di-hormatin — transform di-disable buat yang minta gerakan diminimalin, indikator brightness tetap jalan (bukan efek gerak, jadi aman).
 - 15/15 test end-to-end Playwright (simulasi `mouse.down()`/`mouse.up()` beneran, bukan cuma cek CSS statis) — verifikasi transform berubah pas ditekan & balik normal pas dilepas, di semua kategori tombol: tab bar, tema toggle, preset, start button, toolbar, control bar (termasuk accent bg), section jump item (div).
 
+## 🔧 Fix — Evaluasi color & UI/UX (4 temuan)
+
+Diminta Eko buat evaluasi color scheme & UI/UX aplikasi asli (bukan mockup) — dicek dark/light theme, mobile/desktop, screenshot Playwright headless. 4 temuan genuine (udah dipisahin dari 3 false-alarm hasil screenshot: highlight yang keliatan nabrak ternyata cuma 1 baris ter-wrap panjang, tab-switch keliatan salah ternyata cuma ke-capture di tengah transisi CSS, preview kosong ternyata cuma debounce `scheduleEstimate` belum sempet jalan pas screenshot diambil):
+
+- **Tabrakan nama & visual "Gelap/Terang"** — panel "Tema aplikasi" & toggle preset "Warna panggung" sama-sama punya tombol berlabel "Gelap"/"Terang" dengan gaya identik, jadi keliatan kayak satu grup padahal dua hal beda (ngatur chrome UI vs warna panggung teleprompter). Fix: pecah kartu `.panel` "Tampilan" jadi dua — "Tema Aplikasi" (cuma toggle tema) dan "Panggung" (ukuran teks, margin, warna panggung + custom fields) — disambiguasi lewat pengelompokan/proximity, bukan ganti label tombol.
+- **Tab Setting kepanjangan/padat** — kesolve sebagai efek samping dari pecahnya kartu di atas, gak ada perubahan struktural terpisah.
+- **Preview tab ada dead-zone kosong** di viewport mobile umum — `textarea#script` & `.previewBox` sekarang `flex:1` ngisi sisa ruang vertikal di bawah `880px`, di-scope ke `@media (max-width:879.98px)` doang. Desktop sengaja **gak** ikut berubah — preview box di sana tetap snippet pendek (`height:220px` fixed) biar gak membengkak ngikutin panjang naskah kalau di-apply flex-fill juga (sempat kejadian pas development, previewBox tumbuh 1300px+ nutupin tombol Mulai — makanya di-scope ulang).
+  - Ternyata `#setup` cuma `min-height:100vh` (bukan `height`), jadi `flex:1` di anak-anaknya gak ada "sisa ruang" jelas buat di-grow-kan — fix tambahan: `#setup{height:100vh;height:100dvh;overflow-y:auto;}` + `main.layout{min-height:0;}`, tapi cuma di breakpoint mobile yang sama (desktop tetap `min-height:100vh` + scroll halaman biasa).
+- **Kontras track slider rendah** di dark theme — track yang belum ke-isi (`--switch-track-off` lama, `#2A2D31`) nyaris nyatu sama background panel. Fix: rename jadi `--control-track` (dipakai bareng buat range track & toggle switch track), dark value dinaikin ke `#363A40`, light value (`#D6CDB6`) gak berubah.
+- 5 suite Playwright headless yang ada di-rerun full buat regresi (implementation/theme/stagecolor/colorscheme/touchfeedback) — semua pass setelah 1 assertion di `e2e-colorscheme.js` di-update (nilai lama `--switch-track-off` diganti `--control-track` yang baru). Screenshot visual mobile-dark/light & desktop dicek manual buat verifikasi ke-4 fix.
+- `sw.js` cache `v9` → `v10`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
