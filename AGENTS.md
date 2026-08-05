@@ -31,6 +31,7 @@ tatap/
 ├── openspec/         # Spec-driven change proposals (lihat openspec/changes/)
 ├── CLAUDE.md
 ├── AGENTS.md
+├── DESIGN.md         # Token & pola komponen CSS (radius, tipe, tombol, dst)
 ├── ROADMAP.md
 ├── CONTRIBUTING.md
 └── README.md

@@ -256,6 +256,16 @@ Eko koreksi: fix "intuitive" sebelumnya salah sasaran — bukan soal bentuk visu
 - Diverifikasi: screenshot cross-check iPhone 14 dark/light, iPhone SE (375px, preset 6-tingkat tetap muat 2 baris), desktop — semua bersih. Regression suite penuh (8 file, exit code + FAIL-line dicek eksplisit) pass, cuma 1 FAIL pre-existing (network CDN sandbox, gak related).
 - `sw.js` cache `v21` → `v22`.
 
+## ✅ v3n — DESIGN.md, icon SVG konsisten, hapus em dash dari copy UI (selesai)
+
+Eko minta konsistensi UI dijadikan design system beneran, disimpan di repo (bukan cuma artifact sekali lihat). Plus tiga aturan tambahan: icon SVG doang (gak pernah emoji, termasuk di dokumen audit sebelumnya yang sempat pakai emoji buat demo tombol), gak ada em dash di tampilan, dan "intuitive" jadi prinsip nomor satu.
+
+- **`DESIGN.md` ditambah ke repo** (didaftarin juga di File Structure `AGENTS.md`). Isinya: 5 prinsip desain (intuitive dulu baru rapi, clean, icon SVG doang, reuse sebelum bikin baru, zero-build tetap final), token warna (existing + 4 token semantik baru: `--on-accent`/`--danger`/`--danger-text`/`--success`), skala radius (12 nilai jadi 4 langkah), skala tipe (15 nilai jadi 7 langkah), konsolidasi tombol (19 class jadi 5 pola: `.btn-fill`/`.btn-fill.btn-pill`/`.btn-outline`/`.btn-quiet`/`.btn-danger`), pola segmented control vs toggle switch (kapan pakai yang mana), yang sengaja dikecualikan (palet overlay stage, tetap lepas dari token tema), dan rencana eksekusi 3 fase (token dulu tanpa ubah visual, konsolidasi tombol per grup, skala tipe paling akhir). **Ini baru dokumen proposal, belum ada kode yang dieksekusi dari isinya** — token/konsolidasi tombol nunggu giliran kerja terpisah.
+- **Em dash dihapus dari semua teks yang kebaca user**: `<title>` (`"Tatap — Teleprompter Ringan"` → `"Tatap · Teleprompter Ringan"`, ngikut titik-tengah yang emang udah jadi separator standar app di hint text lain), `manifest.json` `name`, footer note (dipecah jadi dua kalimat pakai titik, bukan disambung em dash), dan placeholder `estimateInfo` (`"≈ — · — kata · — bagian"` → `"≈ - · - kata · - bagian"`, walau ini teknisnya simbol "belum ada nilai" bukan tanda baca penghubung kalimat, tetap diganti biar konsisten literal sama instruksinya). Assertion test yang ngecek placeholder lama (`"— kata"`) diupdate ngikutin.
+- **Catatan penulisan ditambah ke `DESIGN.md`**: gak pakai em dash di teks UI, separator dalam satu baris pakai titik-tengah (`·`). Aturan ini diterapin ke konten baru (dokumen ini & UI copy), bukan retroactive ngedit histori `ROADMAP.md`/dokumen lain yang udah ada.
+- Diverifikasi: title/footer/placeholder ke-render bener via Playwright, regression suite penuh (8 file, exit code dicek) pass, cuma 1 FAIL pre-existing (network CDN sandbox, gak related).
+- `sw.js` cache `v22` → `v23`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
