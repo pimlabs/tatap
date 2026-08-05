@@ -103,6 +103,17 @@ Dikerjain lewat mockup artifact dulu (beberapa ronde validasi/revisi), baru diek
 - **Ini fix ke depan** (biar update berikutnya gak macet lagi) — buat device yang udah kena stuck di versi lama SEKARANG, service worker lama itu masih yang jalan sampai di-refresh paksa manual sekali (tutup semua tab/PWA app-nya total lalu buka lagi, atau clear site data/cache browser buat domain ini). Setelah itu ke depannya bakal auto-update mulus.
 - `sw.js` cache `v6` → `v7`.
 
+## 🔧 Fix — Tema terang: slider & toggle switch gak ikut tema
+
+Ketauan pas Eko coba tema Terang beneran: kombinasi warnanya keliatan aneh. Dua penyebab:
+
+- **Gak ada deklarasi `color-scheme`** di `:root` — tanpa ini, browser render chrome native (track slider yang belum ke-isi, dll) ngikutin preferensi **OS**, bukan `[data-theme]` custom kita. Kalau OS dark tapi app di-set Terang, elemen native tetap kebawa gelap = "opsi font" (slider Ukuran teks) keliatan nabrak. Fix: tambah `color-scheme:dark`/`light` ke tiap blok token, ngikutin pola yang sama kayak variabel warna lainnya.
+- **Ternyata `color-scheme` + `accent-color` doang gak cukup buat `<input type=range>`** — behaviour track yang belum ke-isi gak konsisten diambil dari situ (tetep item di Chromium meski `color-scheme` udah bener). Fix lebih pasti: ambil alih penuh styling track & thumb slider via `::-webkit-slider-runnable-track`/`::-webkit-slider-thumb` (+ prefix `-moz-`), full custom pakai `var(--panel-border)`/`var(--accent)` — gak gantung ke rendering native lagi sama sekali. Efek samping: fill/progress bar bawaan browser (yang sebelumnya kebetulan nongol dari `accent-color`) ilang, ganti jadi track polos + thumb — tetep jelas karena label angka di atas tiap slider udah nunjukkin nilai persis.
+- **Toggle switch (Cermin/Hitung mundur/dll) track-nya di-hardcode `#2A2D31`** (abu gelap), gak pernah ikut tema. Fix: tarik jadi variabel `--switch-track-off` (dark `#2A2D31`, light `#D6CDB6`).
+- Bonus: box "sample kalibrasi" di modal juga kebetulan pakai `rgba(255,255,255,.04)` yang jadi nyaris gak keliatan di panel putih (light theme) — ditarik jadi variabel `--subtle-fill` yang nyesuain arah tint-nya per tema (putih tipis di dark, hitam tipis di light).
+- 9/9 test tambahan pass (color-scheme ke-set bener di semua kombinasi OS/tema, switch track & calib-sample warnanya bener-bener beda antar tema, range input tetap fungsional setelah di-custom-styling) + screenshot visual cross-check kombinasi OS-dark+app-Terang (skenario yang awalnya munculin bug).
+- `sw.js` cache `v7` → `v8`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
