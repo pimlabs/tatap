@@ -98,6 +98,13 @@ a{color:var(--accent);}
      tinggi dari layar (textarea di-resize manual, viewport pendek, dst). */
   #setup{height:100vh;height:100dvh;overflow-y:auto;}
   main.layout{min-height:0;}
+  /* .panelGroup jadi scroll container-nya sendiri (bukan #setup) — kalau
+     konten satu tab (mis. Setting, banyak field) lebih tinggi dari box
+     yang di-alokasikan flex, overflow:visible bawaan bikin konten
+     "bocor" keluar box tanpa dorong sibling (footer.note) turun, jadi
+     numpuk/overlap. Header (logo+tagline) yang di luar .panelGroup jadi
+     gak ikut ke-scroll juga — tetap kepasang di atas, gak lewat notch. */
+  .panelGroup{overflow-y:auto;}
   /* Isi ruang kosong di bawah textarea/previewBox (dead-zone) — desktop
      sengaja gak dikasih ini, box preview di sana tetap snippet pendek
      (height:220px) biar gak membengkak ngikutin panjang naskah. */

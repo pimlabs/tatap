@@ -158,6 +158,15 @@ Diminta Eko buat evaluasi color scheme & UI/UX aplikasi asli (bukan mockup) — 
 - Belum bisa divalidasi visual lagi di sandbox (limitasi sama seperti fix sebelumnya) — **perlu dicek ulang manual sama Eko di PWA device asli**.
 - `sw.js` cache `v12` → `v13`.
 
+## 🔧 Fix — Konten tab Setting numpuk/overlap sama footer (bug beneran, bukan cuma spacing)
+
+- Eko kirim screenshot: setelah fix `max()` di atas, tab Setting yang di-scroll ke bawah keliatan **kacau beneran** — teks footer ("Naskah & pengaturan disimpan otomatis...") numpuk tepat di atas tombol "Kalibrasi kecepatan baca", dan header ("TEMA APLIKASI") ke-scroll sampai nempel status bar. Ini bukan cuma soal jarak kurang pas — ada bug layout asli.
+- Root cause: `#setup` (bukan `.panelGroup`) yang jadi scroll container tunggal (`overflow-y:auto`, dari fix dead-zone sebelumnya). Konten tab Setting (3 kartu, lebih tinggi dari box yang di-alokasikan flex ke `.panelGroup`) gak punya `overflow` sendiri, jadi kelebihan tingginya cuma "bocor" keluar box (overflow:visible bawaan) TANPA dorong sibling di bawahnya (`<footer class="note">`, yang posisinya dihitung dari box `.panelGroup` yang lebih pendek dari konten aslinya) — makanya numpuk. Header ikut ke-scroll bareng karena dia sejajar `.panelGroup` di dalam scroll container yang sama (`#setup`), jadi begitu discroll, dia lewatin balik area aman notch yang cuma direserve di posisi scroll paling atas.
+- Fix: scroll container-nya dipindah ke `.panelGroup` sendiri (`overflow-y:auto`, mobile-only), bukan `#setup`. Efeknya: (1) tiap tab (Naskah/Setting/Preview) sekarang scroll independen di dalam box-nya sendiri kalau kontennya kepanjangan — kelebihan tinggi Setting gak bocor lagi, otomatis ke-contain & scrollable, gak numpuk ke footer; (2) header (logo+tagline) yang ada DI LUAR `.panelGroup` jadi gak ikut ke-scroll sama sekali — selalu nempel di atas, gak pernah lewatin notch lagi, sekalian nyelesain concern "menu atas kacau pas discroll".
+- `#setup{overflow-y:auto}` dibiarin nyala juga (safety net edge-case), tapi normalnya gak pernah kepakai lagi karena `.panelGroup` udah nge-contain overflow-nya sendiri.
+- Diverifikasi: `panelGroup.scrollHeight > clientHeight` (938 vs 552 buat sample naskah dites) sementara `footer` posisinya tetap gak gerak pas `.panelGroup` di-scroll — overlap check (`getBoundingClientRect` footer vs tombol kalibrasi) `false` setelah scroll ke bawah. Screenshot manual cross-check: header pinned, footer bersih di bawah "Jadi remote control dari HP ini" tanpa numpuk. Desktop dicek gak kesentuh (`overflow-y` tetep `visible`, scoped ke mobile breakpoint doang).
+- `sw.js` cache `v13` → `v14`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
