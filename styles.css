@@ -87,7 +87,7 @@ a{color:var(--accent);}
   min-height:100vh;
   display:flex;
   flex-direction:column;
-  padding:calc(32px + env(safe-area-inset-top,0px)) clamp(20px,4vw,56px) 90px;
+  padding:max(32px, env(safe-area-inset-top,0px)) clamp(20px,4vw,56px) 90px;
 }
 @media (max-width:879.98px){
   /* Bounded height (bukan cuma min-height) supaya main.layout punya "sisa
@@ -310,7 +310,7 @@ footer.note{
 /* ---------- Tab bar (mobile) ---------- */
 .tabbar{
   display:flex; gap:2px; position:fixed; left:0; right:0; bottom:0; z-index:900;
-  margin:0 10px calc(10px + env(safe-area-inset-bottom,0px));
+  margin:0 10px max(10px, env(safe-area-inset-bottom,0px));
   background:var(--panel); border:1px solid var(--panel-border);
   border-radius:18px; padding:5px;
   box-shadow:0 10px 26px -14px rgba(0,0,0,.6);
