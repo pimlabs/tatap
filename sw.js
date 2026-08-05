@@ -1,7 +1,8 @@
-var CACHE = "tatap-v6";
+var CACHE = "tatap-v7";
 var ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.json", "./assets/icon-192.png", "./assets/icon-512.png"];
 
 self.addEventListener("install", function (e) {
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE).then(function (cache) {
       return cache.addAll(ASSETS);
@@ -15,6 +16,8 @@ self.addEventListener("activate", function (e) {
       return Promise.all(
         keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); })
       );
+    }).then(function () {
+      return self.clients.claim();
     })
   );
 });

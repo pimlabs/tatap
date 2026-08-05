@@ -96,6 +96,13 @@ Dikerjain lewat mockup artifact dulu (beberapa ronde validasi/revisi), baru diek
 - Mode **Custom**: balik ke behavior asli (color picker + preset Gelap/Terang manual), field-nya muncul lagi. Pindah dari Inherit ke Custom gak reset warna — nilai terakhir (hasil inherit) jadi starting point yang bisa diedit.
 - 15/15 test end-to-end pass via Playwright (default custom, switch ke inherit → field ilang + warna ikut tema aktif + preview box ikut, ganti tema aplikasi pas mode inherit → warna panggung ikut live termasuk di preview box, switch balik ke custom → field muncul lagi & custom color gak ketimpa lagi, stage asli (`#stage` pas `Mulai`) makai warna inherited yang bener, persist setelah reload).
 
+## 🔧 Fix — Service worker gak langsung ambil alih pas update
+
+- **Bug lama, ketauan pas fitur Tema aplikasi (v3f/v3g) gak muncul di HP** yang udah pernah buka app sebelumnya. Penyebabnya: `sw.js` gak pernah manggil `self.skipWaiting()`/`self.clients.claim()`, jadi service worker versi baru cuma nunggu ("waiting") sampai SEMUA tab/instance PWA yang lagi buka app itu ditutup total — sementara service worker LAMA tetap yang ngelayanin fetch (termasuk `index.html`/`app.js` versi lama dari cache), meski file di GitHub Pages udah ke-update.
+- Fix: tambah `self.skipWaiting()` di `install` dan `self.clients.claim()` di `activate` — sekarang service worker baru langsung ambil alih begitu selesai install & activate, gak perlu nunggu semua tab ditutup.
+- **Ini fix ke depan** (biar update berikutnya gak macet lagi) — buat device yang udah kena stuck di versi lama SEKARANG, service worker lama itu masih yang jalan sampai di-refresh paksa manual sekali (tutup semua tab/PWA app-nya total lalu buka lagi, atau clear site data/cache browser buat domain ini). Setelah itu ke depannya bakal auto-update mulus.
+- `sw.js` cache `v6` → `v7`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
