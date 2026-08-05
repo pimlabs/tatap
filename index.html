@@ -93,13 +93,13 @@
           <span id="libSaveBtnLabel">Simpan</span>
         </button>
         <div class="toolSecondary">
-          <button type="button" id="libOpenBtn" class="toolSecondaryBtn" title="Daftar naskah tersimpan">
-            <svg class="icon" width="18" height="18"><use href="#i-folder"/></svg>
-            <span>Daftar</span>
+          <button type="button" id="libOpenBtn" class="toolSecondaryBtn" title="Semua naskah tersimpan">
+            <svg class="icon" width="18" height="18"><use href="#i-list"/></svg>
+            <span>Semua naskah</span>
             <span class="toolBadge" id="libCount">0</span>
           </button>
           <button type="button" id="importMdBtn" class="toolSecondaryBtn" title="Import file Markdown">
-            <svg class="icon" width="18" height="18"><use href="#i-import"/></svg>
+            <svg class="icon" width="18" height="18"><use href="#i-folder"/></svg>
             <span>Import</span>
           </button>
         </div>
@@ -137,12 +137,12 @@
           <label>Margin samping <span class="val" id="marginVal">10%</span></label>
           <input type="range" id="marginRange" min="0" max="35" value="10" />
         </div>
-        <div class="field">
-          <label>Warna panggung</label>
-          <div class="themeToggle">
-            <button type="button" class="themeOpt" id="stageColorModeInherit">Ikuti tema aplikasi</button>
-            <button type="button" class="themeOpt" id="stageColorModeCustom">Custom</button>
-          </div>
+        <div class="toggle-row">
+          <span>Custom warna panggung <small class="hintSmall">(gak ikut tema aplikasi)</small></span>
+          <label class="switch">
+            <input type="checkbox" id="stageColorCustomToggle" />
+            <span class="track"></span><span class="knob"></span>
+          </label>
         </div>
         <div class="field" id="stageColorCustomFields">
           <div class="row2">
@@ -165,12 +165,14 @@
       <div class="panel">
         <h3>Kecepatan &amp; kontrol</h3>
         <div class="field">
-          <label>Kecepatan gulir <span class="val" id="speedVal">70 px/dtk</span></label>
+          <label>Kecepatan gulir <span class="val" id="speedVal">Sedang</span></label>
           <div class="speedPresets" id="speedPresets">
-            <button type="button" class="speedPresetBtn" data-speed="40">Lambat</button>
+            <button type="button" class="speedPresetBtn" data-speed="30">Sangat lambat</button>
+            <button type="button" class="speedPresetBtn" data-speed="50">Lambat</button>
             <button type="button" class="speedPresetBtn" data-speed="70">Sedang</button>
-            <button type="button" class="speedPresetBtn" data-speed="110">Cepat</button>
-            <button type="button" class="speedPresetBtn" data-speed="160">Sangat cepat</button>
+            <button type="button" class="speedPresetBtn" data-speed="100">Cepat</button>
+            <button type="button" class="speedPresetBtn" data-speed="140">Sangat cepat</button>
+            <button type="button" class="speedPresetBtn" data-speed="190">Kilat</button>
           </div>
           <input type="range" id="speedRange" min="20" max="260" value="70" />
         </div>
