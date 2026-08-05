@@ -113,11 +113,10 @@
     </div>
 
     <div class="panelGroup" id="panelSetting">
-      <div class="panel">
-        <h3>Tema Aplikasi</h3>
-        <div class="field">
-          <label>Tema aplikasi</label>
-          <div class="themeToggle">
+      <div class="panel panelCompact">
+        <div class="themeRow">
+          <span class="themeRowLabel">Tema Aplikasi</span>
+          <div class="themeToggle themeToggleCompact">
             <button type="button" class="themeOpt" id="themeOptDark">Gelap</button>
             <button type="button" class="themeOpt" id="themeOptLight">Terang</button>
             <button type="button" class="themeOpt" id="themeOptSystem">Sistem</button>
@@ -344,8 +343,9 @@
       <button type="button" id="remoteBtnSpeedUp"><svg class="icon" width="16" height="16"><use href="#i-plus"/></svg></button>
     </div>
     <div class="remoteRow">
-      <button type="button" id="remoteBtnPrev"><svg class="icon" width="15" height="15"><use href="#i-chevron-left"/></svg>Section</button>
-      <button type="button" id="remoteBtnNext">Section<svg class="icon" width="15" height="15"><use href="#i-chevron-right"/></svg></button>
+      <button type="button" id="remoteBtnPrev" title="Section sebelumnya"><svg class="icon" width="15" height="15"><use href="#i-chevron-left"/></svg></button>
+      <div id="remoteSectionLabel">Section</div>
+      <button type="button" id="remoteBtnNext" title="Section berikutnya"><svg class="icon" width="15" height="15"><use href="#i-chevron-right"/></svg></button>
     </div>
     <button type="button" id="remoteBtnRestart"><svg class="icon" width="15" height="15"><use href="#i-restart"/></svg>Ulang dari awal</button>
     <button type="button" id="remoteBtnExit"><svg class="icon" width="15" height="15"><use href="#i-close"/></svg>Keluar dari stage</button>

@@ -290,6 +290,23 @@ input[type=color]{
 .themeOpt:hover{border-color:var(--accent);color:var(--text);}
 .themeOpt.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
 
+/* Kartu "Tema Aplikasi" sengaja dibikin ringan/compact — sebelumnya kartu
+   penuh (h3 + label yang isinya ngulang teks h3-nya lagi + toggle) makan
+   ruang & visual weight yang sama kayak "Panggung" di bawahnya, padahal
+   ini preference sekali-set, jauh lebih jarang diubah dibanding slider
+   ukuran teks/margin. Satu baris compact: label kiri, toggle kanan. */
+.panelCompact{padding:14px 16px;}
+.themeRow{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; flex-wrap:wrap;
+}
+.themeRowLabel{
+  font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); font-weight:600; flex:none;
+}
+.themeToggleCompact{flex:none;}
+.themeToggleCompact .themeOpt{flex:none; padding:5px 10px;}
+
 .toggle-row{
   display:flex;align-items:center;justify-content:space-between;
   font-size:13px;margin-bottom:14px;
@@ -466,16 +483,26 @@ footer.note{
 #remoteBtnPlayPause{
   width:96px;height:96px;border-radius:50%;
   background:var(--accent);color:#161208;border:none;
-  cursor:pointer;margin-bottom:22px;
+  cursor:pointer;margin:0 auto 22px;
   display:flex;align-items:center;justify-content:center;
 }
+/* .remoteRow dulunya justify-content:center TAPI tombol di dalamnya
+   flex:1 (stretch ngisi 320px penuh) — jadi center-nya percuma, hasilnya
+   tombol -/+ jadi pil lebar aneh buat cuma 1 icon. Sekarang tombol
+   ukuran tetap (kotak kompak), baru justify-content:center kerasa
+   efeknya: cluster kecil yang center, bukan bar lebar penuh. */
 .remoteRow{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px;}
 .remoteRow button{
   background:var(--panel);border:1px solid var(--panel-border);color:var(--text);
-  border-radius:10px;padding:14px 18px;font-size:16px;cursor:pointer;flex:1;
-  display:flex;align-items:center;justify-content:center;gap:6px;
+  border-radius:10px;font-size:16px;cursor:pointer;
+  width:52px;height:48px;flex:none;
+  display:flex;align-items:center;justify-content:center;
 }
-#remoteSpeedLabel{min-width:48px;font-size:16px;color:var(--accent);font-weight:600;flex:none;}
+#remoteSpeedLabel{min-width:64px;font-size:16px;color:var(--accent);font-weight:600;flex:none;}
+/* Beda dari #remoteSpeedLabel — ini label statis ("Section"), bukan
+   nilai live kayak angka speed, jadi warnanya muted bukan accent biar
+   gak keliatan kayak nunjukkin data yang berubah-ubah. */
+#remoteSectionLabel{min-width:64px;font-size:13px;color:var(--muted);font-weight:600;flex:none;}
 #remoteBtnRestart{
   width:100%;background:transparent;border:1px solid var(--panel-border);color:var(--text);
   border-radius:10px;padding:12px 0;font-size:14px;cursor:pointer;margin-bottom:12px;
