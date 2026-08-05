@@ -20,7 +20,7 @@
     activeLibId: null,
     remoteEnabled: false,
     theme: "system",
-    stageColorMode: "custom"
+    stageColorMode: "inherit"
   };
 
   function loadState(){
@@ -100,8 +100,7 @@
     themeOptDark: document.getElementById("themeOptDark"),
     themeOptLight: document.getElementById("themeOptLight"),
     themeOptSystem: document.getElementById("themeOptSystem"),
-    stageColorModeInherit: document.getElementById("stageColorModeInherit"),
-    stageColorModeCustom: document.getElementById("stageColorModeCustom"),
+    stageColorCustomToggle: document.getElementById("stageColorCustomToggle"),
     stageColorCustomFields: document.getElementById("stageColorCustomFields"),
     mirrorToggle: document.getElementById("mirrorToggle"),
     countdownToggle: document.getElementById("countdownToggle"),
@@ -182,10 +181,17 @@
 
   function syncSpeedDisplay(){
     el.speedRange.value = state.speed;
-    el.speedVal.textContent = state.speed + " px/dtk";
+    var matchedLabel = null;
     el.speedPresetBtns.forEach(function(btn){
-      btn.classList.toggle("active", parseInt(btn.dataset.speed, 10) === state.speed);
+      var isMatch = parseInt(btn.dataset.speed, 10) === state.speed;
+      btn.classList.toggle("active", isMatch);
+      if(isMatch) matchedLabel = btn.textContent;
     });
+    // Angka px/dtk gak berarti apa-apa buat kebanyakan orang (tergantung
+    // ukuran font/layar) — tampilin nama tingkatnya aja ("Sedang", dst).
+    // Kalau gak pas ke preset manapun (abis kalibrasi/geser manual),
+    // tampilin "Custom" - tetap jujur, gak dipaksa nunjuk ke preset terdekat.
+    el.speedVal.textContent = matchedLabel || "Custom";
   }
 
   function applyStateToForm(){
@@ -258,21 +264,20 @@
   }
   function setStageColorMode(mode){
     state.stageColorMode = mode;
-    el.stageColorModeInherit.classList.toggle("active", mode === "inherit");
-    el.stageColorModeCustom.classList.toggle("active", mode === "custom");
+    el.stageColorCustomToggle.checked = (mode === "custom");
     el.stageColorCustomFields.hidden = (mode === "inherit");
     if(mode === "inherit") syncStageColorsIfInherit();
     scheduleSave();
     scheduleEstimate();
   }
-  el.stageColorModeInherit.addEventListener("click", function(){ setStageColorMode("inherit"); });
-  el.stageColorModeCustom.addEventListener("click", function(){ setStageColorMode("custom"); });
+  el.stageColorCustomToggle.addEventListener("change", function(){
+    setStageColorMode(el.stageColorCustomToggle.checked ? "custom" : "inherit");
+  });
 
   // Reflect loaded state ke UI (gak lewat setStageColorMode biar gak nge-trigger
   // scheduleSave() yang gak perlu pas baru buka halaman). applyTheme() di bawah
   // udah otomatis manggil syncStageColorsIfInherit() kalau mode-nya "inherit".
-  el.stageColorModeInherit.classList.toggle("active", state.stageColorMode === "inherit");
-  el.stageColorModeCustom.classList.toggle("active", state.stageColorMode === "custom");
+  el.stageColorCustomToggle.checked = (state.stageColorMode === "custom");
   el.stageColorCustomFields.hidden = (state.stageColorMode === "inherit");
   applyTheme();
 
@@ -501,7 +506,7 @@
       var loadBtn = document.createElement("button");
       loadBtn.type = "button";
       loadBtn.className = "libLoad";
-      loadBtn.innerHTML = '<svg class="icon" width="14" height="14"><use href="#i-folder"/></svg><span>Muat</span>';
+      loadBtn.innerHTML = '<svg class="icon" width="14" height="14"><use href="#i-import"/></svg><span>Muat</span>';
       loadBtn.addEventListener("click", function(){
         state.activeLibId = entry.id;
         applyScriptText(entry.script);

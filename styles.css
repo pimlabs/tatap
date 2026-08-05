@@ -324,8 +324,10 @@ input[type=color]{
 .toggle-row{
   display:flex;align-items:center;justify-content:space-between;
   font-size:13px;margin-bottom:14px;
+  gap:12px;
 }
 .toggle-row:last-child{margin-bottom:0;}
+.toggle-row .hintSmall{display:block;color:var(--muted);font-size:11px;font-weight:400;margin-top:2px;}
 .switch{
   position:relative;width:38px;height:22px;flex:none;
 }
@@ -544,8 +546,8 @@ footer.note{
 .remoteRow{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px;}
 .remoteRow button{
   background:var(--panel);border:1px solid var(--panel-border);color:var(--text);
-  border-radius:10px;font-size:16px;cursor:pointer;
-  width:52px;height:48px;flex:none;
+  border-radius:12px;font-size:18px;cursor:pointer;
+  width:64px;height:58px;flex:none;
   display:flex;align-items:center;justify-content:center;
 }
 #remoteSpeedLabel{min-width:64px;font-size:16px;color:var(--accent);font-weight:600;flex:none;}
@@ -561,12 +563,12 @@ footer.note{
 .remoteActionRow{display:flex;gap:10px;margin-bottom:16px;}
 .remoteActionRow button{
   flex:1;background:transparent;border:1px solid var(--panel-border);color:var(--text);
-  border-radius:10px;padding:12px 6px;font-size:13.5px;cursor:pointer;
+  border-radius:12px;padding:16px 6px;font-size:14px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:6px;
 }
 #remoteBtnRestart .icon{color:var(--accent);}
 #remoteBtnExit{border-color:#c0524a;color:#e0776f;}
-#remoteDisconnectBtn{width:100%;margin-top:6px;}
+#remoteDisconnectBtn{width:100%;margin-top:6px;padding:14px 18px;}
 
 /* ---------- Stage (fullscreen prompter) ---------- */
 #stage{
