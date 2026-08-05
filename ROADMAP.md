@@ -150,6 +150,14 @@ Diminta Eko buat evaluasi color scheme & UI/UX aplikasi asli (bukan mockup) — 
 - Diverifikasi manual via Playwright: attribute `min` ke-apply bener, geser slider ke `14` beneran ngubah `sizeVal`/font-size preview.
 - `sw.js` cache `v11` → `v12`.
 
+## 🔧 Fix — Padding safe-area kegedean di PWA (gak harmonis)
+
+- Fix notch/dynamic-island di atas kerja (gak ketutup lagi, confirmed via screenshot device asli), tapi Eko lapor spacing-nya **gak harmonis** — atas (header) maupun bawah (tab bar) — dan **cuma kejadian di mode PWA terinstall**, gak di tab browser biasa.
+- Root cause: dua tempat yang reserve safe-area (`#setup` padding-top, `.tabbar` margin-bottom) pakai `calc(base + env(safe-area-inset))` — **additive**, bukan `max()`. Di tab browser, `env()` resolve ke `0px` (browser chrome-nya sendiri udah reserve area itu), jadi selisihnya nyaris gak keliatan. Di PWA standalone, `env()` resolve ke nilai asli (status bar/home indicator OS, bisa ~59px/~34px di iPhone ber-Dynamic-Island) — ke-tambah ke base `32px`/`10px` yang emang didesain buat konteks non-notch, hasilnya jarak dobel-dobelan (mis. `32px + 59px = 91px` di atas) yang keliatan berlebihan/gak proporsional dibanding skala spacing lain di app.
+- Fix: ganti `calc(base + env(...))` jadi `max(base, env(...))` di kedua tempat — `#setup{padding-top:max(32px, env(safe-area-inset-top,0px))}` dan `.tabbar{margin-bottom:max(10px, env(safe-area-inset-bottom,0px))}`. Device tanpa notch/PWA tetap dapet `32px`/`10px` (gak berubah), device dengan safe-area besar cuma dapet SEBESAR area aman itu (gak ditambah base lagi) — jadi jarak pas buat nge-clear notch/home-indicator tanpa nambah whitespace ekstra di atasnya.
+- Belum bisa divalidasi visual lagi di sandbox (limitasi sama seperti fix sebelumnya) — **perlu dicek ulang manual sama Eko di PWA device asli**.
+- `sw.js` cache `v12` → `v13`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
