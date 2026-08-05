@@ -18,7 +18,9 @@
     highlight: true,
     autoPause: false,
     activeLibId: null,
-    remoteEnabled: false
+    remoteEnabled: false,
+    theme: "system",
+    stageColorMode: "custom"
   };
 
   function loadState(){
@@ -36,6 +38,13 @@
   }
 
   var state = loadState();
+
+  // Set attribute sedini mungkin (sebelum DOM/el lain dibangun) biar gak ada
+  // flash tema salah pas load. "system" = jangan set attribute sama sekali,
+  // biarin @media (prefers-color-scheme) di styles.css yang nentuin.
+  if(state.theme && state.theme !== "system"){
+    document.documentElement.setAttribute("data-theme", state.theme);
+  }
 
   // ---------- Naskah library (multi-script, localStorage) ----------
   function loadLibrary(){
@@ -87,6 +96,12 @@
     textColor: document.getElementById("textColor"),
     presetDark: document.getElementById("presetDark"),
     presetLight: document.getElementById("presetLight"),
+    themeOptDark: document.getElementById("themeOptDark"),
+    themeOptLight: document.getElementById("themeOptLight"),
+    themeOptSystem: document.getElementById("themeOptSystem"),
+    stageColorModeInherit: document.getElementById("stageColorModeInherit"),
+    stageColorModeCustom: document.getElementById("stageColorModeCustom"),
+    stageColorCustomFields: document.getElementById("stageColorCustomFields"),
     mirrorToggle: document.getElementById("mirrorToggle"),
     countdownToggle: document.getElementById("countdownToggle"),
     focusLineToggle: document.getElementById("focusLineToggle"),
@@ -182,6 +197,76 @@
     el.remoteToggle.checked = !!state.remoteEnabled;
   }
   applyStateToForm();
+
+  // ---------- Tema aplikasi (chrome UI: dark/light/system) ----------
+  // Terpisah dari state.bg/state.text (warna panggung teleprompter) — ini cuma
+  // ngatur tampilan setup screen/modal/tab bar. Warna panggung baru kepengaruh
+  // kalau state.stageColorMode === "inherit" (lihat bagian di bawah).
+  var THEME_COLORS = {
+    dark: { bg: "#0E0F11", text: "#F2EFE9" },
+    light: { bg: "#F7F5F1", text: "#221F1A" }
+  };
+  var themeOptEls = { dark: el.themeOptDark, light: el.themeOptLight, system: el.themeOptSystem };
+  var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  function resolveActiveTheme(){
+    if(state.theme === "system"){
+      return (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+    }
+    return state.theme;
+  }
+  function applyTheme(){
+    if(state.theme === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", state.theme);
+    var resolved = resolveActiveTheme();
+    if(themeColorMeta) themeColorMeta.setAttribute("content", THEME_COLORS[resolved].bg);
+    Object.keys(themeOptEls).forEach(function(key){
+      themeOptEls[key].classList.toggle("active", key === state.theme);
+    });
+    syncStageColorsIfInherit();
+  }
+  function setTheme(value){
+    state.theme = value;
+    applyTheme();
+    scheduleSave();
+  }
+  el.themeOptDark.addEventListener("click", function(){ setTheme("dark"); });
+  el.themeOptLight.addEventListener("click", function(){ setTheme("light"); });
+  el.themeOptSystem.addEventListener("click", function(){ setTheme("system"); });
+  if(window.matchMedia){
+    window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function(){
+      if(state.theme === "system") applyTheme();
+    });
+  }
+
+  // ---------- Warna panggung: ikuti tema aplikasi, atau custom ----------
+  function syncStageColorsIfInherit(){
+    if(state.stageColorMode !== "inherit") return;
+    var c = THEME_COLORS[resolveActiveTheme()];
+    state.bg = c.bg;
+    state.text = c.text;
+    el.bgColor.value = state.bg;
+    el.textColor.value = state.text;
+    scheduleEstimate();
+  }
+  function setStageColorMode(mode){
+    state.stageColorMode = mode;
+    el.stageColorModeInherit.classList.toggle("active", mode === "inherit");
+    el.stageColorModeCustom.classList.toggle("active", mode === "custom");
+    el.stageColorCustomFields.hidden = (mode === "inherit");
+    if(mode === "inherit") syncStageColorsIfInherit();
+    scheduleSave();
+    scheduleEstimate();
+  }
+  el.stageColorModeInherit.addEventListener("click", function(){ setStageColorMode("inherit"); });
+  el.stageColorModeCustom.addEventListener("click", function(){ setStageColorMode("custom"); });
+
+  // Reflect loaded state ke UI (gak lewat setStageColorMode biar gak nge-trigger
+  // scheduleSave() yang gak perlu pas baru buka halaman). applyTheme() di bawah
+  // udah otomatis manggil syncStageColorsIfInherit() kalau mode-nya "inherit".
+  el.stageColorModeInherit.classList.toggle("active", state.stageColorMode === "inherit");
+  el.stageColorModeCustom.classList.toggle("active", state.stageColorMode === "custom");
+  el.stageColorCustomFields.hidden = (state.stageColorMode === "inherit");
+  applyTheme();
 
   // ---------- Setup screen tabs (mobile only — desktop shows all 3 via CSS) ----------
   var tabPanels = { naskah: el.panelNaskah, setting: el.panelSetting, preview: el.panelPreview };
