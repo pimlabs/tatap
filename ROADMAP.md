@@ -140,7 +140,15 @@ Diminta Eko buat evaluasi color scheme & UI/UX aplikasi asli (bukan mockup) — 
 - Dilaporkan Eko: area atas (logo "Tatap" + tagline) ketutup notch/dynamic island di HP tertentu. Penyebab: `viewport-fit=cover` udah di-set di meta viewport (biar app bisa gambar sampai ke tepi layar), tapi cuma `.tabbar` di bawah yang reserve `env(safe-area-inset-bottom)` — `#setup` di atas masih padding-top fixed `32px` doang, gak reserve `env(safe-area-inset-top)`.
 - Fix: `#setup{padding:calc(32px + env(safe-area-inset-top,0px)) ...}` — di device tanpa notch/`env()` unsupported, fallback `0px` bikin behaviour persis sama kayak sebelumnya (32px polos); di device dengan notch, otomatis nambah jarak sebesar area aman OS.
 - **Belum bisa divalidasi visual di sandbox ini** — Playwright/Chromium headless resolve `env(safe-area-inset-top)` ke `0px` (gak ada notch beneran buat disimulasikan), jadi cuma keverifikasi CSS-nya valid & gak ngerusak layout non-notch (padding tetap `32px` seperti semula). **Perlu dicek manual sama Eko di HP asli yang punya notch/dynamic island.**
+- Konteks tambahan (klarifikasi Eko): kasusnya khususnya kalau app dijalankan sebagai **PWA terinstall** (bukan sekadar tab browser). Confirmed relevan — `manifest.json` `display:"standalone"` + meta `apple-mobile-web-app-status-bar-style:black-translucent` di `index.html` itu justru yang bikin konten iOS home-screen app digambar **di bawah** status bar/notch (translucent = area status bar transparan, konten nembus sampai atas). Itu sebabnya `env(safe-area-inset-top)` diperlukan — di mode browser tab biasa, browser chrome (address bar dll) udah otomatis ngasih jarak, gak terlalu keliatan; di PWA standalone gak ada browser chrome sama sekali jadi notch beneran nutup konten kalau gak di-reserve manual.
 - `sw.js` cache `v10` → `v11`.
+
+## 🔧 Fix — Minimum ukuran teks 24px kurang rendah
+
+- Dilaporkan Eko: opsi "Ukuran teks" di panel Panggung minimalnya `24px`, kurang buat kebutuhan yang mau teks lebih kecil. Fix: `min` di `#sizeRange` diturunin ke `14px` — `value`/`max`/langkah lain gak berubah, cuma nambah rentang di ujung bawah.
+- Gak ada logic lain yang gantung ke nilai `24` (dicek: `state.size` cuma dipake buat `fontSize` di preview/stage & input ke `measureScript`, gak ada clamp/asumsi minimum di `app.js`), jadi aman diturunin tanpa efek samping.
+- Diverifikasi manual via Playwright: attribute `min` ke-apply bener, geser slider ke `14` beneran ngubah `sizeVal`/font-size preview.
+- `sw.js` cache `v11` → `v12`.
 
 ## 💭 v4 — Ide, belum dianalisis teknis
 
