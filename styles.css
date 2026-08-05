@@ -87,7 +87,7 @@ a{color:var(--accent);}
   min-height:100vh;
   display:flex;
   flex-direction:column;
-  padding:32px clamp(20px,4vw,56px) 90px;
+  padding:calc(32px + env(safe-area-inset-top,0px)) clamp(20px,4vw,56px) 90px;
 }
 @media (max-width:879.98px){
   /* Bounded height (bukan cuma min-height) supaya main.layout punya "sisa
