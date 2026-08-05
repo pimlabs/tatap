@@ -84,20 +84,22 @@
 
   <main class="layout">
     <div class="panelGroup active" id="panelNaskah">
-      <div class="toolbar">
-        <button type="button" id="libSaveBtn" class="toolItem">
-          <svg class="icon" width="19" height="19"><use href="#i-save"/></svg>
+      <div class="toolbarRow">
+        <button type="button" id="libSaveBtn" class="toolPrimary">
+          <svg class="icon" width="18" height="18"><use href="#i-save"/></svg>
           <span id="libSaveBtnLabel">Simpan</span>
         </button>
-        <button type="button" id="libOpenBtn" class="toolItem">
-          <svg class="icon" width="19" height="19"><use href="#i-folder"/></svg>
-          <span>Tersimpan</span>
-          <span class="toolBadge" id="libCount">0</span>
-        </button>
-        <button type="button" id="importMdBtn" class="toolItem">
-          <svg class="icon" width="19" height="19"><use href="#i-import"/></svg>
-          <span>Import</span>
-        </button>
+        <div class="toolSecondary">
+          <button type="button" id="libOpenBtn" class="toolSecondaryBtn" title="Daftar naskah tersimpan">
+            <svg class="icon" width="18" height="18"><use href="#i-folder"/></svg>
+            <span>Daftar</span>
+            <span class="toolBadge" id="libCount">0</span>
+          </button>
+          <button type="button" id="importMdBtn" class="toolSecondaryBtn" title="Import file Markdown">
+            <svg class="icon" width="18" height="18"><use href="#i-import"/></svg>
+            <span>Import</span>
+          </button>
+        </div>
         <input type="file" id="importMdInput" accept=".md,.markdown,text/markdown" hidden />
       </div>
       <textarea id="script" placeholder="Tempel naskah kamu di sini..."></textarea>
