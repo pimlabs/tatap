@@ -39,6 +39,9 @@
   <symbol id="i-import" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M4 19h16"/>
   </symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 7h14"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M7 7l1 13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-13"/>
+  </symbol>
   <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
     <circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.3"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/>
   </symbol>
@@ -163,6 +166,12 @@
         <h3>Kecepatan &amp; kontrol</h3>
         <div class="field">
           <label>Kecepatan gulir <span class="val" id="speedVal">70 px/dtk</span></label>
+          <div class="speedPresets" id="speedPresets">
+            <button type="button" class="speedPresetBtn" data-speed="40">Lambat</button>
+            <button type="button" class="speedPresetBtn" data-speed="70">Sedang</button>
+            <button type="button" class="speedPresetBtn" data-speed="110">Cepat</button>
+            <button type="button" class="speedPresetBtn" data-speed="160">Sangat cepat</button>
+          </div>
           <input type="range" id="speedRange" min="20" max="260" value="70" />
         </div>
 
@@ -272,7 +281,7 @@
     <p class="muted" id="libEmptyHint">Belum ada naskah tersimpan.</p>
     <div id="libList"></div>
     <div class="modal-actions">
-      <button type="button" class="btn-ghost" id="libCloseBtn">Tutup</button>
+      <button type="button" class="btn-ghost" id="libCloseBtn"><svg class="icon" width="14" height="14"><use href="#i-close"/></svg>Tutup</button>
     </div>
   </div>
 </div>
@@ -347,9 +356,11 @@
       <div id="remoteSectionLabel">Section</div>
       <button type="button" id="remoteBtnNext" title="Section berikutnya"><svg class="icon" width="15" height="15"><use href="#i-chevron-right"/></svg></button>
     </div>
-    <button type="button" id="remoteBtnRestart"><svg class="icon" width="15" height="15"><use href="#i-restart"/></svg>Ulang dari awal</button>
-    <button type="button" id="remoteBtnExit"><svg class="icon" width="15" height="15"><use href="#i-close"/></svg>Keluar dari stage</button>
-    <button type="button" class="btn-ghost" id="remoteDisconnectBtn">Putuskan</button>
+    <div class="remoteActionRow">
+      <button type="button" id="remoteBtnRestart" title="Ulang dari awal"><svg class="icon" width="16" height="16"><use href="#i-restart"/></svg>Ulang</button>
+      <button type="button" id="remoteBtnExit" title="Keluar dari stage"><svg class="icon" width="16" height="16"><use href="#i-close"/></svg>Keluar stage</button>
+    </div>
+    <button type="button" class="btn-ghost" id="remoteDisconnectBtn"><svg class="icon" width="14" height="14"><use href="#i-link"/></svg>Putuskan koneksi</button>
   </div>
 </div>
 

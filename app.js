@@ -16,7 +16,7 @@
     countdown: true,
     focusLine: true,
     highlight: true,
-    autoPause: false,
+    autoPause: true,
     activeLibId: null,
     remoteEnabled: false,
     theme: "system",
@@ -92,6 +92,7 @@
     marginVal: document.getElementById("marginVal"),
     speedRange: document.getElementById("speedRange"),
     speedVal: document.getElementById("speedVal"),
+    speedPresetBtns: document.querySelectorAll(".speedPresetBtn"),
     bgColor: document.getElementById("bgColor"),
     textColor: document.getElementById("textColor"),
     presetDark: document.getElementById("presetDark"),
@@ -179,14 +180,21 @@
     btnExit: document.getElementById("btnExit")
   };
 
+  function syncSpeedDisplay(){
+    el.speedRange.value = state.speed;
+    el.speedVal.textContent = state.speed + " px/dtk";
+    el.speedPresetBtns.forEach(function(btn){
+      btn.classList.toggle("active", parseInt(btn.dataset.speed, 10) === state.speed);
+    });
+  }
+
   function applyStateToForm(){
     el.script.value = state.script;
     el.sizeRange.value = state.size;
     el.sizeVal.textContent = state.size + "px";
     el.marginRange.value = state.margin;
     el.marginVal.textContent = state.margin + "%";
-    el.speedRange.value = state.speed;
-    el.speedVal.textContent = state.speed + " px/dtk";
+    syncSpeedDisplay();
     el.bgColor.value = state.bg;
     el.textColor.value = state.text;
     el.mirrorToggle.checked = !!state.mirror;
@@ -492,7 +500,8 @@
 
       var loadBtn = document.createElement("button");
       loadBtn.type = "button";
-      loadBtn.textContent = "Muat";
+      loadBtn.className = "libLoad";
+      loadBtn.innerHTML = '<svg class="icon" width="14" height="14"><use href="#i-folder"/></svg><span>Muat</span>';
       loadBtn.addEventListener("click", function(){
         state.activeLibId = entry.id;
         applyScriptText(entry.script);
@@ -503,7 +512,7 @@
       var delBtn = document.createElement("button");
       delBtn.type = "button";
       delBtn.className = "libDelete";
-      delBtn.textContent = "Hapus";
+      delBtn.innerHTML = '<svg class="icon" width="14" height="14"><use href="#i-trash"/></svg><span>Hapus</span>';
       delBtn.addEventListener("click", function(){
         if(!confirm('Hapus naskah "' + entry.title + '"?')) return;
         library = library.filter(function(x){ return x.id !== entry.id; });
@@ -561,9 +570,17 @@
   });
   el.speedRange.addEventListener("input", function(){
     state.speed = parseInt(el.speedRange.value, 10);
-    el.speedVal.textContent = state.speed + " px/dtk";
+    syncSpeedDisplay();
     scheduleSave();
     scheduleEstimate();
+  });
+  el.speedPresetBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      state.speed = parseInt(btn.dataset.speed, 10);
+      syncSpeedDisplay();
+      scheduleSave();
+      scheduleEstimate();
+    });
   });
   el.bgColor.addEventListener("input", function(){ state.bg = el.bgColor.value; scheduleSave(); scheduleEstimate(); });
   el.textColor.addEventListener("input", function(){ state.text = el.textColor.value; scheduleSave(); scheduleEstimate(); });
@@ -625,8 +642,7 @@
         el.speedRange.max = newSpeed + 20;
       }
       state.speed = newSpeed;
-      el.speedRange.value = newSpeed;
-      el.speedVal.textContent = newSpeed + " px/dtk";
+      syncSpeedDisplay();
       scheduleSave();
       updateEstimate();
       closeCalibModal();
@@ -772,8 +788,7 @@
 
   function changeSpeed(delta){
     state.speed = Math.max(20, Math.min(parseInt(el.speedRange.max, 10), state.speed + delta));
-    el.speedRange.value = state.speed;
-    el.speedVal.textContent = state.speed + " px/dtk";
+    syncSpeedDisplay();
     el.barSpeedLabel.textContent = state.speed;
     scheduleSave();
     sendRemoteState();
