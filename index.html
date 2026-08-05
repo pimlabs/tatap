@@ -126,19 +126,28 @@
           <label>Margin samping <span class="val" id="marginVal">10%</span></label>
           <input type="range" id="marginRange" min="0" max="35" value="10" />
         </div>
-        <div class="row2">
-          <div class="colorfield">
-            <label>Warna latar</label>
-            <input type="color" id="bgColor" value="#0E0F11" />
-          </div>
-          <div class="colorfield">
-            <label>Warna teks</label>
-            <input type="color" id="textColor" value="#F2EFE9" />
+        <div class="field">
+          <label>Warna panggung</label>
+          <div class="themeToggle">
+            <button type="button" class="themeOpt" id="stageColorModeInherit">Ikuti tema aplikasi</button>
+            <button type="button" class="themeOpt" id="stageColorModeCustom">Custom</button>
           </div>
         </div>
-        <div class="presets">
-          <button type="button" id="presetDark">Gelap</button>
-          <button type="button" id="presetLight">Terang</button>
+        <div class="field" id="stageColorCustomFields">
+          <div class="row2">
+            <div class="colorfield">
+              <label>Warna latar</label>
+              <input type="color" id="bgColor" value="#0E0F11" />
+            </div>
+            <div class="colorfield">
+              <label>Warna teks</label>
+              <input type="color" id="textColor" value="#F2EFE9" />
+            </div>
+          </div>
+          <div class="presets">
+            <button type="button" id="presetDark">Gelap</button>
+            <button type="button" id="presetLight">Terang</button>
+          </div>
         </div>
       </div>
 

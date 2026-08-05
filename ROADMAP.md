@@ -81,12 +81,20 @@ Dikerjain lewat mockup artifact dulu (beberapa ronde validasi/revisi), baru diek
 ## ✅ v3f — Tema aplikasi: Gelap/Terang/Sistem (selesai)
 
 - Toggle 3-way baru "Tema aplikasi" di panel Tampilan (Gelap/Terang/Sistem), default **Sistem**. Ngatur chrome UI doang — setup screen, modal, tab bar — lewat CSS custom properties (`--bg`/`--panel`/`--panel-border`/`--text`/`--muted`/`--accent`) yang di-override via `[data-theme]` attribute di `<html>`.
-- **Terpisah total dari "Warna latar"/"Warna teks"** yang udah ada — itu tetap khusus warna panggung teleprompter (`state.bg`/`state.text`, di-set inline via JS pas render stage/preview), gak kepengaruh sama sekali sama tema aplikasi. Diverifikasi eksplisit lewat test: ganti tema aplikasi ke Terang, warna stage/preview box tetap gelap sesuai `state.bg` default.
+- **Awalnya terpisah total dari "Warna latar"/"Warna teks"** yang udah ada (khusus warna panggung teleprompter, `state.bg`/`state.text`) — lihat v3g di bawah, sekarang ada opsi buat nyambungin keduanya kalau mau.
 - Mode **Sistem** = gak nyimpen preferensi eksplisit, ngikutin `@media (prefers-color-scheme)` — otomatis live-reactive kalau OS diganti pas app lagi kebuka (`matchMedia().addEventListener("change", ...)`), gak perlu reload.
 - `<meta name="theme-color">` (warna status bar browser/PWA) ikut di-update dinamis sesuai tema yang resolve, termasuk pas mode Sistem (dihitung dari `matchMedia` saat itu).
 - Attribute `data-theme` di-set sedini mungkin (langsung setelah `loadState()`, sebelum elemen lain dibangun) buat minimalisir flash tema salah pas load.
 - Palet terang: bg `#F7F5F1` (warm paper, bukan putih polos), panel `#FFFFFF`, teks `#221F1A`, accent `#C9791F` (amber didalemin dikit dari versi gelap `#E8A33D` biar kontras cukup di atas putih).
-- 13/13 test end-to-end pass via Playwright (OS dark + system → gelap, klik Terang → override localStorage-persisted, klik Sistem → attribute dilepas balik ngikut OS, fresh profile + OS light + system → otomatis terang, warna panggung/preview tetap gak kesentuh, meta theme-color update, gak ada JS error).
+- 13/13 test end-to-end pass via Playwright (OS dark + system → gelap, klik Terang → override localStorage-persisted, klik Sistem → attribute dilepas balik ngikut OS, fresh profile + OS light + system → otomatis terang, warna panggung/preview tetap gak kesentuh selama mode custom, meta theme-color update, gak ada JS error).
+
+## ✅ v3g — Warna panggung: ikuti tema aplikasi / custom (selesai)
+
+- Toggle baru "Warna panggung" (Ikuti tema aplikasi / Custom) di bawah field "Tema aplikasi" — default **Custom** (preserve behavior lama, gak diam-diam ganti pengaturan user yang udah ada).
+- Mode **Ikuti tema aplikasi**: `state.bg`/`state.text` panggung disamain sama palet tema aplikasi yang lagi aktif (dark → `#0E0F11`/`#F2EFE9`, light → `#F7F5F1`/`#221F1A`) lewat `THEME_COLORS` map + `resolveActiveTheme()` (di-reuse dari fitur tema v3f). Field `Warna latar`/`Warna teks` + preset Gelap/Terang disembunyiin (gak relevan) selama mode ini aktif.
+- Live-sync: ganti tema aplikasi (Gelap/Terang/Sistem) atau OS berubah pas mode Sistem → warna panggung ikut ke-update otomatis lewat `syncStageColorsIfInherit()` yang dipanggil dari dalam `applyTheme()` — satu jalur, gak ada state ganda yang bisa out-of-sync.
+- Mode **Custom**: balik ke behavior asli (color picker + preset Gelap/Terang manual), field-nya muncul lagi. Pindah dari Inherit ke Custom gak reset warna — nilai terakhir (hasil inherit) jadi starting point yang bisa diedit.
+- 15/15 test end-to-end pass via Playwright (default custom, switch ke inherit → field ilang + warna ikut tema aktif + preview box ikut, ganti tema aplikasi pas mode inherit → warna panggung ikut live termasuk di preview box, switch balik ke custom → field muncul lagi & custom color gak ketimpa lagi, stage asli (`#stage` pas `Mulai`) makai warna inherited yang bener, persist setelah reload).
 
 ## 💭 v4 — Ide, belum dianalisis teknis
 
@@ -96,4 +104,4 @@ Dikerjain lewat mockup artifact dulu (beberapa ronde validasi/revisi), baru diek
 
 ## Prioritas yang disarankan
 
-Semua item v3 (a/b/c/d/e/f) udah selesai dikerjakan — remote control (v3d) masih butuh verifikasi manual koneksi P2P beneran (lihat catatan di v3d), mobile readiness (v3e) juga baru divalidasi otomatis, belum dicoba di device fisik. Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
+Semua item v3 (a–g) udah selesai dikerjakan — remote control (v3d) masih butuh verifikasi manual koneksi P2P beneran (lihat catatan di v3d), mobile readiness (v3e) juga baru divalidasi otomatis, belum dicoba di device fisik. Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
