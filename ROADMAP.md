@@ -96,6 +96,33 @@ Dikerjain lewat mockup artifact dulu (beberapa ronde validasi/revisi), baru diek
 - Mode **Custom**: balik ke behavior asli (color picker + preset Gelap/Terang manual), field-nya muncul lagi. Pindah dari Inherit ke Custom gak reset warna — nilai terakhir (hasil inherit) jadi starting point yang bisa diedit.
 - 15/15 test end-to-end pass via Playwright (default custom, switch ke inherit → field ilang + warna ikut tema aktif + preview box ikut, ganti tema aplikasi pas mode inherit → warna panggung ikut live termasuk di preview box, switch balik ke custom → field muncul lagi & custom color gak ketimpa lagi, stage asli (`#stage` pas `Mulai`) makai warna inherited yang bener, persist setelah reload).
 
+## 🔧 Fix — Service worker gak langsung ambil alih pas update
+
+- **Bug lama, ketauan pas fitur Tema aplikasi (v3f/v3g) gak muncul di HP** yang udah pernah buka app sebelumnya. Penyebabnya: `sw.js` gak pernah manggil `self.skipWaiting()`/`self.clients.claim()`, jadi service worker versi baru cuma nunggu ("waiting") sampai SEMUA tab/instance PWA yang lagi buka app itu ditutup total — sementara service worker LAMA tetap yang ngelayanin fetch (termasuk `index.html`/`app.js` versi lama dari cache), meski file di GitHub Pages udah ke-update.
+- Fix: tambah `self.skipWaiting()` di `install` dan `self.clients.claim()` di `activate` — sekarang service worker baru langsung ambil alih begitu selesai install & activate, gak perlu nunggu semua tab ditutup.
+- **Ini fix ke depan** (biar update berikutnya gak macet lagi) — buat device yang udah kena stuck di versi lama SEKARANG, service worker lama itu masih yang jalan sampai di-refresh paksa manual sekali (tutup semua tab/PWA app-nya total lalu buka lagi, atau clear site data/cache browser buat domain ini). Setelah itu ke depannya bakal auto-update mulus.
+- `sw.js` cache `v6` → `v7`.
+
+## 🔧 Fix — Tema terang: slider & toggle switch gak ikut tema
+
+Ketauan pas Eko coba tema Terang beneran: kombinasi warnanya keliatan aneh. Dua penyebab:
+
+- **Gak ada deklarasi `color-scheme`** di `:root` — tanpa ini, browser render chrome native (track slider yang belum ke-isi, dll) ngikutin preferensi **OS**, bukan `[data-theme]` custom kita. Kalau OS dark tapi app di-set Terang, elemen native tetap kebawa gelap = "opsi font" (slider Ukuran teks) keliatan nabrak. Fix: tambah `color-scheme:dark`/`light` ke tiap blok token, ngikutin pola yang sama kayak variabel warna lainnya.
+- **Ternyata `color-scheme` + `accent-color` doang gak cukup buat `<input type=range>`** — behaviour track yang belum ke-isi gak konsisten diambil dari situ (tetep item di Chromium meski `color-scheme` udah bener). Fix lebih pasti: ambil alih penuh styling track & thumb slider via `::-webkit-slider-runnable-track`/`::-webkit-slider-thumb` (+ prefix `-moz-`), full custom pakai `var(--panel-border)`/`var(--accent)` — gak gantung ke rendering native lagi sama sekali. Efek samping: fill/progress bar bawaan browser (yang sebelumnya kebetulan nongol dari `accent-color`) ilang, ganti jadi track polos + thumb — tetep jelas karena label angka di atas tiap slider udah nunjukkin nilai persis.
+- **Toggle switch (Cermin/Hitung mundur/dll) track-nya di-hardcode `#2A2D31`** (abu gelap), gak pernah ikut tema. Fix: tarik jadi variabel `--switch-track-off` (dark `#2A2D31`, light `#D6CDB6`).
+- Bonus: box "sample kalibrasi" di modal juga kebetulan pakai `rgba(255,255,255,.04)` yang jadi nyaris gak keliatan di panel putih (light theme) — ditarik jadi variabel `--subtle-fill` yang nyesuain arah tint-nya per tema (putih tipis di dark, hitam tipis di light).
+- 9/9 test tambahan pass (color-scheme ke-set bener di semua kombinasi OS/tema, switch track & calib-sample warnanya bener-bener beda antar tema, range input tetap fungsional setelah di-custom-styling) + screenshot visual cross-check kombinasi OS-dark+app-Terang (skenario yang awalnya munculin bug).
+- `sw.js` cache `v7` → `v8`.
+
+## ✅ v3h — Touch feedback di semua tombol (selesai)
+
+- Semua `<button>` (+ `.sectionItem`, div section-jump yang diperlakukan kayak tombol) sekarang punya respon instan pas ditekan: **membesar dikit** (`scale(1.07)`) + **indikator brightness** (`filter:brightness(1.2)`), transisi cepat (`.1s`). Aturan global satu tempat (`button, .sectionItem { ... }` di awal `styles.css`), bukan nge-duplicate per komponen — otomatis kepakai di tab bar, toolbar, preset, tema toggle, start button, control bar (termasuk yang accent/playBtn), speed popover, remote pad, section jump, dst.
+- Pilih `:active` (bukan `:hover`) karena itu yang beneran ngerespon touch — `:hover` gak reliable di touch device (kadang gak nyala sama sekali, kadang nyangkut/"sticky" abis tap).
+- `-webkit-tap-highlight-color:transparent` disertain biar gak numpuk sama highlight flash bawaan Android Chrome yang keliatan norak kalau digabung sama animasi custom kita.
+- `input[type=range]` sengaja **dikecualiin** — nge-scale seluruh elemen pas lagi di-drag bisa bikin jarak visual antara jari/kursor sama thumb keliatan aneh.
+- `prefers-reduced-motion` di-hormatin — transform di-disable buat yang minta gerakan diminimalin, indikator brightness tetap jalan (bukan efek gerak, jadi aman).
+- 15/15 test end-to-end Playwright (simulasi `mouse.down()`/`mouse.up()` beneran, bukan cuma cek CSS statis) — verifikasi transform berubah pas ditekan & balik normal pas dilepas, di semua kategori tombol: tab bar, tema toggle, preset, start button, toolbar, control bar (termasuk accent bg), section jump item (div).
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
@@ -104,4 +131,4 @@ Dikerjain lewat mockup artifact dulu (beberapa ronde validasi/revisi), baru diek
 
 ## Prioritas yang disarankan
 
-Semua item v3 (a–g) udah selesai dikerjakan — remote control (v3d) masih butuh verifikasi manual koneksi P2P beneran (lihat catatan di v3d), mobile readiness (v3e) juga baru divalidasi otomatis, belum dicoba di device fisik. Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
+Semua item v3 (a–h) udah selesai dikerjakan — remote control (v3d) masih butuh verifikasi manual koneksi P2P beneran (lihat catatan di v3d), mobile readiness (v3e) juga baru divalidasi otomatis, belum dicoba di device fisik. Sisa roadmap tinggal v4, yang masih ide dan belum dianalisis teknis — perlu obrolan/scoping dulu sama pemilik repo sebelum mulai, sesuai catatan di masing-masing item.
