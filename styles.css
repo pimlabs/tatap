@@ -242,6 +242,20 @@ textarea#script::placeholder{color:var(--muted);}
   font-size:13px;color:var(--text);margin-bottom:6px;
 }
 .field label span.val{color:var(--accent);font-weight:600;}
+/* Shortcut cepat buat kecepatan gulir yang umum dipakai — slider halus
+   & Kalibrasi tetap ada di bawah buat fine-tune manual/personal, ini
+   cuma nge-skip drag-slider buat kasus umum. Aktif kalau state.speed
+   PAS sama nilai preset (bukan approx) — kalau abis kalibrasi/geser
+   manual ke nilai di antara, sengaja gak ada yang nyala (jujur nunjukkin
+   ini custom, bukan salah satu preset). */
+.speedPresets{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.speedPresetBtn{
+  flex:1;font-size:11.5px;padding:6px 4px;border-radius:8px;
+  border:1px solid var(--panel-border);background:transparent;color:var(--muted);
+  cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;
+}
+.speedPresetBtn:hover{border-color:var(--accent);color:var(--text);}
+.speedPresetBtn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
 /* Custom track/thumb (bukan cuma accent-color) — accent-color+color-scheme doang
    gak selalu bikin bagian track yang belum ke-isi ikut tema secara konsisten
    lintas browser, jadi kontrolnya diambil alih penuh biar pasti ngikut tema. */
@@ -418,6 +432,7 @@ footer.note{
 .btn-ghost{
   background:transparent;border:1px solid var(--panel-border);color:var(--muted);
   border-radius:999px;padding:10px 18px;cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
 
 .libList{max-height:44vh;overflow:auto;margin-top:14px;}
@@ -434,9 +449,15 @@ footer.note{
 .libItem button{
   font-size:12px;padding:6px 10px;border-radius:8px;flex:none;
   border:1px solid var(--panel-border);background:transparent;color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;gap:5px;
 }
 .libItem button:hover{border-color:var(--accent);color:var(--text);}
-.libItem button.libDelete:hover{border-color:#c0524a;color:#e0776f;}
+/* Beda dari :hover-only sebelumnya — touch device gak punya hover state
+   sebelum disentuh, jadi Muat & Hapus keliatan identik sampai ke-tap.
+   Hapus sekarang tetap kemerahan dari awal (gak nunggu hover) biar
+   "ini aksi destructive" kebaca sebelum jari nyentuh tombolnya. */
+.libItem button.libDelete{border-color:rgba(192,82,74,.4);color:#c0524a;}
+.libItem button.libDelete:hover{border-color:#c0524a;color:#e0776f;background:rgba(192,82,74,.08);}
 
 /* ---------- Remote HP ---------- */
 .linklike{
@@ -480,11 +501,20 @@ footer.note{
   margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:6px;
 }
 .dotOnline{width:7px;height:7px;border-radius:50%;background:#5FCB86;flex:none;}
+/* Icon doang (pause-bars vs play-triangle) susah kebeda pas dilihat
+   sekilas/dari jarak jauh (dipakai sambil rekam). Warna fill jadi
+   sinyal utama: playing = solid accent (konsisten sama makna "aktif/on"
+   di elemen lain se-app), paused = outline doang (idle, gak ada beban
+   visual, nunjukkin "belum jalan / lagi berhenti"). */
 #remoteBtnPlayPause{
   width:96px;height:96px;border-radius:50%;
-  background:var(--accent);color:#161208;border:none;
+  background:var(--accent);color:#161208;border:2px solid var(--accent);
   cursor:pointer;margin:0 auto 22px;
   display:flex;align-items:center;justify-content:center;
+  transition:background-color .15s, color .15s;
+}
+#remoteBtnPlayPause.isPaused{
+  background:transparent;color:var(--accent);
 }
 /* .remoteRow dulunya justify-content:center TAPI tombol di dalamnya
    flex:1 (stretch ngisi 320px penuh) — jadi center-nya percuma, hasilnya
@@ -503,17 +533,20 @@ footer.note{
    nilai live kayak angka speed, jadi warnanya muted bukan accent biar
    gak keliatan kayak nunjukkin data yang berubah-ubah. */
 #remoteSectionLabel{min-width:64px;font-size:13px;color:var(--muted);font-weight:600;flex:none;}
-#remoteBtnRestart{
-  width:100%;background:transparent;border:1px solid var(--panel-border);color:var(--text);
-  border-radius:10px;padding:12px 0;font-size:14px;cursor:pointer;margin-bottom:12px;
-  display:flex;align-items:center;justify-content:center;gap:7px;
+/* Restart+Exit dikelompokin sejajar (sama-sama ngontrol sesi stage yang
+   lagi jalan) — beda tier dari Disconnect (ngeputus koneksi remote-nya
+   sendiri) yang sengaja dipisah jarak & bentuknya (pill, bukan
+   rounded-rect) di bawah. Icon Ulang dikasih tint accent biar ada
+   sedikit "warna" — sebelumnya full abu-abu monoton di ketiga tombol. */
+.remoteActionRow{display:flex;gap:10px;margin-bottom:16px;}
+.remoteActionRow button{
+  flex:1;background:transparent;border:1px solid var(--panel-border);color:var(--text);
+  border-radius:10px;padding:12px 6px;font-size:13.5px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
-#remoteBtnExit{
-  width:100%;background:transparent;border:1px solid #c0524a;color:#e0776f;
-  border-radius:10px;padding:12px 0;font-size:14px;cursor:pointer;margin-bottom:20px;
-  display:flex;align-items:center;justify-content:center;gap:7px;
-}
-#remoteDisconnectBtn{width:100%;}
+#remoteBtnRestart .icon{color:var(--accent);}
+#remoteBtnExit{border-color:#c0524a;color:#e0776f;}
+#remoteDisconnectBtn{width:100%;margin-top:6px;}
 
 /* ---------- Stage (fullscreen prompter) ---------- */
 #stage{
