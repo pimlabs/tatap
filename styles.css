@@ -192,32 +192,35 @@ main.layout{
   main.layout.desktopShowPreview #panelNaskah{display:none !important;}
 }
 
-/* Simpan (aksi instan, paling sering dipakai) sengaja dikasih gaya beda
-   & lebih menonjol dari Daftar/Import (aksi yang buka modal/file-picker,
-   lebih jarang) — sebelumnya ketiganya disegmen jadi satu strip rata,
-   keliatan kayak tab switcher (nyamain 3 jenis interaksi yang beda). */
+/* Simpan (aksi instan, paling sering dipakai) tetap dikasih gaya beda &
+   sedikit menonjol dari Daftar/Import (aksi yang buka modal/file-picker,
+   lebih jarang) — tapi ketiganya sengaja dibikin compact (bukan strip
+   full-width setinggi ~62px kayak sebelumnya): ini toolbar utility buat
+   manajemen naskah, bukan komponen utama, jadi porsinya jangan bersaing
+   sama textarea di bawahnya. flex:none + auto-width bikin barisnya
+   nyusut ngikutin konten, bukan dipaksa stretch penuh. */
 .toolbarRow{
-  display:flex; gap:8px; align-items:stretch;
+  display:flex; gap:6px; align-items:center; flex-wrap:wrap;
 }
 .toolPrimary{
-  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  flex:none; display:flex; align-items:center; justify-content:center; gap:6px;
   background:var(--accent-dim); border:1px solid var(--accent);
-  border-radius:var(--radius); color:var(--accent); font-weight:600; font-size:14px;
-  padding:12px 16px; cursor:pointer; font-family:'Inter',sans-serif;
+  border-radius:var(--radius); color:var(--accent); font-weight:600; font-size:12.5px;
+  padding:7px 12px; cursor:pointer; font-family:'Inter',sans-serif;
 }
 .toolPrimary:hover{filter:brightness(1.08);}
 .toolSecondary{
   display:flex; gap:6px; flex:none;
 }
 .toolSecondaryBtn{
-  flex:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
-  width:62px; background:var(--panel); border:1px solid var(--panel-border);
-  border-radius:var(--radius); color:var(--muted); font-size:10.5px; position:relative;
-  padding:10px 4px 9px; cursor:pointer; font-family:'Inter',sans-serif;
+  flex:none; display:flex; align-items:center; justify-content:center; gap:5px;
+  background:var(--panel); border:1px solid var(--panel-border);
+  border-radius:var(--radius); color:var(--muted); font-size:12px;
+  padding:7px 10px; cursor:pointer; font-family:'Inter',sans-serif;
 }
 .toolSecondaryBtn:hover{color:var(--text); border-color:var(--accent);}
 .toolBadge{
-  position:absolute; top:5px; right:7px; background:var(--accent); color:#161208;
+  background:var(--accent); color:#161208;
   font-size:9px; font-weight:700; min-width:15px; height:15px; border-radius:99px;
   display:flex; align-items:center; justify-content:center; padding:0 3px;
 }

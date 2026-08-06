@@ -289,6 +289,16 @@ Eko komplain visual desktop jadi "jelek" & "kacau" dibanding dulu sejak v3e namb
 - Belum dites manual di device asli (HP/tablet) oleh Eko — terutama buat konfirmasi perpindahan tombol Mulai ke tab Setting di mobile beneran kerasa oke, bukan cuma "gak error" doang.
 - `sw.js` cache `v24` → `v25`.
 
+## 🔧 Fix — Toolbar Naskah (Simpan/Daftar/Import) porsinya kegedean
+
+Eko lihat area toolbar naskah (Simpan/Daftar/Import) porsinya kegedean — bukan komponen utama (textarea naskah itu intinya), tapi visualnya bersaing kayak header.
+
+- Root cause: `.toolPrimary` (Simpan) `flex:1` maksa stretch penuh lebar row, padding `12px 16px` + font `14px`; `.toolSecondaryBtn` (Daftar/Import) icon-di-atas-label-di-bawah `62px` persegi. Total tinggi toolbar ~62px, lebar penuh — setara komponen utama padahal cuma utility manajemen naskah.
+- Fix: ketiga tombol dibikin compact & auto-width (`flex:none`, bukan stretch), icon+label sejajar horizontal (bukan stack), padding `7px 10-12px`, font `12-12.5px`, icon `18px` → `15px`. Simpan tetap dikasih aksen (border+background accent) biar tetap kebaca sebagai aksi utama di antara ketiganya, tapi ukurannya sama compact-nya kayak Daftar/Import — beda cuma warna, bukan lagi beda skala.
+- Label tombol Daftar dipendekin dari "Semua naskah" jadi **"Daftar"** (title attribute tetap "Semua naskah tersimpan" buat konteks di hover) — lebih pas buat pill compact icon+label+badge.
+- Diverifikasi via Playwright: tinggi `.toolbarRow` turun dari ~62px jadi 31px (desktop & mobile iPhone SE, gak kepenyet/gak collapse ke 0), tombol Simpan gak lagi stretch (lebar auto-nya cuma ~12% dari lebar row), flow simpan naskah baru (dialog prompt → badge Daftar nambah) tetap jalan normal. Screenshot desktop & mobile dicek visual, toolbar sekarang jelas kebaca sebagai strip utility kecil di atas textarea, bukan header kedua.
+- `sw.js` cache `v25` → `v26`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
