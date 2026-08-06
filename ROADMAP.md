@@ -310,6 +310,16 @@ Eko minta: switcher Naskah/Preview & toolbar Simpan/Daftar/Import (yang sebelumn
 - Diverifikasi via Playwright: desktop — toolbar konfirmasi pindah jadi child `#col1Switch`, sejajar vertikal (center-aligned, dicek lewat bounding rect) sama switcher, posisinya di kanan switcher, ada gap kosong signifikan di tengah, tetap keliatan pas toggle ke Preview, flow Simpan (dialog prompt → badge Daftar) masih jalan dari lokasi baru, nol console/page error. Mobile — toolbar konfirmasi TETAP di `panelNaskah`, `#col1Switch` tetap ke-hide, urutan DOM (toolbar di atas textarea) gak berubah, nol console/page error. Resize test — nyebrang breakpoint desktop→mobile→desktop, toolbar pindah tempat dengan benar di setiap arah.
 - `sw.js` cache `v26` → `v27`.
 
+## 🔧 Fix — Harmonisasi switcher Naskah/Preview & Tema Aplikasi jadi satu pola (`.seg`)
+
+Eko minta barisan tombol di kolom 1 (switcher Naskah/Preview + toolbar Simpan/Daftar/Import) dibikin lebih harmoni & konsisten, termasuk toggle Tema Aplikasi.
+
+- Diagnosis: tiga kontrol yang sama-sama "segmented control" (pilihan majemuk mutually-exclusive) punya tiga gaya visual beda — switcher Naskah/Preview pakai pill container (border cuma di luar, opsi di dalam transparan), Tema Aplikasi pakai tombol individual border sendiri, radius beda (12px vs 8px), padding beda (9px vs 5px vertikal). Toolbar Simpan/Daftar/Import juga radius `var(--radius)` = 14px, beda dari keduanya. Ini persis masalah yang udah diidentifikasi di `DESIGN.md` ("12 nilai border-radius, ~19 varian class tombol") dan diusulin solusinya (pola `.seg`/`.opt`) tapi belum pernah dieksekusi ke kode.
+- Fix: mulai eksekusi `DESIGN.md` — tambah token `--r-sm:8px`/`--r-md:12px` (skala radius yang diusulin), bikin class bersama `.seg`/`.opt` (satu pola: tombol individual border sendiri, auto-width bukan flex:1, active = border+background accent), pakai buat switcher Naskah/Preview (gantiin `.col1SwitchGroup`/`.col1SwitchBtn`) DAN Tema Aplikasi (gantiin `.themeToggle`/`.themeOpt`/`.themeToggleCompact`). Toolbar Simpan/Daftar/Import (`.toolPrimary`/`.toolSecondaryBtn`) radius-nya disamain ke `--r-md` (14px → 12px) biar satu keluarga sama switcher-nya, tanpa ngubah gaya "chip" mereka yang emang udah beda kategori (`.btn-fill`/`.btn-outline` di `DESIGN.md`, bukan segmented control).
+- `DESIGN.md` diupdate: bagian "Segmented control" dicatat `.themeOpt` sudah dieksekusi (`.speedPresetBtn`/`.presets button` belum, di luar scope kali ini — gak disentuh biar perubahan tetap terfokus ke baris yang diminta).
+- Diverifikasi via Playwright: radius switcher Naskah/Preview == radius Tema Aplikasi (8px), radius Simpan == radius Daftar/Import (12px), fungsi switcher (toggle Naskah/Preview, ganti tema Gelap/Terang/Sistem) tetap jalan normal di desktop & mobile (tab Setting), nol console/page error. Screenshot desktop (baris gabungan + kartu Tema Aplikasi) & mobile (tab Setting) dicek visual — tiga kontrol sekarang kebaca sebagai satu keluarga visual, bukan tiga implementasi beda.
+- `sw.js` cache `v27` → `v28`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
