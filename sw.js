@@ -1,4 +1,4 @@
-var CACHE = "tatap-v23";
+var CACHE = "tatap-v24";
 var ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.json", "./assets/icon-192.png", "./assets/icon-512.png"];
 
 self.addEventListener("install", function (e) {

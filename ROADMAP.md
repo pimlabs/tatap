@@ -266,6 +266,17 @@ Eko minta konsistensi UI dijadikan design system beneran, disimpan di repo (buka
 - Diverifikasi: title/footer/placeholder ke-render bener via Playwright, regression suite penuh (8 file, exit code dicek) pass, cuma 1 FAIL pre-existing (network CDN sandbox, gak related).
 - `sw.js` cache `v22` → `v23`.
 
+## 🔧 Fix — Layout desktop overflow horizontal kalau naskah ada kata panjang tanpa spasi
+
+- Eko lapor (screenshot monitor ultrawide 3420px): kolom Preview & tombol "Mulai" meledak lebar sampai kepotong di tepi layar, kolom Naskah/Setting malah lebih sempit dari jatah normalnya.
+- Root cause: `main.layout` desktop pakai CSS Grid `grid-template-columns:1.25fr 1fr 1fr`. Kolom `fr` punya minimum implisit `minmax(auto,1fr)` — `auto` resolve ke min-content dari isinya. Naskah nyata yang dipaste user ("title: The Value Era..." dst, dokumen ~119 ribu kata) kemungkinan besar punya token panjang tanpa spasi (URL, ID, hash, atau kata majemuk) yang min-content-nya lebih lebar dari jatah 1fr kolom Preview — maksa SELURUH grid (bahkan halaman) overflow horizontal ke kanan, sementara kolom lain ke-squeeze di bawah jatah normalnya buat nutup defisit.
+- Direproduksi persis: satu kata 100 karakter tanpa spasi di textarea langsung bikin `previewBox` melebar dari 441px (jatah normal) ke 2710px di viewport 1600px, `body.scrollWidth` ngelewatin `window.innerWidth`. Konfirmasi juga di viewport 3420px persis kayak laporan Eko.
+- Fix dua lapis:
+  1. `.panelGroup{min-width:0;}` di breakpoint desktop — matiin proteksi min-content grid, kolom jadi bisa nyusut sesuai jatah `fr`-nya.
+  2. `overflow-wrap:anywhere` di `.previewInner`, `#stageText`, dan `#measurer` — kata/token panjang beneran DIPATAHIN di dalam box-nya, bukan cuma "gak maksa grid lebar" doang. Dipasang di ketiganya biar preview, stage asli pas rekam, dan estimasi durasi baca konsisten kalau ketemu naskah yang ada token panjang.
+- Diverifikasi: repro case (kata 100 & 150 karakter) di viewport 1600px & 3420px (persis ukuran laporan Eko) — `hasHorizontalOverflow` balik ke `false`, kolom Preview balik ke lebar 1fr yang bener. Stage view (bukan cuma preview) juga dicek, kata panjang kepatahin rapi tanpa overflow. Naskah normal (gak ada kata panjang) discreenshot ulang, nol perubahan visual. Regression suite penuh (8 file, exit code dicek) pass, cuma 1 FAIL pre-existing (network CDN sandbox, gak related).
+- `sw.js` cache `v23` → `v24`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
