@@ -87,12 +87,18 @@
 
   <main class="layout">
     <div class="col1Switch" id="col1Switch">
-      <button type="button" class="col1SwitchBtn active" id="col1SwitchNaskah">
-        <svg class="icon" width="15" height="15"><use href="#i-doc"/></svg>Naskah
-      </button>
-      <button type="button" class="col1SwitchBtn" id="col1SwitchPreview">
-        <svg class="icon" width="15" height="15"><use href="#i-eye"/></svg>Preview
-      </button>
+      <div class="col1SwitchGroup">
+        <button type="button" class="col1SwitchBtn active" id="col1SwitchNaskah">
+          <svg class="icon" width="15" height="15"><use href="#i-doc"/></svg>Naskah
+        </button>
+        <button type="button" class="col1SwitchBtn" id="col1SwitchPreview">
+          <svg class="icon" width="15" height="15"><use href="#i-eye"/></svg>Preview
+        </button>
+      </div>
+      <!-- .toolbarRow (Simpan/Daftar/Import) digeser ke sini oleh app.js
+           cuma di desktop (>=880px), biar selurus sama switcher ini.
+           Di mobile tetap di tempat asalnya, di atas textarea (lihat
+           panelNaskah) — lokasi DOM aslinya emang di sana. -->
     </div>
     <div class="panelGroup active" id="panelNaskah">
       <div class="toolbarRow">

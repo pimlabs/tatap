@@ -141,8 +141,10 @@
     tabBtnNaskah: document.getElementById("tabBtnNaskah"),
     tabBtnSetting: document.getElementById("tabBtnSetting"),
     tabBtnPreview: document.getElementById("tabBtnPreview"),
+    col1Switch: document.getElementById("col1Switch"),
     col1SwitchNaskah: document.getElementById("col1SwitchNaskah"),
     col1SwitchPreview: document.getElementById("col1SwitchPreview"),
+    toolbarRow: document.querySelector(".toolbarRow"),
     previewBox: document.getElementById("previewBox"),
     previewInner: document.getElementById("previewInner"),
     previewFocusLine: document.getElementById("previewFocusLine"),
@@ -307,6 +309,19 @@
   }
   el.col1SwitchNaskah.addEventListener("click", function(){ setCol1View("naskah"); });
   el.col1SwitchPreview.addEventListener("click", function(){ setCol1View("preview"); });
+
+  // Toolbar naskah (Simpan/Daftar/Import) digeser jadi selurus sama
+  // switcher Naskah/Preview pas desktop (>=880px), balik ke tempat asal
+  // (atas textarea, dalam panelNaskah) pas mobile — reparenting DOM node
+  // yang sama (bukan duplikat elemen/id) via matchMedia, biar handler &
+  // badge Daftar tetap satu sumber kebenaran di kedua breakpoint.
+  var desktopMq = window.matchMedia("(min-width:880px)");
+  function placeToolbarRow(isDesktop){
+    if(isDesktop) el.col1Switch.appendChild(el.toolbarRow);
+    else el.panelNaskah.insertBefore(el.toolbarRow, el.panelNaskah.firstChild);
+  }
+  placeToolbarRow(desktopMq.matches);
+  desktopMq.addEventListener("change", function(e){ placeToolbarRow(e.matches); });
 
   el.tabBtnNaskah.addEventListener("click", function(){ setActiveTab("naskah"); });
   el.tabBtnSetting.addEventListener("click", function(){ setActiveTab("setting"); });

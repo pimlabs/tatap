@@ -180,7 +180,7 @@ main.layout{
      sesuai jatah fr-nya — kombinasi sama overflow-wrap di bawah yang
      beneran mecah kata panjangnya. */
   .panelGroup{display:flex !important; min-width:0;}
-  .col1Switch{display:flex; min-width:0;}
+  .col1Switch{display:flex; align-items:center; flex-wrap:wrap; min-width:0;}
   #col1Switch{grid-column:1; grid-row:1;}
   #panelNaskah{grid-column:1; grid-row:2;}
   #panelPreview{grid-column:1; grid-row:2;}
@@ -419,7 +419,16 @@ footer.note{
   #setup{padding-bottom:48px;}
 }
 
-/* ---------- Naskah/Preview switch (desktop only, kolom 1) ---------- */
+/* ---------- Naskah/Preview switch + toolbar naskah, selurus (desktop only, kolom 1) ----------
+   .col1Switch adalah baris gabungan: switcher Naskah/Preview di kiri,
+   .toolbarRow (Simpan/Daftar/Import) digeser masuk ke sini oleh app.js
+   pas desktop, area kosong di antaranya lewat justify-content:space-between
+   (bukan spacer manual). Mobile gak kepengaruh — toolbarRow balik ke
+   lokasi asalnya (atas textarea, dalam panelNaskah) di bawah 880px. */
+.col1SwitchGroup{
+  display:flex; gap:6px; background:var(--panel); border:1px solid var(--panel-border);
+  border-radius:12px; padding:4px; flex:none;
+}
 .col1SwitchBtn{
   flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
   padding:9px 10px; border-radius:9px; border:none; background:transparent;
@@ -429,9 +438,9 @@ footer.note{
 .col1SwitchBtn.active{background:var(--accent-dim); color:var(--accent);}
 @media (min-width:880px){
   .col1Switch{
-    gap:6px; background:var(--panel); border:1px solid var(--panel-border);
-    border-radius:12px; padding:4px;
+    justify-content:space-between; gap:12px;
   }
+  .col1Switch .toolbarRow{flex:none;}
 }
 
 /* ---------- Preview panel ---------- */

@@ -299,6 +299,17 @@ Eko lihat area toolbar naskah (Simpan/Daftar/Import) porsinya kegedean — bukan
 - Diverifikasi via Playwright: tinggi `.toolbarRow` turun dari ~62px jadi 31px (desktop & mobile iPhone SE, gak kepenyet/gak collapse ke 0), tombol Simpan gak lagi stretch (lebar auto-nya cuma ~12% dari lebar row), flow simpan naskah baru (dialog prompt → badge Daftar nambah) tetap jalan normal. Screenshot desktop & mobile dicek visual, toolbar sekarang jelas kebaca sebagai strip utility kecil di atas textarea, bukan header kedua.
 - `sw.js` cache `v25` → `v26`.
 
+## 🔧 Fix — Switcher Naskah/Preview & toolbar Simpan/Import digabung selurus (desktop)
+
+Eko minta: switcher Naskah/Preview & toolbar Simpan/Daftar/Import (yang sebelumnya dua baris terpisah tumpuk di kolom 1) digabung jadi satu baris — switcher di kiri, area kosong, toolbar di kanan. Mobile gak boleh kepengaruh.
+
+- Masalahnya: `.toolbarRow` (Simpan/Daftar/Import) lokasi DOM-nya di dalam `#panelNaskah` (wajib, biar tetap muncul di tab Naskah pas mobile), sementara `#col1Switch` (switcher Naskah/Preview) sengaja jadi elemen independen di luar `panelNaskah`/`panelPreview` (biar tetap keliatan dipencet buat pindah balik pas lagi di view Preview). Dua elemen beda induk gak bisa "disejajarkan" murni lewat CSS Grid placement (grid-column/row cuma berlaku buat direct children grid container) tanpa satu di antaranya pindah tempat.
+- Fix: `.toolbarRow` **dipindah (reparenting DOM node yang sama, bukan diduplikat)** oleh `app.js` — masuk ke dalam `#col1Switch` pas viewport ≥880px (jadi selurus sama switcher di sana), balik ke tempat asal (child pertama `#panelNaskah`, di atas textarea) pas <880px. Dipicu `matchMedia("(min-width:880px)")` + listener `change`, jadi ikut update real-time kalau window di-resize ngelewatin breakpoint (bukan cuma pas awal load) — dites eksplisit lewat 3-step resize desktop→mobile→desktop.
+- `#col1Switch` di breakpoint desktop jadi `justify-content:space-between` — area kosong di tengah otomatis dari flexbox, bukan spacer manual. Switcher Naskah/Preview dibungkus wrapper baru `.col1SwitchGroup` (bawa gaya pill lama: bg+border+radius+padding), toolbar tetap pakai gaya compact-nya sendiri dari fix sebelumnya.
+- Efek positif tambahan: karena toolbar sekarang bagian dari baris persisten `#col1Switch` (bukan lagi di dalam `panelNaskah` yang di-hide pas toggle ke Preview), tombol Simpan/Daftar/Import di desktop **tetap keliatan & bisa dipencet** meskipun lagi nampilin Preview di kolom 1 — sebelumnya ini ilang pas toggle ke Preview.
+- Diverifikasi via Playwright: desktop — toolbar konfirmasi pindah jadi child `#col1Switch`, sejajar vertikal (center-aligned, dicek lewat bounding rect) sama switcher, posisinya di kanan switcher, ada gap kosong signifikan di tengah, tetap keliatan pas toggle ke Preview, flow Simpan (dialog prompt → badge Daftar) masih jalan dari lokasi baru, nol console/page error. Mobile — toolbar konfirmasi TETAP di `panelNaskah`, `#col1Switch` tetap ke-hide, urutan DOM (toolbar di atas textarea) gak berubah, nol console/page error. Resize test — nyebrang breakpoint desktop→mobile→desktop, toolbar pindah tempat dengan benar di setiap arah.
+- `sw.js` cache `v26` → `v27`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
