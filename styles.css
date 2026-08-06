@@ -148,8 +148,12 @@ header.brand{
   margin:0 0 22px 44px;
 }
 /* Mobile (<880px): cuma satu panelGroup aktif yang keliatan, dikontrol tab bar bawah.
-   Desktop (>=880px): ketiganya tampil sekaligus jadi 3 kolom, tab bar disembunyikan —
-   komponen yang sama, cuma disusun ulang, bukan sistem terpisah. */
+   Desktop (>=880px): 2 kolom — kolom 1 timeshare Naskah/Preview lewat
+   col1Switch, kolom 2 (Setting, termasuk tombol Mulai) selalu keliatan.
+   Sebelum v3e desktop emang 2 kolom kayak gini (tanpa preview visual);
+   sempet jadi 3 kolom sejajar pas mobile readiness, tapi kolom preview
+   nambah lebar & berasa penuh padahal isinya ringan — balik ke 2 kolom,
+   preview jadi toggle di kolom 1 alih-alih kolom sendiri. */
 main.layout{
   flex:1;
   display:flex;
@@ -157,11 +161,13 @@ main.layout{
 }
 .panelGroup{display:none;flex-direction:column;gap:14px;flex:1;min-height:0;}
 .panelGroup.active{display:flex;}
+.col1Switch{display:none;}
 
 @media (min-width:880px){
   main.layout{
     display:grid;
-    grid-template-columns:1.25fr 1fr 1fr;
+    grid-template-columns:1.3fr 1fr;
+    grid-template-rows:auto 1fr;
     gap:24px;
     align-items:start;
   }
@@ -174,6 +180,16 @@ main.layout{
      sesuai jatah fr-nya — kombinasi sama overflow-wrap di bawah yang
      beneran mecah kata panjangnya. */
   .panelGroup{display:flex !important; min-width:0;}
+  .col1Switch{display:flex; min-width:0;}
+  #col1Switch{grid-column:1; grid-row:1;}
+  #panelNaskah{grid-column:1; grid-row:2;}
+  #panelPreview{grid-column:1; grid-row:2;}
+  #panelSetting{grid-column:2; grid-row:1 / -1;}
+  /* Naskah/Preview gantian di kolom 1 (state di-toggle app.js lewat class
+     desktopShowPreview di main.layout) — id-selector + 2 class biar
+     spesifisitasnya ngalahin ".panelGroup{display:flex!important}" di atas. */
+  main.layout:not(.desktopShowPreview) #panelPreview{display:none !important;}
+  main.layout.desktopShowPreview #panelNaskah{display:none !important;}
 }
 
 /* Simpan (aksi instan, paling sering dipakai) sengaja dikasih gaya beda
@@ -398,6 +414,21 @@ footer.note{
 @media (min-width:880px){
   .tabbar{display:none;}
   #setup{padding-bottom:48px;}
+}
+
+/* ---------- Naskah/Preview switch (desktop only, kolom 1) ---------- */
+.col1SwitchBtn{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:9px 10px; border-radius:9px; border:none; background:transparent;
+  color:var(--muted); font-size:12.5px; font-weight:600; cursor:pointer;
+  font-family:'Inter',sans-serif;
+}
+.col1SwitchBtn.active{background:var(--accent-dim); color:var(--accent);}
+@media (min-width:880px){
+  .col1Switch{
+    gap:6px; background:var(--panel); border:1px solid var(--panel-border);
+    border-radius:12px; padding:4px;
+  }
 }
 
 /* ---------- Preview panel ---------- */

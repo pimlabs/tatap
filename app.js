@@ -134,12 +134,15 @@
     calibBtn: document.getElementById("calibBtn"),
     startBtn: document.getElementById("startBtn"),
 
+    mainLayout: document.querySelector("main.layout"),
     panelNaskah: document.getElementById("panelNaskah"),
     panelSetting: document.getElementById("panelSetting"),
     panelPreview: document.getElementById("panelPreview"),
     tabBtnNaskah: document.getElementById("tabBtnNaskah"),
     tabBtnSetting: document.getElementById("tabBtnSetting"),
     tabBtnPreview: document.getElementById("tabBtnPreview"),
+    col1SwitchNaskah: document.getElementById("col1SwitchNaskah"),
+    col1SwitchPreview: document.getElementById("col1SwitchPreview"),
     previewBox: document.getElementById("previewBox"),
     previewInner: document.getElementById("previewInner"),
     previewFocusLine: document.getElementById("previewFocusLine"),
@@ -281,7 +284,7 @@
   el.stageColorCustomFields.hidden = (state.stageColorMode === "inherit");
   applyTheme();
 
-  // ---------- Setup screen tabs (mobile only — desktop shows all 3 via CSS) ----------
+  // ---------- Setup screen tabs (mobile only — desktop pakai col1 switch di bawah) ----------
   var tabPanels = { naskah: el.panelNaskah, setting: el.panelSetting, preview: el.panelPreview };
   var tabBtns = { naskah: el.tabBtnNaskah, setting: el.tabBtnSetting, preview: el.tabBtnPreview };
   function setActiveTab(name){
@@ -291,6 +294,20 @@
     });
     if(name === "preview") updatePreviewBox();
   }
+  // ---------- Desktop col1 switch: Naskah/Preview (desktop only — terpisah
+  // dari tab mobile di atas; state-nya cuma class di main.layout, gak disimpan
+  // ke localStorage karena bukan preference, cuma view sementara). ----------
+  var col1Btns = { naskah: el.col1SwitchNaskah, preview: el.col1SwitchPreview };
+  function setCol1View(name){
+    el.mainLayout.classList.toggle("desktopShowPreview", name === "preview");
+    Object.keys(col1Btns).forEach(function(key){
+      col1Btns[key].classList.toggle("active", key === name);
+    });
+    if(name === "preview") updatePreviewBox();
+  }
+  el.col1SwitchNaskah.addEventListener("click", function(){ setCol1View("naskah"); });
+  el.col1SwitchPreview.addEventListener("click", function(){ setCol1View("preview"); });
+
   el.tabBtnNaskah.addEventListener("click", function(){ setActiveTab("naskah"); });
   el.tabBtnSetting.addEventListener("click", function(){ setActiveTab("setting"); });
   el.tabBtnPreview.addEventListener("click", function(){ setActiveTab("preview"); });

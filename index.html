@@ -86,6 +86,14 @@
   <p class="tagline">Teleprompter ringan, langsung di browser. Tanpa install.</p>
 
   <main class="layout">
+    <div class="col1Switch" id="col1Switch">
+      <button type="button" class="col1SwitchBtn active" id="col1SwitchNaskah">
+        <svg class="icon" width="15" height="15"><use href="#i-doc"/></svg>Naskah
+      </button>
+      <button type="button" class="col1SwitchBtn" id="col1SwitchPreview">
+        <svg class="icon" width="15" height="15"><use href="#i-eye"/></svg>Preview
+      </button>
+    </div>
     <div class="panelGroup active" id="panelNaskah">
       <div class="toolbarRow">
         <button type="button" id="libSaveBtn" class="toolPrimary">
@@ -176,6 +184,7 @@
           </div>
           <input type="range" id="speedRange" min="20" max="260" value="70" />
         </div>
+        <p class="estimate" id="estimateInfo">≈ - &middot; - kata &middot; - bagian</p>
 
         <button type="button" class="btn-secondary" id="calibBtn">
           <svg class="icon" width="15" height="15"><use href="#i-target"/></svg>
@@ -224,6 +233,12 @@
             <span class="track"></span><span class="knob"></span>
           </label>
         </div>
+
+        <button id="startBtn">
+          <svg class="icon" width="16" height="16"><use href="#i-play"/></svg>
+          Mulai
+        </button>
+        <p class="hint">Space: pause &middot; ↑↓: speed &middot; [ ]: section &middot; Esc: keluar</p>
       </div>
 
       <button type="button" id="becomeRemoteBtn" class="linklike">
@@ -240,12 +255,6 @@
         <div class="previewFade" id="previewFade"></div>
       </div>
       <div class="previewCaption">Sesuai ukuran &amp; warna dari tab Setting</div>
-      <p class="estimate" id="estimateInfo">≈ - &middot; - kata &middot; - bagian</p>
-      <button id="startBtn">
-        <svg class="icon" width="16" height="16"><use href="#i-play"/></svg>
-        Mulai
-      </button>
-      <p class="hint">Space: pause &middot; ↑↓: speed &middot; [ ]: section &middot; Esc: keluar</p>
     </div>
   </main>
 
