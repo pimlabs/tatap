@@ -15,6 +15,8 @@
   --control-track:#363A40;
   --subtle-fill:rgba(255,255,255,.04);
   --radius:14px;
+  --r-sm:8px;
+  --r-md:12px;
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
@@ -148,8 +150,12 @@ header.brand{
   margin:0 0 22px 44px;
 }
 /* Mobile (<880px): cuma satu panelGroup aktif yang keliatan, dikontrol tab bar bawah.
-   Desktop (>=880px): ketiganya tampil sekaligus jadi 3 kolom, tab bar disembunyikan —
-   komponen yang sama, cuma disusun ulang, bukan sistem terpisah. */
+   Desktop (>=880px): 2 kolom — kolom 1 timeshare Naskah/Preview lewat
+   col1Switch, kolom 2 (Setting, termasuk tombol Mulai) selalu keliatan.
+   Sebelum v3e desktop emang 2 kolom kayak gini (tanpa preview visual);
+   sempet jadi 3 kolom sejajar pas mobile readiness, tapi kolom preview
+   nambah lebar & berasa penuh padahal isinya ringan — balik ke 2 kolom,
+   preview jadi toggle di kolom 1 alih-alih kolom sendiri. */
 main.layout{
   flex:1;
   display:flex;
@@ -157,43 +163,66 @@ main.layout{
 }
 .panelGroup{display:none;flex-direction:column;gap:14px;flex:1;min-height:0;}
 .panelGroup.active{display:flex;}
+.col1Switch{display:none;}
 
 @media (min-width:880px){
   main.layout{
     display:grid;
-    grid-template-columns:1.25fr 1fr 1fr;
+    grid-template-columns:1.3fr 1fr;
+    grid-template-rows:auto 1fr;
     gap:24px;
     align-items:start;
   }
-  .panelGroup{display:flex !important;}
+  /* Kolom grid dengan unit fr punya minimum implisit minmax(auto,1fr) —
+     "auto" resolve ke min-content dari isinya. Kalau naskah user punya
+     satu kata/token panjang tanpa spasi (URL, ID, hash), min-content itu
+     bisa jauh lebih lebar dari jatah 1fr kolom, maksa SELURUH grid
+     (main.layout, bahkan halaman) overflow horizontal ke kanan.
+     min-width:0 matiin proteksi min-content itu, biar kolom bisa nyusut
+     sesuai jatah fr-nya — kombinasi sama overflow-wrap di bawah yang
+     beneran mecah kata panjangnya. */
+  .panelGroup{display:flex !important; min-width:0;}
+  .col1Switch{display:flex; align-items:center; flex-wrap:wrap; min-width:0;}
+  #col1Switch{grid-column:1; grid-row:1;}
+  #panelNaskah{grid-column:1; grid-row:2;}
+  #panelPreview{grid-column:1; grid-row:2;}
+  #panelSetting{grid-column:2; grid-row:1 / -1;}
+  /* Naskah/Preview gantian di kolom 1 (state di-toggle app.js lewat class
+     desktopShowPreview di main.layout) — id-selector + 2 class biar
+     spesifisitasnya ngalahin ".panelGroup{display:flex!important}" di atas. */
+  main.layout:not(.desktopShowPreview) #panelPreview{display:none !important;}
+  main.layout.desktopShowPreview #panelNaskah{display:none !important;}
 }
 
-/* Simpan (aksi instan, paling sering dipakai) sengaja dikasih gaya beda
-   & lebih menonjol dari Daftar/Import (aksi yang buka modal/file-picker,
-   lebih jarang) — sebelumnya ketiganya disegmen jadi satu strip rata,
-   keliatan kayak tab switcher (nyamain 3 jenis interaksi yang beda). */
+/* Simpan (aksi instan, paling sering dipakai) tetap dikasih gaya beda &
+   sedikit menonjol dari Daftar/Import (aksi yang buka modal/file-picker,
+   lebih jarang) — tapi ketiganya sengaja dibikin compact (bukan strip
+   full-width setinggi ~62px kayak sebelumnya): ini toolbar utility buat
+   manajemen naskah, bukan komponen utama, jadi porsinya jangan bersaing
+   sama textarea di bawahnya. flex:none + auto-width bikin barisnya
+   nyusut ngikutin konten, bukan dipaksa stretch penuh. */
 .toolbarRow{
-  display:flex; gap:8px; align-items:stretch;
+  display:flex; gap:6px; align-items:center; flex-wrap:wrap;
 }
 .toolPrimary{
-  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  flex:none; display:flex; align-items:center; justify-content:center; gap:6px;
   background:var(--accent-dim); border:1px solid var(--accent);
-  border-radius:var(--radius); color:var(--accent); font-weight:600; font-size:14px;
-  padding:12px 16px; cursor:pointer; font-family:'Inter',sans-serif;
+  border-radius:var(--r-md); color:var(--accent); font-weight:600; font-size:12.5px;
+  padding:7px 12px; cursor:pointer; font-family:'Inter',sans-serif;
 }
 .toolPrimary:hover{filter:brightness(1.08);}
 .toolSecondary{
   display:flex; gap:6px; flex:none;
 }
 .toolSecondaryBtn{
-  flex:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
-  width:62px; background:var(--panel); border:1px solid var(--panel-border);
-  border-radius:var(--radius); color:var(--muted); font-size:10.5px; position:relative;
-  padding:10px 4px 9px; cursor:pointer; font-family:'Inter',sans-serif;
+  flex:none; display:flex; align-items:center; justify-content:center; gap:5px;
+  background:var(--panel); border:1px solid var(--panel-border);
+  border-radius:var(--r-md); color:var(--muted); font-size:12.5px;
+  padding:7px 10px; cursor:pointer; font-family:'Inter',sans-serif;
 }
 .toolSecondaryBtn:hover{color:var(--text); border-color:var(--accent);}
 .toolBadge{
-  position:absolute; top:5px; right:7px; background:var(--accent); color:#161208;
+  background:var(--accent); color:#161208;
   font-size:9px; font-weight:700; min-width:15px; height:15px; border-radius:99px;
   display:flex; align-items:center; justify-content:center; padding:0 3px;
 }
@@ -295,20 +324,14 @@ input[type=color]{
 }
 .presets button:hover{border-color:var(--accent);color:var(--text);}
 
-.themeToggle{display:flex;gap:8px;}
-.themeOpt{
-  flex:1;font-size:12px;padding:6px 8px;border-radius:8px;
-  border:1px solid var(--panel-border);background:transparent;color:var(--muted);
-  cursor:pointer;
-}
-.themeOpt:hover{border-color:var(--accent);color:var(--text);}
-.themeOpt.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
-
 /* Kartu "Tema Aplikasi" sengaja dibikin ringan/compact — sebelumnya kartu
    penuh (h3 + label yang isinya ngulang teks h3-nya lagi + toggle) makan
    ruang & visual weight yang sama kayak "Panggung" di bawahnya, padahal
    ini preference sekali-set, jauh lebih jarang diubah dibanding slider
-   ukuran teks/margin. Satu baris compact: label kiri, toggle kanan. */
+   ukuran teks/margin. Satu baris compact: label kiri, toggle kanan.
+   Togglenya sendiri pakai .seg/.opt (lihat definisi deket tab bar) —
+   dulu punya implementasi sendiri (.themeToggle/.themeOpt), sekarang
+   disatuin biar konsisten sama switcher Naskah/Preview. */
 .panelCompact{padding:14px 16px;}
 .themeRow{
   display:flex; align-items:center; justify-content:space-between;
@@ -318,8 +341,6 @@ input[type=color]{
   font-size:12px; letter-spacing:.08em; text-transform:uppercase;
   color:var(--muted); font-weight:600; flex:none;
 }
-.themeToggleCompact{flex:none;}
-.themeToggleCompact .themeOpt{flex:none; padding:5px 10px;}
 
 .toggle-row{
   display:flex;align-items:center;justify-content:space-between;
@@ -392,6 +413,38 @@ footer.note{
   #setup{padding-bottom:48px;}
 }
 
+/* ---------- Segmented control (.seg/.opt) ----------
+   Satu pola dipakai di dua tempat yang tadinya reimplementasi terpisah
+   (col1SwitchGroup/col1SwitchBtn buat Naskah/Preview, themeToggle/themeOpt
+   buat Tema Aplikasi) — disatuin biar konsisten, sekalian nyicil eksekusi
+   pola "Segmented control" yang udah diusulin di DESIGN.md. Opsi individual
+   punya border sendiri (bukan satu pill besar ngebungkus semua opsi) &
+   auto-width (bukan flex:1) — disengaja biar senada sama toolbar Simpan/
+   Daftar/Import di sebelahnya, yang juga chip individual auto-width. */
+.seg{ display:flex; gap:6px; }
+.seg .opt{
+  flex:none; display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:7px 10px; border-radius:var(--r-sm); border:1px solid var(--panel-border);
+  background:transparent; color:var(--muted); font-size:12.5px; font-weight:600;
+  cursor:pointer; font-family:'Inter',sans-serif;
+}
+.seg .opt:hover{border-color:var(--accent); color:var(--text);}
+.seg .opt.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
+
+/* ---------- Naskah/Preview switch + toolbar naskah, selurus (desktop only, kolom 1) ----------
+   .col1Switch adalah baris gabungan: switcher Naskah/Preview (.seg) di
+   kiri, .toolbarRow (Simpan/Daftar/Import) digeser masuk ke sini oleh
+   app.js pas desktop, area kosong di antaranya lewat
+   justify-content:space-between (bukan spacer manual). Mobile gak
+   kepengaruh — toolbarRow balik ke lokasi asalnya (atas textarea, dalam
+   panelNaskah) di bawah 880px. */
+@media (min-width:880px){
+  .col1Switch{
+    justify-content:space-between; gap:12px;
+  }
+  .col1Switch .toolbarRow{flex:none;}
+}
+
 /* ---------- Preview panel ---------- */
 .previewLabel{font-size:13px;color:var(--text);font-weight:500;}
 .previewCaption{font-size:11px;color:var(--muted);margin-top:-8px;}
@@ -400,7 +453,11 @@ footer.note{
   padding:22px 20px; height:220px; overflow:hidden; background:var(--bg);
 }
 .previewFocusLine{position:absolute;left:0;right:0;top:38%;height:1px;background:var(--accent);opacity:.3;}
-.previewInner{line-height:1.45;font-family:'Inter',sans-serif;}
+/* overflow-wrap:anywhere — kata/token panjang tanpa spasi (URL, ID, hash)
+   dipaksa patah, bukan bikin box ini (atau kolom grid desktop yang
+   nampung-nya) melebar gak terkontrol. Dipasang di sini + #stageText +
+   #measurer biar preview, stage asli, dan estimasi durasi konsisten. */
+.previewInner{line-height:1.45;font-family:'Inter',sans-serif;overflow-wrap:anywhere;}
 .previewInner .line{margin:0;}
 .previewFade{
   position:absolute;left:0;right:0;bottom:0;height:64px;
@@ -592,6 +649,7 @@ footer.note{
   padding:18vh 24px 100vh;
   line-height:1.45;
   font-family:'Inter',sans-serif;
+  overflow-wrap:anywhere;
 }
 #stageText .line{margin:0;}
 #stageText .line-active{color:var(--accent);font-weight:600;}
@@ -599,6 +657,7 @@ footer.note{
 #measurer{
   position:absolute;visibility:hidden;left:-9999px;top:0;
   line-height:1.45;font-family:'Inter',sans-serif;padding:0 24px;
+  overflow-wrap:anywhere;
 }
 #measurer .line{margin:0;}
 #focusLine{

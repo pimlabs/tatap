@@ -80,7 +80,7 @@ Lingkaran penuh (tombol icon-only di control bar stage, knob switch, dll) tetap 
 
 ### Segmented control (`.seg`)
 
-Gantiin `.themeOpt`, `.speedPresetBtn`, dan `.presets button`, tiga implementasi ulang dari pola yang sama persis. Dipakai buat pilihan majemuk yang mutually-exclusive (contoh: Gelap/Terang/Sistem).
+Gantiin `.themeOpt` **(sudah dieksekusi, lihat ROADMAP.md)**, `.speedPresetBtn`, dan `.presets button` **(belum)** — tadinya tiga+ implementasi ulang dari pola yang sama persis (plus satu lagi yang sempat muncul belakangan, `.col1SwitchBtn` buat switcher Naskah/Preview, ikut disatuin ke sini juga). Dipakai buat pilihan majemuk yang mutually-exclusive (contoh: Gelap/Terang/Sistem).
 
 ```html
 <div class="seg">
