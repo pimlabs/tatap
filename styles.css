@@ -57,7 +57,13 @@
   --subtle-fill:rgba(255,255,255,.04);
 }
 *{box-sizing:border-box;}
-html,body{margin:0;height:100%;}
+/* overscroll-behavior-y:none di sini + tiap container yang beneran
+   scroll (#setup, .panelGroup, dst di bawah) — matiin rubber-band/bounce
+   Safari iOS pas ke-scroll lewat batas atas/bawah. Global di html/body
+   jaga-jaga kalau document sendiri kebagian overflow tipis (mis. dvh
+   meleset pas address bar Safari collapse/expand), biar gak ketarik
+   pull-to-refresh gesture juga. */
+html,body{margin:0;height:100%;overscroll-behavior-y:none;}
 
 /* ---------- Touch feedback ---------- */
 /* Semua tombol (+ .sectionItem, div yang diperlakukan kayak tombol) kasih
@@ -98,7 +104,7 @@ a{color:var(--accent);}
      malah bikin previewBox tumbuh sepanjang konten (startBtn ke-dorong
      keluar viewport). Overflow-y:auto jaga-jaga kalau konten tetap lebih
      tinggi dari layar (textarea di-resize manual, viewport pendek, dst). */
-  #setup{height:100vh;height:100dvh;overflow-y:auto;}
+  #setup{height:100vh;height:100dvh;overflow-y:auto;overscroll-behavior-y:none;}
   main.layout{min-height:0;}
   /* .panelGroup jadi scroll container-nya sendiri (bukan #setup) — kalau
      konten satu tab (mis. Setting, banyak field) lebih tinggi dari box
@@ -107,7 +113,7 @@ a{color:var(--accent);}
      footer dipindah jadi anak panelNaskah) turun, jadi numpuk/overlap.
      Header (logo+tagline) yang di luar .panelGroup jadi gak ikut
      ke-scroll juga — tetap kepasang di atas, gak lewat notch. */
-  .panelGroup{overflow-y:auto;}
+  .panelGroup{overflow-y:auto;overscroll-behavior-y:none;}
   /* Isi ruang kosong di bawah textarea/previewBox (dead-zone) — desktop
      sengaja gak dikasih ini, box preview di sana tetap snippet pendek
      (height:220px) biar gak membengkak ngikutin panjang naskah. */
@@ -239,6 +245,7 @@ textarea#script{
   line-height:1.6;
   padding:18px 20px;
   outline:none;
+  overscroll-behavior-y:none;
 }
 textarea#script:focus{border-color:var(--accent);}
 textarea#script::placeholder{color:var(--muted);}
@@ -494,7 +501,7 @@ footer.note{
   display:flex;align-items:center;justify-content:center;gap:6px;
 }
 
-.libList{max-height:44vh;overflow:auto;margin-top:14px;}
+#libList{max-height:44vh;overflow:auto;overscroll-behavior-y:none;margin-top:14px;}
 .libItem{
   display:flex;align-items:center;gap:10px;
   padding:10px 4px;border-bottom:1px solid var(--panel-border);
@@ -721,7 +728,7 @@ footer.note{
 /* ---------- Section jump panel ---------- */
 .overlay-panel{
   position:absolute;right:20px;bottom:90px;width:300px;max-height:55vh;
-  overflow:auto;background:rgba(20,20,22,.96);
+  overflow:auto;overscroll-behavior-y:none;background:rgba(20,20,22,.96);
   border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px;
   z-index:1100;
 }
