@@ -320,6 +320,16 @@ Eko minta barisan tombol di kolom 1 (switcher Naskah/Preview + toolbar Simpan/Da
 - Diverifikasi via Playwright: radius switcher Naskah/Preview == radius Tema Aplikasi (8px), radius Simpan == radius Daftar/Import (12px), fungsi switcher (toggle Naskah/Preview, ganti tema Gelap/Terang/Sistem) tetap jalan normal di desktop & mobile (tab Setting), nol console/page error. Screenshot desktop (baris gabungan + kartu Tema Aplikasi) & mobile (tab Setting) dicek visual — tiga kontrol sekarang kebaca sebagai satu keluarga visual, bukan tiga implementasi beda.
 - `sw.js` cache `v27` → `v28`.
 
+## 🔧 Fix — Matiin rubber-band/bounce scroll Safari iOS
+
+Eko keluhan: scroll di HP (Safari iOS) suka mantul/bounce pas ke-scroll lewat batas atas/bawah, ganggu.
+
+- Fix: `overscroll-behavior-y:none` ditambah ke `html`/`body` (global, jaga-jaga document sendiri kebagian overflow tipis) dan ke semua container yang beneran scroll: `#setup` & `.panelGroup` (layar setup mobile, sumber utama keluhan), `textarea#script` (naskah), `#libList` (daftar naskah tersimpan di modal), `.overlay-panel` (panel lompat section pas rekam). Ini CSS-only, gak ada JS baru — didukung Safari iOS 16+, browser lama fallback ke behavior lama (masih bounce, tapi gak regresi dari sebelumnya).
+- **Ketauan sekalian**: `#libList` (elemen `id="libList"`) selama ini ke-target CSS pakai selector class `.libList` yang gak pernah match (typo lama, gak berhubungan sama fix ini) — jadi `max-height:44vh;overflow:auto` yang dimaksud buat daftar naskah tersimpan gak pernah aktif, modal bisa kepanjangan kalau naskah tersimpan banyak. Sekalian dibenerin jadi `#libList` di fix ini, karena baris yang sama lagi disentuh.
+- Diverifikasi via Playwright: computed `overscroll-behavior-y:none` konfirmasi kepasang di semua 7 tempat (html, body, `#setup`, `.panelGroup`, `#script`, `#libList`, `.overlay-panel`), scroll manual di tab Setting & isi textarea naskah masih jalan normal (nol regresi fungsional), nol console/page error.
+- **Belum bisa dites efek visual bounce-nya beneran** — gak ada Safari/iOS di environment ini, cuma Chromium/Playwright (yang gak render rubber-band iOS sama sekali). Tolong dicek langsung di HP asli (Safari, & PWA yang udah di-install ke home screen) apakah bounce-nya beneran ilang.
+- `sw.js` cache `v28` → `v29`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
