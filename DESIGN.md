@@ -81,9 +81,9 @@ Lingkaran penuh (tombol icon-only di control bar stage, knob switch, dll) tetap 
 
 ### Segmented control (`.seg`)
 
-Gantiin `.themeOpt` **(sudah dieksekusi, lihat ROADMAP.md)** — tadinya tiga+ implementasi ulang dari pola yang sama persis (plus satu lagi yang sempat muncul belakangan, `.col1SwitchBtn` buat switcher Naskah/Preview, ikut disatuin ke sini juga). Dipakai buat pilihan majemuk yang mutually-exclusive (contoh: Gelap/Terang/Sistem).
+Gantiin `.themeOpt`, `.speedPresetBtn`, `.presets button` **(semua sudah dieksekusi, lihat ROADMAP.md)** — tadinya empat+ implementasi ulang dari pola yang sama persis (plus `.col1SwitchBtn` buat switcher Naskah/Preview). Dipakai buat pilihan majemuk yang mutually-exclusive (contoh: Gelap/Terang/Sistem).
 
-`.speedPresetBtn` & `.presets button` **belum** dipindah ke markup `.seg`/`.opt` (keduanya masih `flex:1` ngisi rata lebar penuh — beda dari `.opt` yang auto-width — karena butuh isi seluruh lebar row buat 4-6 opsi), tapi radius-nya udah disamain ke `--r-md` biar bentuk tombolnya tetap konsisten sama sisanya.
+`.opt` sengaja gak di-scope ke `.seg .opt` di CSS — dipakai juga di luar wrapper `.seg` (`.speedPresets`, `.presets`) yang butuh `flex:1` ngisi rata lebar penuh (4-6 opsi), beda dari `.seg .opt` biasa yang auto-width. `.speedPresetBtn`/`id` lama (`presetDark`/`presetLight`) tetap dipertahankan sebagai class/id tambahan buat hook JS (`querySelectorAll`/`getElementById`) — bukan buat styling lagi, itu semua dari `.opt`.
 
 ```html
 <div class="seg">
@@ -102,13 +102,9 @@ Sudah konsisten, gak diubah. Dipakai buat pertanyaan biner (on/off), bukan pilih
 
 ## Yang sengaja dikecualikan
 
-**Overlay stage** (`#controlBar`, `#speedPopover`, `.overlay-panel`, `#countdownOverlay`). Sengaja selalu gelap-translucent apapun tema app, karena harus tetap legible di atas warna panggung custom milik user yang bisa apa aja. Gak ditarik ke token `--panel`/`--panel-border` yang ngikut tema. Nilai `rgba()`-nya sendiri dirapiin jadi 3 token terpisah:
+**Overlay stage** (`#controlBar`, `#speedPopover`, `.overlay-panel`, `#countdownOverlay`). Sengaja selalu gelap-translucent apapun tema app, karena harus tetap legible di atas warna panggung custom milik user yang bisa apa aja. Gak ditarik ke token `--panel`/`--panel-border` yang ngikut tema.
 
-| Token | Nilai |
-|---|---|
-| `--overlay-bg` | `rgba(20,20,22,.9)` |
-| `--overlay-border` | `rgba(255,255,255,.1)` |
-| `--overlay-hover` | `rgba(255,255,255,.12)` |
+**Belum ditokenize** (dicoba, ternyata bukan sekadar rename): audit nilai `rgba()` yang beneran dipakai nunjukkin `--overlay-bg` sebenernya 3 nilai beda (`.82` controlBar, `.94` speedPopover, `.96` overlay-panel — bukan `.9` doang), `--overlay-border` 2 nilai beda (`.08` controlBar, `.1` speedPopover/overlay-panel), `--overlay-hover` 4 nilai beda (`.08`/`.1`/`.12`/`.16` di berbagai state hover/active). Proposal awal 3-token ini ditulis tanpa ngecek nilai riil dulu — maksain jadi 3 token bakal butuh MILIH satu opacity per token (ubah beberapa nilai beneran), bukan cuma rapiin nama. Karena overlay ini yang keliatan pas lagi rekam (high-stakes, bukan tempat buat eksperimen visual diam-diam), token ini dibiarin belum dieksekusi sampai ada keputusan eksplisit nilai mana yang menang di tiap grup.
 
 ## Status implementasi
 
@@ -118,7 +114,9 @@ Sudah konsisten, gak diubah. Dipakai buat pertanyaan biner (on/off), bukan pilih
 2. **Konsolidasi tombol, 5 pola.** Semua `.toolPrimary`/`.toolSecondaryBtn`/`.btn-accent`/`.btn-ghost`/`.linklike`/`.libLoad`/`.libDelete` diganti `.btn-fill`/`.btn-fill.btn-pill`/`.btn-outline`/`.btn-quiet`/`.btn-danger`. **Ada perubahan visual disengaja**: Simpan (toolbar naskah) yang tadinya tinted-outline sekarang solid fill; tombol Batal/Tutup di modal & Putuskan/Kembali di remote pad yang tadinya pill berbatas sekarang jadi teks underline quiet (ngikut deskripsi `.btn-quiet` sendiri: "tutup, batal, putuskan"). Warna/radius ditarik dari class dasar, ukuran/padding di-scope per konteks (`.toolbarRow`, `.modal-actions`, `.libItem`, `.remoteActionRow`) — bukan satu ukuran buat semua.
 3. **Skala tipe, 7 langkah.** `--fs-label`(11)/`--fs-meta`(12)/`--fs-sm`(13)/`--fs-body`(14)/`--fs-lg`(16)/`--fs-h3`(20)/`--fs-h1`(26) dipasang ke hampir semua teks UI di layar setup, modal, & remote pad. Dikecualikan (tetap angka mentah): badge count (9px), CTA `#startBtn` (18px, sengaja lebih gede dari skala), kode remote 4-digit (32px), angka hitung mundur (56px), icon glyph di tombol bulat — plus **seluruh overlay stage** (`#controlBar`/`#speedPopover`/`.overlay-panel`/`#countdownOverlay`), yang dari awal emang dikecualikan dari sistem token (lihat di atas). Beberapa nilai 11.5px/12.5px dibulatin turun ke 11/12 (bukan naik) biar tombol compact yang udah ditune gak balik melebar.
 
-Token `--overlay-bg`/`--overlay-border`/`--overlay-hover` di section "Yang sengaja dikecualikan" di atas **belum** dieksekusi (nilai `rgba()` overlay stage masih hardcode di tempat) — di luar scope 3 fase ini.
+4. **Susulan: `.speedPresetBtn` & `.presets button` ikut dipindah ke `.opt`.** Dua pola terakhir yang masih reimplementasi sendiri (radius udah disamain di fase 3, tapi border/warna/hover/active masih copy-paste manual) sekarang makein `.opt` juga — selector diubah dari `.seg .opt` jadi `.opt` polos (gak wajib punya wrapper `.seg`) biar bisa dipakai di `.speedPresets`/`.presets` yang butuh `flex:1` (beda dari `.seg .opt` yang auto-width). Nol perubahan visual (radius/warna udah sama dari fase 3, cuma hapus duplikasi kode).
+
+Token `--overlay-bg`/`--overlay-border`/`--overlay-hover` di section "Yang sengaja dikecualikan" di atas **belum** dieksekusi — dicoba, ternyata nilai `rgba()` riil lebih variatif dari proposal awal (lihat catatan di section itu), butuh keputusan eksplisit sebelum dieksekusi.
 
 ## Catatan penulisan
 

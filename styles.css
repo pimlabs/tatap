@@ -343,13 +343,7 @@ textarea#script::placeholder{color:var(--muted);}
    manual ke nilai di antara, sengaja gak ada yang nyala (jujur nunjukkin
    ini custom, bukan salah satu preset). */
 .speedPresets{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
-.speedPresetBtn{
-  flex:1;font-size:var(--fs-meta);padding:6px 4px;border-radius:var(--r-md);
-  border:1px solid var(--panel-border);background:transparent;color:var(--muted);
-  cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;
-}
-.speedPresetBtn:hover{border-color:var(--accent);color:var(--text);}
-.speedPresetBtn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.speedPresets .opt{flex:1;padding:6px 4px;white-space:nowrap;}
 /* Custom track/thumb (bukan cuma accent-color) — accent-color+color-scheme doang
    gak selalu bikin bagian track yang belum ke-isi ikut tema secara konsisten
    lintas browser, jadi kontrolnya diambil alih penuh biar pasti ngikut tema. */
@@ -387,12 +381,7 @@ input[type=color]{
   border-radius:8px;background:none;padding:2px;cursor:pointer;
 }
 .presets{display:flex;gap:8px;margin-top:8px;}
-.presets button{
-  flex:1;font-size:var(--fs-meta);padding:6px 8px;border-radius:var(--r-md);
-  border:1px solid var(--panel-border);background:transparent;color:var(--muted);
-  cursor:pointer;
-}
-.presets button:hover{border-color:var(--accent);color:var(--text);}
+.presets .opt{flex:1;padding:6px 8px;}
 
 /* Kartu "Tema Aplikasi" sengaja dibikin ringan/compact — sebelumnya kartu
    penuh (h3 + label yang isinya ngulang teks h3-nya lagi + toggle) makan
@@ -473,22 +462,25 @@ footer.note{
 }
 
 /* ---------- Segmented control (.seg/.opt) ----------
-   Satu pola dipakai di dua tempat yang tadinya reimplementasi terpisah
+   Satu pola dipakai di banyak tempat yang tadinya reimplementasi terpisah
    (col1SwitchGroup/col1SwitchBtn buat Naskah/Preview, themeToggle/themeOpt
-   buat Tema Aplikasi) — disatuin biar konsisten, sekalian nyicil eksekusi
-   pola "Segmented control" yang udah diusulin di DESIGN.md. Opsi individual
-   punya border sendiri (bukan satu pill besar ngebungkus semua opsi) &
-   auto-width (bukan flex:1) — disengaja biar senada sama toolbar Simpan/
-   Daftar/Import di sebelahnya, yang juga chip individual auto-width. */
+   buat Tema Aplikasi, speedPresetBtn, presets button) — disatuin biar
+   konsisten, sekalian eksekusi pola "Segmented control" yang diusulin di
+   DESIGN.md. .opt sengaja gak di-scope ke ".seg .opt" — dipakai juga di
+   luar wrapper .seg (mis. .speedPresets, .presets) yang punya kebutuhan
+   flex beda (flex:1 ngisi rata, bukan auto-width kayak .seg biasa). Opsi
+   individual punya border sendiri (bukan satu pill besar ngebungkus
+   semua opsi) — disengaja biar senada sama toolbar Simpan/Daftar/Import
+   di sebelahnya, yang juga chip individual. */
 .seg{ display:flex; gap:6px; }
-.seg .opt{
+.opt{
   flex:none; display:flex; align-items:center; justify-content:center; gap:6px;
   padding:7px 10px; border-radius:var(--r-md); border:1px solid var(--panel-border);
   background:transparent; color:var(--muted); font-size:var(--fs-meta); font-weight:600;
   cursor:pointer; font-family:'Inter',sans-serif;
 }
-.seg .opt:hover{border-color:var(--accent); color:var(--text);}
-.seg .opt.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
+.opt:hover{border-color:var(--accent); color:var(--text);}
+.opt.active{border-color:var(--accent); color:var(--accent); background:var(--accent-dim);}
 
 /* ---------- Naskah/Preview switch + toolbar naskah, selurus (desktop only, kolom 1) ----------
    .col1Switch adalah baris gabungan: switcher Naskah/Preview (.seg) di
