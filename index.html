@@ -102,17 +102,17 @@
     </div>
     <div class="panelGroup active" id="panelNaskah">
       <div class="toolbarRow">
-        <button type="button" id="libSaveBtn" class="toolPrimary">
+        <button type="button" id="libSaveBtn" class="btn-fill">
           <svg class="icon" width="15" height="15"><use href="#i-save"/></svg>
           <span id="libSaveBtnLabel">Simpan</span>
         </button>
         <div class="toolSecondary">
-          <button type="button" id="libOpenBtn" class="toolSecondaryBtn" title="Semua naskah tersimpan">
+          <button type="button" id="libOpenBtn" class="btn-outline" title="Semua naskah tersimpan">
             <svg class="icon" width="15" height="15"><use href="#i-list"/></svg>
             <span>Daftar</span>
             <span class="toolBadge" id="libCount">0</span>
           </button>
-          <button type="button" id="importMdBtn" class="toolSecondaryBtn" title="Import file Markdown">
+          <button type="button" id="importMdBtn" class="btn-outline" title="Import file Markdown">
             <svg class="icon" width="15" height="15"><use href="#i-folder"/></svg>
             <span>Import</span>
           </button>
@@ -192,7 +192,7 @@
         </div>
         <p class="estimate" id="estimateInfo">≈ - &middot; - kata &middot; - bagian</p>
 
-        <button type="button" class="btn-secondary" id="calibBtn">
+        <button type="button" class="btn-outline" id="calibBtn">
           <svg class="icon" width="15" height="15"><use href="#i-target"/></svg>
           Kalibrasi kecepatan baca
         </button>
@@ -240,14 +240,14 @@
           </label>
         </div>
 
-        <button id="startBtn">
+        <button id="startBtn" class="btn-fill btn-pill">
           <svg class="icon" width="16" height="16"><use href="#i-play"/></svg>
           Mulai
         </button>
         <p class="hint">Space: pause &middot; ↑↓: speed &middot; [ ]: section &middot; Esc: keluar</p>
       </div>
 
-      <button type="button" id="becomeRemoteBtn" class="linklike">
+      <button type="button" id="becomeRemoteBtn" class="btn-quiet">
         <svg class="icon" width="13" height="13"><use href="#i-phone"/></svg>
         Jadi remote control dari HP ini
       </button>
@@ -284,8 +284,8 @@
     <div class="calib-sample" id="calibSample"></div>
     <div id="calibTimerLabel">0.0 detik</div>
     <div class="modal-actions">
-      <button type="button" class="btn-accent" id="calibStartBtn">▶ Mulai baca</button>
-      <button type="button" class="btn-ghost" id="calibCancelBtn">Batal</button>
+      <button type="button" class="btn-fill btn-pill" id="calibStartBtn">▶ Mulai baca</button>
+      <button type="button" class="btn-quiet" id="calibCancelBtn">Batal</button>
     </div>
   </div>
 </div>
@@ -297,7 +297,7 @@
     <p class="muted" id="libEmptyHint">Belum ada naskah tersimpan.</p>
     <div id="libList"></div>
     <div class="modal-actions">
-      <button type="button" class="btn-ghost" id="libCloseBtn"><svg class="icon" width="14" height="14"><use href="#i-close"/></svg>Tutup</button>
+      <button type="button" class="btn-quiet" id="libCloseBtn"><svg class="icon" width="14" height="14"><use href="#i-close"/></svg>Tutup</button>
     </div>
   </div>
 </div>
@@ -355,9 +355,9 @@
     <h2>Remote Tatap</h2>
     <p class="muted">Masukkan kode 4 digit yang tampil di layar utama.</p>
     <input type="text" id="remoteCodeInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="0000" autocomplete="off" />
-    <button type="button" class="btn-accent" id="remoteConnectBtn">Sambung</button>
+    <button type="button" class="btn-fill btn-pill" id="remoteConnectBtn">Sambung</button>
     <p id="remoteError" class="remoteError"></p>
-    <button type="button" class="btn-ghost" id="remoteBackBtn">‹ Kembali</button>
+    <button type="button" class="btn-quiet" id="remoteBackBtn">‹ Kembali</button>
   </div>
   <div id="remotePad" hidden>
     <p id="remoteStatus" class="muted"><span class="dotOnline"></span>Tersambung</p>
@@ -373,10 +373,10 @@
       <button type="button" id="remoteBtnNext" title="Section berikutnya"><svg class="icon" width="15" height="15"><use href="#i-chevron-right"/></svg></button>
     </div>
     <div class="remoteActionRow">
-      <button type="button" id="remoteBtnRestart" title="Ulang dari awal"><svg class="icon" width="16" height="16"><use href="#i-restart"/></svg>Ulang</button>
-      <button type="button" id="remoteBtnExit" title="Keluar dari stage"><svg class="icon" width="16" height="16"><use href="#i-close"/></svg>Keluar stage</button>
+      <button type="button" id="remoteBtnRestart" class="btn-outline" title="Ulang dari awal"><svg class="icon" width="16" height="16"><use href="#i-restart"/></svg>Ulang</button>
+      <button type="button" id="remoteBtnExit" class="btn-danger" title="Keluar dari stage"><svg class="icon" width="16" height="16"><use href="#i-close"/></svg>Keluar stage</button>
     </div>
-    <button type="button" class="btn-ghost" id="remoteDisconnectBtn"><svg class="icon" width="14" height="14"><use href="#i-link"/></svg>Putuskan koneksi</button>
+    <button type="button" class="btn-quiet" id="remoteDisconnectBtn"><svg class="icon" width="14" height="14"><use href="#i-link"/></svg>Putuskan koneksi</button>
   </div>
 </div>
 

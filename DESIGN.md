@@ -112,11 +112,13 @@ Sudah konsisten, gak diubah. Dipakai buat pertanyaan biner (on/off), bukan pilih
 
 ## Status implementasi
 
-Dokumen ini proposal. Belum ada kode yang dieksekusi dari sini. Rencana eksekusi (3 fase, low-risk dulu):
+**Ketiga fase di bawah udah dieksekusi** (lihat `ROADMAP.md` buat detail per-commit) — beda dari rencana awal "nol perubahan visual", karena eksekusinya nyusul draf mockup yang direview & disetujui Eko dulu (bukan cuma rename class buta), jadi ada beberapa perubahan visual yang disengaja (dijelasin di tiap poin):
 
-1. **Token dulu.** Tambah semua variabel di atas ke `:root` (3 blok tema, ngikut pola yang udah ada). Ganti nilai hardcode yang cocok ke variabelnya. Nol perubahan visual, screenshot before/after harus identik.
-2. **Konsolidasi tombol per grup.** Satu grup per commit (mulai dari `.seg`, paling banyak duplikasi), bukan sekaligus 19 class. Target: nol perubahan visual, cuma nama class yang beda.
-3. **Skala tipe, paling akhir.** Beberapa ukuran (11.5px, 12.5px, 10.5px) bakal dibulatin ke tetangga terdekat. Satu-satunya fase yang punya kemungkinan kecil kelihatan beda 1px. Screenshot cross-check penuh sebelum di-ship.
+1. **Token.** `--on-accent`/`--danger`/`--danger-text`/`--success` ditambah ke `:root` (nilai sama di kedua tema, gak perlu diulang di blok light/dark). `--r-sm` sempet ditambah tapi kehapus lagi — lihat poin Segmented control di bawah. Nol perubahan visual di fase ini.
+2. **Konsolidasi tombol, 5 pola.** Semua `.toolPrimary`/`.toolSecondaryBtn`/`.btn-accent`/`.btn-ghost`/`.linklike`/`.libLoad`/`.libDelete` diganti `.btn-fill`/`.btn-fill.btn-pill`/`.btn-outline`/`.btn-quiet`/`.btn-danger`. **Ada perubahan visual disengaja**: Simpan (toolbar naskah) yang tadinya tinted-outline sekarang solid fill; tombol Batal/Tutup di modal & Putuskan/Kembali di remote pad yang tadinya pill berbatas sekarang jadi teks underline quiet (ngikut deskripsi `.btn-quiet` sendiri: "tutup, batal, putuskan"). Warna/radius ditarik dari class dasar, ukuran/padding di-scope per konteks (`.toolbarRow`, `.modal-actions`, `.libItem`, `.remoteActionRow`) — bukan satu ukuran buat semua.
+3. **Skala tipe, 7 langkah.** `--fs-label`(11)/`--fs-meta`(12)/`--fs-sm`(13)/`--fs-body`(14)/`--fs-lg`(16)/`--fs-h3`(20)/`--fs-h1`(26) dipasang ke hampir semua teks UI di layar setup, modal, & remote pad. Dikecualikan (tetap angka mentah): badge count (9px), CTA `#startBtn` (18px, sengaja lebih gede dari skala), kode remote 4-digit (32px), angka hitung mundur (56px), icon glyph di tombol bulat — plus **seluruh overlay stage** (`#controlBar`/`#speedPopover`/`.overlay-panel`/`#countdownOverlay`), yang dari awal emang dikecualikan dari sistem token (lihat di atas). Beberapa nilai 11.5px/12.5px dibulatin turun ke 11/12 (bukan naik) biar tombol compact yang udah ditune gak balik melebar.
+
+Token `--overlay-bg`/`--overlay-border`/`--overlay-hover` di section "Yang sengaja dikecualikan" di atas **belum** dieksekusi (nilai `rgba()` overlay stage masih hardcode di tempat) — di luar scope 3 fase ini.
 
 ## Catatan penulisan
 
