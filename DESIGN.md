@@ -43,10 +43,11 @@ Ditambah, buat nutup 4 tempat yang selama ini ngetik ulang hex code yang sama da
 
 | Token | Nilai | Dipakai buat |
 |---|---|---|
-| `--r-sm` | `8px` | Chip, badge, opsi di dalam segmented control |
-| `--r-md` | `12px` | Tombol, input teks/warna |
+| `--r-md` | `12px` | Tombol, opsi segmented control, input teks/warna |
 | `--r-lg` | `16px` | Kartu panel, modal, textarea (ganti `--radius` lama yang `14px`) |
 | `--r-pill` | `999px` | CTA utama, toggle switch, badge bulat |
+
+Awalnya diusulin 4 langkah dengan `--r-sm:8px` terpisah buat "opsi di dalam segmented control" (beda dari tombol biasa) — tapi begitu opsi segmented control (`.seg .opt`) & tombol toolbar (Simpan/Daftar/Import) kepakai bersisian di baris yang sama, beda radius 8px vs 12px kerasa gak konsisten secara visual. Eko minta disamain — jadi `.seg .opt` ikut `--r-md`, `--r-sm` gak dipakai lagi (dihapus dari `:root`, bukan dibiarin jadi token mati).
 
 Lingkaran penuh (tombol icon-only di control bar stage, knob switch, dll) tetap `border-radius:50%`, di luar skala ini.
 
@@ -80,7 +81,9 @@ Lingkaran penuh (tombol icon-only di control bar stage, knob switch, dll) tetap 
 
 ### Segmented control (`.seg`)
 
-Gantiin `.themeOpt` **(sudah dieksekusi, lihat ROADMAP.md)**, `.speedPresetBtn`, dan `.presets button` **(belum)** — tadinya tiga+ implementasi ulang dari pola yang sama persis (plus satu lagi yang sempat muncul belakangan, `.col1SwitchBtn` buat switcher Naskah/Preview, ikut disatuin ke sini juga). Dipakai buat pilihan majemuk yang mutually-exclusive (contoh: Gelap/Terang/Sistem).
+Gantiin `.themeOpt` **(sudah dieksekusi, lihat ROADMAP.md)** — tadinya tiga+ implementasi ulang dari pola yang sama persis (plus satu lagi yang sempat muncul belakangan, `.col1SwitchBtn` buat switcher Naskah/Preview, ikut disatuin ke sini juga). Dipakai buat pilihan majemuk yang mutually-exclusive (contoh: Gelap/Terang/Sistem).
+
+`.speedPresetBtn` & `.presets button` **belum** dipindah ke markup `.seg`/`.opt` (keduanya masih `flex:1` ngisi rata lebar penuh — beda dari `.opt` yang auto-width — karena butuh isi seluruh lebar row buat 4-6 opsi), tapi radius-nya udah disamain ke `--r-md` biar bentuk tombolnya tetap konsisten sama sisanya.
 
 ```html
 <div class="seg">

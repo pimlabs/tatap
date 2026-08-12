@@ -341,6 +341,22 @@ Tiga catatan visual dari Eko liat desktop (screenshot baris switcher/toolbar vs 
 - Diverifikasi via Playwright: tinggi `#col1Switch` vs `.panelCompact` selisih ≤2px, tinggi textarea vs previewBox persis sama (380px = 380px) pas toggle ke Preview, lebar color swatch turun ke 44px, nol console/page error. Screenshot desktop (top strip, Panggung card, full setup screen) & mobile (tab Setting) dicek visual.
 - `sw.js` cache `v29` → `v30`.
 
+## 🔧 Fix — Container baris kedua (textarea vs Panggung) lurus horizontal
+
+Lanjutan dari fix tinggi baris pertama (col1Switch vs kartu Tema Aplikasi) — Eko minta konsisten diterusin ke baris di bawahnya juga: textarea Naskah/previewBox (kolom 1) harus lurus sama kartu Panggung (kolom 2, kartu kedua di Setting).
+
+- Root cause: `main.layout` grid pakai `gap:24px` (row-gap DAN column-gap sekaligus), sementara `panelSetting` (`.panelGroup{gap:14px}`) adalah SATU box utuh yang span `grid-row:1/-1` — jadi grid row-gap 24px cuma keliatan efeknya di kolom 1 (jarak col1Switch ke textarea), sedangkan jarak antar-kartu di kolom 2 (Tema Aplikasi ke Panggung) tetap pakai gap internal panelGroup yang 14px. Dua angka beda (24 vs 14) bikin baris kedua gak lurus — diukur persis: textarea mulai di y=189, kartu Panggung mulai di y=180, beda 9px.
+- Fix: `gap:24px` dipecah jadi `column-gap:24px` (tetap, jarak horizontal kolom 1↔2 gak berubah) + `row-gap:14px` (disamain ke gap internal `panelGroup`). Baris pertama (col1Switch/Tema Aplikasi) gak kepengaruh (row1 auto-height tetap dari kontennya), baris kedua sekarang lurus.
+- Diverifikasi via Playwright: selisih posisi top textarea vs kartu Panggung turun dari 9px jadi ≤1px (sisa 1px dari pembulatan sub-pixel tinggi baris pertama, gak keliatan kasat mata), baris pertama tetap lurus persis (0px), mobile gak kepengaruh (`main.layout` masih `display:flex` di bawah 880px, row-gap/column-gap grid gak berlaku), nol console/page error. Dicek juga di view Preview (bukan cuma Naskah) — sama-sama lurus.
+
+Lanjutan feedback di ronde evaluasi visual yang sama:
+
+- **Panggung (& panel lain) dibikin lebih compact**: `.panel{padding:20px→16px}`, `.panel h3{margin-bottom:14px→12px}`, `.field{margin-bottom:16px→12px}`, `.field label{margin-bottom:6px→4px}` — global, jadi Kecepatan & Kontrol ikut lebih rapat juga (konsisten, bukan cuma Panggung sendirian dibikin beda).
+- **Fragment label ~~"Begini kira-kira tampilannya nanti"~~ dihapus** dari panel Preview (`.previewLabel`) — dianggap gak perlu, previewCaption ("Sesuai ukuran & warna dari tab Setting") udah cukup ngejelasin. Efek samping bagus: previewBox sekarang jadi elemen pertama di panelPreview, top-nya otomatis pas sama top textarea (0px selisih, sebelumnya previewBox mulai lebih rendah karena ketutup tinggi label).
+- **Bentuk tombol disamain semua**: `.seg .opt` (switcher Naskah/Preview, Tema Aplikasi) sebelumnya radius `--r-sm` (8px), beda sama tombol toolbar/preset yang `--r-md` (12px) — kerasa gak konsisten pas ketemu bersisian di baris yang sama. Disamain semua ke `--r-md`: `.seg .opt`, `.speedPresetBtn`, `.presets button` (dua yang terakhir tadinya hardcode `8px`, sekarang ikut token), `.btn-secondary` (tadinya `10px`). Token `--r-sm` yang jadi gak kepake dihapus dari `:root` (bukan dibiarin jadi token mati) — `DESIGN.md` diupdate ngikutin keputusan ini (radius scale sekarang cuma `--r-md`/`--r-lg`/`--r-pill`, gak ada `--r-sm` lagi).
+- Diverifikasi: radius 6 elemen (switcher Naskah/Preview, Tema Aplikasi, Simpan, Daftar, speed preset, Kalibrasi) dicek konfirmasi seragam persis `12px`, previewLabel konfirmasi hilang dari DOM di desktop & mobile, alignment row2 & mobile tetap gak kepengaruh, nol console/page error. Screenshot desktop (top strip, Panggung compact, radius seragam) & mobile (tab Setting, tab Preview) dicek visual.
+- `sw.js` cache `v30` → `v32`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
