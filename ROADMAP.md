@@ -330,6 +330,17 @@ Eko keluhan: scroll di HP (Safari iOS) suka mantul/bounce pas ke-scroll lewat ba
 - **Belum bisa dites efek visual bounce-nya beneran** — gak ada Safari/iOS di environment ini, cuma Chromium/Playwright (yang gak render rubber-band iOS sama sekali). Tolong dicek langsung di HP asli (Safari, & PWA yang udah di-install ke home screen) apakah bounce-nya beneran ilang.
 - `sw.js` cache `v28` → `v29`.
 
+## 🔧 Fix — Evaluasi visual desktop: tinggi baris seragam, Panggung compact, Naskah/Preview sama tinggi
+
+Tiga catatan visual dari Eko liat desktop (screenshot baris switcher/toolbar vs kartu Tema Aplikasi):
+
+1. **Baris `#col1Switch` (switcher Naskah/Preview + toolbar Simpan/Daftar/Import) gak seragam tingginya sama kartu Tema Aplikasi di sebelahnya** — tombolnya sendiri udah senada (fix sebelumnya), tapi baris itu gak punya padding jadi cuma setinggi tombolnya doang (31px), sementara kartu Tema Aplikasi 60px (ada padding kartu `.panelCompact{padding:14px 16px}`). Fix: `#col1Switch` dikasih `padding:14px 0` (desktop only) — bukan diukur dari tombolnya doang, tapi termasuk "safe area" di luar tombol, angka 14px sengaja disamain ke padding vertikal `.panelCompact`. Hasilnya 59px vs 60px, praktis seragam.
+2. **Naskah (textarea) & Preview (previewBox) di kolom 1 harus sama tinggi** — biar toggle Naskah/Preview gak bikin tinggi kolom lompat naik-turun. Textarea `min-height:380px`, sementara previewBox `height:220px` (jauh lebih pendek). Fix: `.previewBox{height:380px}` di desktop, disamain persis ke tinggi textarea.
+3. **Kartu Panggung kepanjangan & color chooser kelebaran** — dua color picker (Warna latar/Warna teks) sebelumnya `width:100%` ngisi separuh `.row2` (bisa ~150px+), padahal cuma kotak warna polos, plus label-nya di baris terpisah di atas (bikin tinggi dobel). Fix: `.colorfield` disusun ulang jadi satu baris (label kiri, swatch kanan, `justify-content:space-between`), swatch di-fix `44x30px` (bukan `width:100%`). Baris "Custom warna panggung" jadi jauh lebih ringkas, satu-dua baris alih-alih tiga.
+- Semua fix desktop-only via media query kecuali colorfield (yang justru bikin mobile juga lebih ringkas, dicek screenshot — gak ada regresi).
+- Diverifikasi via Playwright: tinggi `#col1Switch` vs `.panelCompact` selisih ≤2px, tinggi textarea vs previewBox persis sama (380px = 380px) pas toggle ke Preview, lebar color swatch turun ke 44px, nol console/page error. Screenshot desktop (top strip, Panggung card, full setup screen) & mobile (tab Setting) dicek visual.
+- `sw.js` cache `v29` → `v30`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
