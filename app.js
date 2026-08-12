@@ -537,7 +537,7 @@
 
       var loadBtn = document.createElement("button");
       loadBtn.type = "button";
-      loadBtn.className = "libLoad";
+      loadBtn.className = "btn-outline";
       loadBtn.innerHTML = '<svg class="icon" width="14" height="14"><use href="#i-import"/></svg><span>Muat</span>';
       loadBtn.addEventListener("click", function(){
         state.activeLibId = entry.id;
@@ -548,7 +548,7 @@
 
       var delBtn = document.createElement("button");
       delBtn.type = "button";
-      delBtn.className = "libDelete";
+      delBtn.className = "btn-danger";
       delBtn.innerHTML = '<svg class="icon" width="14" height="14"><use href="#i-trash"/></svg><span>Hapus</span>';
       delBtn.addEventListener("click", function(){
         if(!confirm('Hapus naskah "' + entry.title + '"?')) return;

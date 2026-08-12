@@ -16,6 +16,27 @@
   --subtle-fill:rgba(255,255,255,.04);
   --radius:14px;
   --r-md:12px;
+  /* Sama nilainya di kedua tema (gak kayak --bg/--accent/dst) — warna ini
+     representasi state universal (teks di atas accent, destructive,
+     sukses), bukan bagian dari palet gelap/terang. */
+  --on-accent:#161208;
+  --danger:#c0524a;
+  --danger-text:#e0776f;
+  --success:#5FCB86;
+  /* Skala tipe (DESIGN.md) — 15 nilai lama dipadetin jadi 7 langkah.
+     Dikecualikan (sengaja gak ikut skala ini): angka display gede
+     (#remoteCodeInput 32px, ringNum 56px, badge 9px) & CTA utama
+     (#startBtn 18px, lebih gede dari fs-lg biar tetap paling menonjol
+     di layar), plus seluruh overlay stage (#controlBar/#speedPopover/
+     .overlay-panel/#countdownOverlay) yang emang udah dikecualikan dari
+     token sistem token secara umum. */
+  --fs-label:11px;
+  --fs-meta:12px;
+  --fs-sm:13px;
+  --fs-body:14px;
+  --fs-lg:16px;
+  --fs-h3:20px;
+  --fs-h1:26px;
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
@@ -146,12 +167,12 @@ header.brand{
 .wordmark{
   font-family:'Fraunces',serif;
   font-weight:600;
-  font-size:26px;
+  font-size:var(--fs-h1);
   letter-spacing:.2px;
 }
 .tagline{
   color:var(--muted);
-  font-size:14px;
+  font-size:var(--fs-body);
   margin:0 0 22px 44px;
 }
 /* Mobile (<880px): cuma satu panelGroup aktif yang keliatan, dikontrol tab bar bawah.
@@ -173,7 +194,13 @@ main.layout{
 @media (min-width:880px){
   main.layout{
     display:grid;
-    grid-template-columns:1.3fr 1fr;
+    /* Kolom 2 (Setting) dulu 1fr — ikut nge-scale sama lebar layar, jadi
+       di monitor ultrawide (3000px+) kartu-nya bisa nyampe 1000px+ lebih,
+       slider jadi kepanjangan & kerasa banyak ruang kosong. Kolom 1
+       (Naskah) tetap 1fr biar nyerap sisa ruang di layar lebar — kolom
+       2 di-cap minmax(320px,460px), 460 disamain ke max-width modal biar
+       konsisten sama lebar "kartu" lain di app ini. */
+    grid-template-columns:1fr minmax(320px,460px);
     grid-template-rows:auto 1fr;
     column-gap:24px;
     /* row-gap disamain ke gap antar-kartu di dalam panelSetting
@@ -217,28 +244,52 @@ main.layout{
 .toolbarRow{
   display:flex; gap:6px; align-items:center; flex-wrap:wrap;
 }
-.toolPrimary{
-  flex:none; display:flex; align-items:center; justify-content:center; gap:6px;
-  background:var(--accent-dim); border:1px solid var(--accent);
-  border-radius:var(--r-md); color:var(--accent); font-weight:600; font-size:12.5px;
-  padding:7px 12px; cursor:pointer; font-family:'Inter',sans-serif;
-}
-.toolPrimary:hover{filter:brightness(1.08);}
 .toolSecondary{
   display:flex; gap:6px; flex:none;
 }
-.toolSecondaryBtn{
-  flex:none; display:flex; align-items:center; justify-content:center; gap:5px;
-  background:var(--panel); border:1px solid var(--panel-border);
-  border-radius:var(--r-md); color:var(--muted); font-size:12.5px;
-  padding:7px 10px; cursor:pointer; font-family:'Inter',sans-serif;
-}
-.toolSecondaryBtn:hover{color:var(--text); border-color:var(--accent);}
 .toolBadge{
-  background:var(--accent); color:#161208;
+  background:var(--accent); color:var(--on-accent);
   font-size:9px; font-weight:700; min-width:15px; height:15px; border-radius:99px;
   display:flex; align-items:center; justify-content:center; padding:0 3px;
 }
+.toolbarRow .btn-fill, .toolbarRow .btn-outline{
+  flex:none; font-size:var(--fs-meta); padding:7px 12px;
+}
+
+/* ---------- Tombol: 5 pola (lihat DESIGN.md) ----------
+   Warna/border/radius dari sini — ukuran & layout (flex, padding gede/
+   kecil, width:100%) dari konteksnya masing-masing (.toolbarRow,
+   .modal-actions, .libItem, .remoteActionRow, dst), scoped di bawah
+   deket komponennya. */
+.btn-fill{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  background:var(--accent); border:none; border-radius:var(--r-md);
+  color:var(--on-accent); font-weight:600; font-family:'Inter',sans-serif;
+  cursor:pointer;
+}
+.btn-fill:hover{filter:brightness(1.06);}
+.btn-fill.btn-pill{
+  border-radius:999px; font-family:'Fraunces',serif; font-weight:700;
+  font-size:var(--fs-body); padding:10px 18px;
+}
+.btn-outline{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  background:transparent; border:1px solid var(--panel-border); border-radius:var(--r-md);
+  color:var(--text); font-family:'Inter',sans-serif; cursor:pointer;
+}
+.btn-outline:hover{border-color:var(--accent); color:var(--accent);}
+.btn-quiet{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  background:transparent; border:none; color:var(--muted);
+  text-decoration:underline; font-family:'Inter',sans-serif; cursor:pointer; padding:0;
+}
+.btn-quiet:hover{color:var(--accent);}
+.btn-danger{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  background:transparent; border:1px solid var(--danger); border-radius:var(--r-md);
+  color:var(--danger-text); font-family:'Inter',sans-serif; cursor:pointer;
+}
+.btn-danger:hover{background:rgba(192,82,74,.08); border-color:var(--danger-text);}
 textarea#script{
   width:100%;
   min-height:380px;
@@ -248,7 +299,7 @@ textarea#script{
   border-radius:var(--radius);
   color:var(--text);
   font-family:'Inter',sans-serif;
-  font-size:16px;
+  font-size:var(--fs-lg);
   line-height:1.6;
   padding:18px 20px;
   outline:none;
@@ -257,7 +308,7 @@ textarea#script{
 textarea#script:focus{border-color:var(--accent);}
 textarea#script::placeholder{color:var(--muted);}
 .hint-inline{
-  color:var(--muted);font-size:12px;margin:8px 2px 0;
+  color:var(--muted);font-size:var(--fs-meta);margin:8px 2px 0;
 }
 .hint-inline code{
   background:var(--panel);border:1px solid var(--panel-border);
@@ -272,7 +323,7 @@ textarea#script::placeholder{color:var(--muted);}
 }
 .panel h3{
   margin:0 0 12px;
-  font-size:12px;
+  font-size:var(--fs-label);
   letter-spacing:.08em;
   text-transform:uppercase;
   color:var(--muted);
@@ -282,7 +333,7 @@ textarea#script::placeholder{color:var(--muted);}
 .field:last-child{margin-bottom:0;}
 .field label{
   display:flex;justify-content:space-between;
-  font-size:13px;color:var(--text);margin-bottom:4px;
+  font-size:var(--fs-sm);color:var(--text);margin-bottom:4px;
 }
 .field label span.val{color:var(--accent);font-weight:600;}
 /* Shortcut cepat buat kecepatan gulir yang umum dipakai — slider halus
@@ -293,7 +344,7 @@ textarea#script::placeholder{color:var(--muted);}
    ini custom, bukan salah satu preset). */
 .speedPresets{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
 .speedPresetBtn{
-  flex:1;font-size:11.5px;padding:6px 4px;border-radius:var(--r-md);
+  flex:1;font-size:var(--fs-meta);padding:6px 4px;border-radius:var(--r-md);
   border:1px solid var(--panel-border);background:transparent;color:var(--muted);
   cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;
 }
@@ -330,14 +381,14 @@ input[type=range]::-moz-range-thumb{
    dua baris per field. */
 .row2{display:flex;gap:16px;}
 .colorfield{display:flex;align-items:center;justify-content:space-between;gap:8px;flex:1;}
-.colorfield label{font-size:12px;color:var(--muted);margin-bottom:0;}
+.colorfield label{font-size:var(--fs-meta);color:var(--muted);margin-bottom:0;}
 input[type=color]{
   flex:none;width:44px;height:30px;border:1px solid var(--panel-border);
   border-radius:8px;background:none;padding:2px;cursor:pointer;
 }
 .presets{display:flex;gap:8px;margin-top:8px;}
 .presets button{
-  flex:1;font-size:12px;padding:6px 8px;border-radius:var(--r-md);
+  flex:1;font-size:var(--fs-meta);padding:6px 8px;border-radius:var(--r-md);
   border:1px solid var(--panel-border);background:transparent;color:var(--muted);
   cursor:pointer;
 }
@@ -357,17 +408,17 @@ input[type=color]{
   gap:12px; flex-wrap:wrap;
 }
 .themeRowLabel{
-  font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  font-size:var(--fs-label); letter-spacing:.08em; text-transform:uppercase;
   color:var(--muted); font-weight:600; flex:none;
 }
 
 .toggle-row{
   display:flex;align-items:center;justify-content:space-between;
-  font-size:13px;margin-bottom:14px;
+  font-size:var(--fs-sm);margin-bottom:14px;
   gap:12px;
 }
 .toggle-row:last-child{margin-bottom:0;}
-.toggle-row .hintSmall{display:block;color:var(--muted);font-size:11px;font-weight:400;margin-top:2px;}
+.toggle-row .hintSmall{display:block;color:var(--muted);font-size:var(--fs-label);font-weight:400;margin-top:2px;}
 .switch{
   position:relative;width:38px;height:22px;flex:none;
 }
@@ -383,33 +434,22 @@ input[type=color]{
 .switch input:checked + .track + .knob{transform:translateX(16px);background:var(--accent);}
 
 .estimate{
-  font-size:12.5px;color:var(--muted);margin:-4px 0 16px;
+  font-size:var(--fs-meta);color:var(--muted);margin:-4px 0 16px;
   line-height:1.5;
 }
 .estimate b{color:var(--text);}
 
-button.btn-secondary{
-  width:100%;background:transparent;border:1px solid var(--panel-border);
-  color:var(--text);border-radius:var(--r-md);padding:9px 0;font-size:13px;
-  cursor:pointer;margin-bottom:16px;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-button.btn-secondary:hover{border-color:var(--accent);}
+#calibBtn.btn-outline{width:100%;padding:9px 0;font-size:var(--fs-sm);margin-bottom:16px;}
 
-button#startBtn{
-  width:100%;margin-top:6px;
-  background:var(--accent);color:#161208;
-  border:none;border-radius:999px;
-  font-family:'Fraunces',serif;font-weight:600;font-size:18px;
-  padding:14px 0;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-button#startBtn:hover{filter:brightness(1.06);}
+/* #startBtn tetap 18px, sengaja lebih gede dari --fs-lg — ini CTA paling
+   penting di layar, gak ikut skala teks UI biasa (mirip kenapa angka
+   display di stage juga dikecualikan). */
+#startBtn.btn-fill.btn-pill{width:100%;margin-top:6px;font-size:18px;padding:14px 0;}
 .hint{
-  text-align:center;color:var(--muted);font-size:12px;margin-top:10px;
+  text-align:center;color:var(--muted);font-size:var(--fs-meta);margin-top:10px;
 }
 footer.note{
-  margin-top:24px;color:var(--muted);font-size:12px;
+  margin-top:24px;color:var(--muted);font-size:var(--fs-meta);
 }
 
 /* ---------- Tab bar (mobile) ---------- */
@@ -422,7 +462,7 @@ footer.note{
 }
 .tabBtn{
   flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
-  padding:9px 4px; border-radius:13px; color:var(--muted); font-size:11px; font-weight:500;
+  padding:9px 4px; border-radius:13px; color:var(--muted); font-size:var(--fs-label); font-weight:500;
   cursor:pointer; background:transparent; border:none; font-family:'Inter',sans-serif;
   transition:background-color .15s ease, color .15s ease, transform .1s ease, filter .1s ease;
 }
@@ -444,7 +484,7 @@ footer.note{
 .seg .opt{
   flex:none; display:flex; align-items:center; justify-content:center; gap:6px;
   padding:7px 10px; border-radius:var(--r-md); border:1px solid var(--panel-border);
-  background:transparent; color:var(--muted); font-size:12.5px; font-weight:600;
+  background:transparent; color:var(--muted); font-size:var(--fs-meta); font-weight:600;
   cursor:pointer; font-family:'Inter',sans-serif;
 }
 .seg .opt:hover{border-color:var(--accent); color:var(--text);}
@@ -469,7 +509,7 @@ footer.note{
 }
 
 /* ---------- Preview panel ---------- */
-.previewCaption{font-size:11px;color:var(--muted);margin-top:-8px;}
+.previewCaption{font-size:var(--fs-label);color:var(--muted);margin-top:-8px;}
 .previewBox{
   position:relative; border:1px solid var(--panel-border); border-radius:var(--radius);
   padding:22px 20px; height:220px; overflow:hidden; background:var(--bg);
@@ -503,23 +543,16 @@ footer.note{
   background:var(--panel);border:1px solid var(--panel-border);
   border-radius:16px;padding:26px;max-width:460px;width:100%;
 }
-.modal-box h3{margin:0 0 6px;font-family:'Fraunces',serif;font-weight:600;font-size:20px;}
-.modal-box p.muted{color:var(--muted);font-size:13px;margin:0;}
+.modal-box h3{margin:0 0 6px;font-family:'Fraunces',serif;font-weight:600;font-size:var(--fs-h3);}
+.modal-box p.muted{color:var(--muted);font-size:var(--fs-sm);margin:0;}
 .calib-sample{
   background:var(--subtle-fill);border-radius:10px;padding:16px;
-  font-size:15px;line-height:1.6;margin-top:14px;
+  font-size:var(--fs-lg);line-height:1.6;margin-top:14px;
 }
-#calibTimerLabel{margin-top:10px;font-size:13px;color:var(--muted);}
-.modal-actions{display:flex;gap:10px;margin-top:18px;}
-.btn-accent{
-  background:var(--accent);color:#161208;border:none;border-radius:999px;
-  padding:10px 18px;font-weight:600;cursor:pointer;flex:1;font-size:14px;
-}
-.btn-ghost{
-  background:transparent;border:1px solid var(--panel-border);color:var(--muted);
-  border-radius:999px;padding:10px 18px;cursor:pointer;font-size:14px;
-  display:flex;align-items:center;justify-content:center;gap:6px;
-}
+#calibTimerLabel{margin-top:10px;font-size:var(--fs-sm);color:var(--muted);}
+.modal-actions{display:flex;gap:10px;margin-top:18px;align-items:center;}
+.modal-actions .btn-fill.btn-pill{flex:1;}
+.modal-actions .btn-quiet{font-size:var(--fs-body);}
 
 #libList{max-height:44vh;overflow:auto;overscroll-behavior-y:none;margin-top:14px;}
 .libItem{
@@ -529,30 +562,18 @@ footer.note{
 .libItem:last-child{border-bottom:none;}
 .libItem .libInfo{flex:1;min-width:0;}
 .libItem .libTitle{
-  font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:var(--fs-body);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.libItem .libMeta{font-size:11.5px;color:var(--muted);margin-top:2px;}
-.libItem button{
-  font-size:12px;padding:6px 10px;border-radius:8px;flex:none;
-  border:1px solid var(--panel-border);background:transparent;color:var(--muted);cursor:pointer;
-  display:flex;align-items:center;gap:5px;
+.libItem .libMeta{font-size:var(--fs-label);color:var(--muted);margin-top:2px;}
+/* Hapus (.btn-danger) tetap kemerahan dari awal, gak nunggu :hover — touch
+   device gak punya hover state sebelum disentuh, jadi Muat & Hapus musti
+   keliatan beda sebelum ke-tap, bukan pas ke-tap. */
+.libItem .btn-outline, .libItem .btn-danger{
+  flex:none; font-size:var(--fs-meta); padding:6px 10px;
 }
-.libItem button:hover{border-color:var(--accent);color:var(--text);}
-/* Beda dari :hover-only sebelumnya — touch device gak punya hover state
-   sebelum disentuh, jadi Muat & Hapus keliatan identik sampai ke-tap.
-   Hapus sekarang tetap kemerahan dari awal (gak nunggu hover) biar
-   "ini aksi destructive" kebaca sebelum jari nyentuh tombolnya. */
-.libItem button.libDelete{border-color:rgba(192,82,74,.4);color:#c0524a;}
-.libItem button.libDelete:hover{border-color:#c0524a;color:#e0776f;background:rgba(192,82,74,.08);}
 
 /* ---------- Remote HP ---------- */
-.linklike{
-  background:none;border:none;color:var(--muted);
-  font-size:12px;text-decoration:underline;cursor:pointer;
-  padding:0;margin-top:2px;
-  display:flex;align-items:center;justify-content:center;gap:6px;
-}
-.linklike:hover{color:var(--accent);}
+#becomeRemoteBtn.btn-quiet{font-size:var(--fs-meta);margin-top:2px;}
 
 /* Badge dipaksa mulai baris baru sendiri (bukan ngikut flex-wrap alami)
    — sebelumnya separator "|" sebelum play/pause/exit bisa ke-dorong
@@ -566,7 +587,7 @@ footer.note{
   flex-basis:100%; width:0; height:0; margin:0; background:transparent;
 }
 #remoteBadge{
-  font-size:12px;color:var(--muted);padding:0 6px;
+  font-size:var(--fs-meta);color:var(--muted);padding:0 6px;
   display:flex;align-items:center;gap:4px;white-space:nowrap;flex:none;
   margin-top:2px;
 }
@@ -592,7 +613,7 @@ footer.note{
 #remoteConnect, #remotePad{width:100%;max-width:320px;text-align:center;}
 #remoteConnect .ring{margin:0 auto 16px;}
 #remoteConnect h2{font-family:'Fraunces',serif;font-weight:600;margin:0 0 6px;}
-#remoteConnect .muted{color:var(--muted);font-size:13px;margin:0 0 20px;}
+#remoteConnect .muted{color:var(--muted);font-size:var(--fs-sm);margin:0 0 20px;}
 #remoteCodeInput{
   width:100%;font-size:32px;letter-spacing:.3em;text-align:center;
   background:var(--panel);border:1px solid var(--panel-border);border-radius:12px;
@@ -600,13 +621,13 @@ footer.note{
 }
 #remoteCodeInput:focus{outline:none;border-color:var(--accent);}
 #remoteConnectBtn{width:100%;margin-bottom:10px;}
-.remoteError{color:#e0776f;font-size:12.5px;min-height:16px;margin:0 0 10px;}
-#remoteBackBtn{width:100%;}
+.remoteError{color:var(--danger-text);font-size:var(--fs-meta);min-height:16px;margin:0 0 10px;}
+#remoteBackBtn{width:100%;font-size:var(--fs-body);}
 
 #remotePad #remoteStatus{
   margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:6px;
 }
-.dotOnline{width:7px;height:7px;border-radius:50%;background:#5FCB86;flex:none;}
+.dotOnline{width:7px;height:7px;border-radius:50%;background:var(--success);flex:none;}
 /* Icon doang (pause-bars vs play-triangle) susah kebeda pas dilihat
    sekilas/dari jarak jauh (dipakai sambil rekam). Warna fill jadi
    sinyal utama: playing = solid accent (konsisten sama makna "aktif/on"
@@ -614,7 +635,7 @@ footer.note{
    visual, nunjukkin "belum jalan / lagi berhenti"). */
 #remoteBtnPlayPause{
   width:96px;height:96px;border-radius:50%;
-  background:var(--accent);color:#161208;border:2px solid var(--accent);
+  background:var(--accent);color:var(--on-accent);border:2px solid var(--accent);
   cursor:pointer;margin:0 auto 22px;
   display:flex;align-items:center;justify-content:center;
   transition:background-color .15s, color .15s;
@@ -634,25 +655,22 @@ footer.note{
   width:64px;height:58px;flex:none;
   display:flex;align-items:center;justify-content:center;
 }
-#remoteSpeedLabel{min-width:64px;font-size:16px;color:var(--accent);font-weight:600;flex:none;}
+#remoteSpeedLabel{min-width:64px;font-size:var(--fs-lg);color:var(--accent);font-weight:600;flex:none;}
 /* Beda dari #remoteSpeedLabel — ini label statis ("Section"), bukan
    nilai live kayak angka speed, jadi warnanya muted bukan accent biar
    gak keliatan kayak nunjukkin data yang berubah-ubah. */
-#remoteSectionLabel{min-width:64px;font-size:13px;color:var(--muted);font-weight:600;flex:none;}
+#remoteSectionLabel{min-width:64px;font-size:var(--fs-sm);color:var(--muted);font-weight:600;flex:none;}
 /* Restart+Exit dikelompokin sejajar (sama-sama ngontrol sesi stage yang
    lagi jalan) — beda tier dari Disconnect (ngeputus koneksi remote-nya
    sendiri) yang sengaja dipisah jarak & bentuknya (pill, bukan
    rounded-rect) di bawah. Icon Ulang dikasih tint accent biar ada
    sedikit "warna" — sebelumnya full abu-abu monoton di ketiga tombol. */
 .remoteActionRow{display:flex;gap:10px;margin-bottom:16px;}
-.remoteActionRow button{
-  flex:1;background:transparent;border:1px solid var(--panel-border);color:var(--text);
-  border-radius:12px;padding:16px 6px;font-size:14px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:6px;
+.remoteActionRow .btn-outline, .remoteActionRow .btn-danger{
+  flex:1;padding:16px 6px;font-size:var(--fs-body);
 }
 #remoteBtnRestart .icon{color:var(--accent);}
-#remoteBtnExit{border-color:#c0524a;color:#e0776f;}
-#remoteDisconnectBtn{width:100%;margin-top:6px;padding:14px 18px;}
+#remoteDisconnectBtn{width:100%;margin-top:6px;padding:14px 18px;font-size:var(--fs-body);}
 
 /* ---------- Stage (fullscreen prompter) ---------- */
 #stage{
@@ -722,7 +740,7 @@ footer.note{
   display:flex;align-items:center;justify-content:center;flex:none;
 }
 #controlBar button:hover{background:rgba(255,255,255,.1);}
-#controlBar .playBtn{background:var(--accent);color:#161208;}
+#controlBar .playBtn{background:var(--accent);color:var(--on-accent);}
 #controlBar .playBtn:hover{background:var(--accent);filter:brightness(1.08);}
 #controlBar .speedToggleBtn{
   width:auto;padding:0 15px;border-radius:22px;font-size:14px;font-weight:600;

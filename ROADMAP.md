@@ -357,6 +357,32 @@ Lanjutan feedback di ronde evaluasi visual yang sama:
 - Diverifikasi: radius 6 elemen (switcher Naskah/Preview, Tema Aplikasi, Simpan, Daftar, speed preset, Kalibrasi) dicek konfirmasi seragam persis `12px`, previewLabel konfirmasi hilang dari DOM di desktop & mobile, alignment row2 & mobile tetap gak kepengaruh, nol console/page error. Screenshot desktop (top strip, Panggung compact, radius seragam) & mobile (tab Setting, tab Preview) dicek visual.
 - `sw.js` cache `v30` → `v32`.
 
+## ✅ v3p — Eksekusi penuh DESIGN.md: token, 5 pola tombol, skala tipe (selesai)
+
+Eko lihat screenshot naskah asli (119 ribu kata) di desktop lebar: kolom Setting (kanan) ikut melebar ngikutin layar, di monitor ultrawide bisa 1400px+ padahal isinya cuma slider & toggle. Sekalian ditanya "kalau boleh full rombak visual, apa yang diperbaiki" — dikasih draf artifact 4 area (tombol, skala tipe, token warna, layar yang belum disentuh), Eko setuju & minta dieksekusi semua.
+
+**1. Kolom Setting di-cap, gak ikut ngelebar di ultrawide**
+- `grid-template-columns:1.3fr 1fr` → `1fr minmax(320px,460px)`. Kolom 1 (Naskah) tetap `1fr` nyerap sisa ruang; kolom 2 di-cap max 460px (disamain ke `max-width` modal, biar "lebar kartu" konsisten se-app).
+- Diverifikasi: di viewport 3000px, kolom Setting kekunci di 460px (sebelumnya bakal ~1400px+).
+
+**2. Token warna semantik ditambah ke `:root`**
+- `--on-accent`(#161208), `--danger`(#c0524a), `--danger-text`(#e0776f), `--success`(#5FCB86) — sama nilainya di kedua tema, gak perlu diulang per blok. Ganti hardcode di `#startBtn`/`.dotOnline`/`#remoteBtnPlayPause`/`#controlBar .playBtn`/`.remoteError`, plus 2 tempat yang sebelumnya ngetik ulang merah dgn nilai sedikit beda (`.libDelete` pakai `rgba(192,82,74,.4)`, `#remoteBtnExit` pakai `#c0524a` mentah).
+
+**3. Tombol dikonsolidasi jadi 5 pola** (`.btn-fill`, `.btn-fill.btn-pill`, `.btn-outline`, `.btn-quiet`, `.btn-danger`) — gantiin `.toolPrimary`/`.toolSecondaryBtn`/`.btn-accent`/`.btn-ghost`/`.linklike`/`.libLoad`/`.libDelete` (8 implementasi beda jadi 5 kelas gantian, warna/radius dari kelasnya, ukuran/padding di-scope per konteks: `.toolbarRow`, `.modal-actions`, `.libItem`, `.remoteActionRow`).
+- **Ada 2 perubahan visual disengaja** (bukan cuma rename, beda dari rencana awal "nol perubahan visual" — karena Eko udah lihat & setujui mockup-nya duluan): tombol **Simpan** di toolbar naskah, dulu tinted-outline (background tipis + border accent), sekarang **solid fill** oranye. Tombol **Batal/Tutup** di modal & **Kembali/Putuskan koneksi** di remote pad, dulu pill berbatas, sekarang **teks underline quiet** (ngikut definisi `.btn-quiet` sendiri di `DESIGN.md`: "tutup, batal, putuskan").
+- `app.js` diupdate: tombol Muat/Hapus di daftar naskah (`renderLibList`) sekarang di-render pakai class `btn-outline`/`btn-danger` alih-alih `libLoad`/`libDelete`.
+
+**4. Skala tipe dipadetin ke 7 langkah** (`--fs-label`11 / `--fs-meta`12 / `--fs-sm`13 / `--fs-body`14 / `--fs-lg`16 / `--fs-h3`20 / `--fs-h1`26) — dipasang ke hampir semua teks UI di layar setup, modal, & remote pad (~35 selector). Dikecualikan (angka mentah, sengaja): badge count (9px), CTA `#startBtn` (18px, sengaja lebih gede dari skala biar tetap paling menonjol), kode remote 4-digit (32px), angka hitung mundur (56px), icon glyph tombol bulat — plus **seluruh overlay stage** (`#controlBar`/`#speedPopover`/`.overlay-panel`/`#countdownOverlay`) yang dari awal udah dikecualikan dari sistem token di `DESIGN.md`. Beberapa nilai (11.5px/12.5px) dibulatin **turun** ke tetangga terdekat (bukan naik) — sengaja, biar tombol compact yang udah di-tune beberapa fix sebelumnya gak balik melebar.
+- `--r-sm` (token radius yang sempet ditambah di fix sebelumnya) dihapus lagi — begitu ternyata gak kepake di mana pun (`.seg .opt` udah disamain ke `--r-md`), gak dibiarin jadi token mati.
+
+**5. Efek domino ke layar yang belum disentuh**: modal Kalibrasi, modal Daftar Naskah, & remote pad otomatis ikut rapi begitu pola tombol di atas diterapin — bukan class baru lagi buat masing-masing, cuma makein 5 pola yang sama.
+
+`DESIGN.md` diupdate penuh: skala radius (r-sm dihapus dari tabel), status implementasi (3 fase ditandain selesai + catatan penyimpangan dari "nol perubahan visual" di poin tombol).
+
+Diverifikasi via Playwright: kolom Setting ke-cap di ultrawide, flow Simpan/Muat/Hapus/Tutup/Batal/Mulai semua masih jalan lewat class baru, token warna & tipe kekonfirmasi ke-pasang di `:root`, nol console/page error di desktop/mobile/ultrawide. Screenshot cross-check: desktop normal, desktop ultrawide (3000px), light theme (setup + modal Kalibrasi), mobile (tab Naskah/Setting), modal Daftar Naskah light theme (kontras tombol Hapus dicek manual, masih legible).
+
+`sw.js` cache `v32` → `v33`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
