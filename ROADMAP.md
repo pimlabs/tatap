@@ -383,6 +383,16 @@ Diverifikasi via Playwright: kolom Setting ke-cap di ultrawide, flow Simpan/Muat
 
 `sw.js` cache `v32` → `v33`.
 
+## ✅ v3q — Beresin sisa `.speedPresetBtn`/`.presets button` ke `.opt` (selesai)
+
+Lanjutan v3p — dua pola tombol terakhir yang masih reimplementasi sendiri (radius udah disamain sebelumnya, tapi border/warna/hover/active masih copy-paste manual, bukan dari class bersama).
+
+- Selector `.seg .opt` diubah jadi `.opt` polos (gak wajib punya wrapper `.seg`) — biar bisa dipakai langsung di `.speedPresets` (preset kecepatan gulir) & `.presets` (preset warna panggung Gelap/Terang), yang butuh `flex:1` ngisi rata lebar (4-6 opsi) alih-alih auto-width kayak `.seg .opt` biasa.
+- `.speedPresetBtn`/`#presetDark`/`#presetLight` tetap dipertahankan sebagai class/id tambahan di HTML (bukan dihapus) — cuma buat hook JS (`querySelectorAll`, `getElementById`), styling-nya sepenuhnya dari `.opt` sekarang.
+- Dicoba juga eksekusi token `--overlay-bg`/`--overlay-border`/`--overlay-hover` (item DESIGN.md lain yang masih "belum") — ternyata nilai `rgba()` riil di overlay stage lebih variatif dari proposal awal (background 3 opacity beda: `.82`/`.94`/`.96`; border 2 beda: `.08`/`.1`; hover/active 4 beda: `.08`/`.1`/`.12`/`.16`). Maksain jadi 3 token butuh MILIH satu nilai per grup (ubah opacity beneran di overlay yang keliatan pas rekam) — bukan cuma rename, jadi sengaja **belum dieksekusi** sampai ada keputusan eksplisit dari Eko. `DESIGN.md` diupdate nyatet temuan ini.
+- Diverifikasi via Playwright: radius 5 elemen (switcher Naskah/Preview, Tema Aplikasi, speed preset, warna preset, Simpan) konfirmasi seragam persis 12px, klik speed preset & warna preset masih jalan normal (state active, nilai ke-set), nol console/page error desktop & mobile. Screenshot cross-check kartu Panggung + Kecepatan & Kontrol — visual sekarang beneran satu keluarga, gak ada lagi tombol yang "hampir sama tapi beda dikit".
+- `sw.js` cache `v33` → `v34`.
+
 ## 💭 v4 — Ide, belum dianalisis teknis
 
 - Sync naskah laptop ↔ iPad (opsi: manual export/import JSON dulu, baru pertimbangkan backend ringan kalau frekuensi pakai tinggi)
